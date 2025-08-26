@@ -195,10 +195,11 @@ L = Make current node a child node
 J = Move current node down
 K = Move current node up
 D = Delete the current node
-/ = Search
+/ = Search (begin with : to search labels)
 f = Find text in the current document
 ! = Replace text in the current document
 s = Save the current file
+S = Save as
                         </pre>
                     </td>
                 </tr>
@@ -239,6 +240,7 @@ s = Save the current file
   let treeData = [];
   let selectedId = null;
   let editing = false;
+  let fileName = "httree";
 
         let searchActive = false;
         let searchMatches = [];
@@ -589,9 +591,14 @@ s = Save the current file
 
 
 
-function saveAsHtml() {
-const name = prompt("Save as .html (enter name without extension):", "");
-if (!name) return;
+function saveAsHtml(currentFileName) {
+    let name = currentFileName;
+    let saveName = false;
+    if (name === "") {
+        name = prompt("Save as .html (enter name without extension):", "");
+        if (!name) return;
+        saveName = true;
+    }
 
             const elemLimit = 20; // Number of elements per line
             const htmlDoc = document.documentElement.cloneNode(true);
@@ -608,6 +615,9 @@ if (!name) return;
 
             // Ensure correct replacement of the old database
             let htmlContent = "<!DOCTYPE html>" + htmlDoc.outerHTML;
+            if (saveName) {
+                htmlContent = htmlContent.replace(/let\s+fileName\s*=\s*"([^"]*)";/, `let fileName = "${name}";`);
+            }
             htmlContent = htmlContent.replace(/let\s+treeData\s*=\s*\[[\s\S]*?\];/, `let treeData = ${formattedDatabase};`);
 
             let blob = new Blob([htmlContent], { type: "text/html" });
@@ -656,7 +666,8 @@ if (!name) return;
       case 'J': reorderAmongSiblings('down'); break;
       case 'K': reorderAmongSiblings('up'); break;
       case 'D': deleteNode(); break;
-      case 's': saveAsHtml(); break;
+      case 's': saveAsHtml(fileName); break;
+      case 'S': saveAsHtml(""); break;
       default: did = false; break;
     }
     if (did) { e.preventDefault(); render(); }
