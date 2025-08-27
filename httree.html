@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!DOCTYPE htmla
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Httree</title>
+    <title>Notes</title>
     <style>
         :root {
             --bg: #000;
@@ -59,7 +59,7 @@
 
         .node {
             display: flex; align-items: center; gap: 8px;
-            padding: 2px 6px; border-radius: 6px;
+            padding: 2px 6px; border-radius: 2px;
             cursor: default; user-select: none;
         }
         .node .twisty { width: 12px; display: inline-block; text-align: center; color: var(--muted); }
@@ -105,7 +105,7 @@
             background: #222;
             color: #fff;
             border: 2px solid #444;
-            border-radius: 10px;
+            border-radius: 2px;
             z-index: 9999;
             font-family: monospace;
             padding: 10px;
@@ -138,10 +138,92 @@
             background: #444;
         }
 
+        /* Links Dialog */
+        #linksDialog {
+            display: none;
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            max-height: 70%;
+            background: #222;
+            color: #fff;
+            border: 2px solid #444;
+            border-radius: 2px;
+            padding: 20px;
+            z-index: 9999;
+            font-family: monospace;
+            overflow-y: auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+        #linksDialog h3 {
+            margin-top: 0;
+        }
+        #linksList a {
+            display: block;
+            color: #00d1b2;
+            text-decoration: underline;
+            margin-bottom: 6px;
+            word-break: break-all;
+        }
+        #linksDialog .close {
+            margin-top: 10px;
+            color: #ccc;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        /* Search/Replace Dialog */
+        #replaceDialog {
+            display: none;
+            position: fixed;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            background: #222;
+            color: #fff;
+            border: 2px solid #444;
+            border-radius: 2px; /* per your request */
+            padding: 16px;
+            z-index: 9999;
+            font-family: monospace;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+        #replaceDialog h3 {
+            margin-top: 0;
+        }
+        #replaceDialog label {
+            display: block;
+            margin-bottom: 4px;
+        }
+        #replaceDialog input {
+            width: 100%;
+            padding: 6px;
+            margin-bottom: 10px;
+            background: #111;
+            color: #fff;
+            border: 1px solid #555;
+        }
+        #replaceDialog button {
+            background: #444;
+            color: #ddd;
+            border: none;
+            padding: 6px 12px;
+            margin-right: 8px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        #replaceDialog .close {
+            background: #444;
+            color: #fff;
+        }
+
 
         /* Scrollbars */
         ::-webkit-scrollbar { width: 10px; height: 10px; }
-        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 6px; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 2px; }
         ::-webkit-scrollbar-track { background: #0b0f17; }
     </style>
 </head>
@@ -196,9 +278,10 @@ L = Make current node a child node
 J = Move current node down
 K = Move current node up
 D = Delete the current node
+i = Edit current note
 / = Search (begin with : to search labels)
-f = Find text in the current document
-! = Replace text in the current document
+f = Find/Replace text in the current note 
+# = Show note links dialog
 
 s = Save the current file
 S = Save as
@@ -232,6 +315,24 @@ S = Save as
         <div id="searchList" class="search-results"></div>
     </div>
 
+    <div id="linksDialog">
+        <h3>Links in Note</h3>
+        <div id="linksList"></div>
+    </div>
+
+    <div id="replaceDialog">
+        <h3>Find & Replace</h3>
+        <label for="searchText">Find</label>
+        <input type="text" id="searchText" />
+        <label for="replaceText">Replace With</label>
+        <input type="text" id="replaceText" />
+        <div>
+            <button onclick="doFind()">Find</button>
+            <button onclick="doReplaceAll()">Replace All</button>
+        </div>
+        <div id="replaceResults"></div>
+    </div>
+
     <script>
         //---- Data Model ------------------------------------------------------
         const makeId = () => Math.random().toString(36).slice(2, 10);
@@ -242,6 +343,8 @@ S = Save as
         let treeData = [];
         let selectedId = null;
         let editing = false;
+        let showingLinks = false;
+        let finding = false;
         let fileName = "httree";
 
         let searchActive = false;
@@ -250,6 +353,9 @@ S = Save as
         const searchDialog = document.getElementById('searchDialog');
         const searchInput = document.getElementById('searchInput');
         const searchList = document.getElementById('searchList');
+
+        let findMatches = [];
+        let findIndex = 0;
 
 
         //---- Utilities -------------------------------------------------------
@@ -520,6 +626,151 @@ S = Save as
         }
 
 
+        //---- Links -----------------------------------------------------------
+        function openLinksDialog() {
+            showingLinks = true;
+            const info = findNodeAndParentById(selectedId);
+            if (!info || !info.node.content) return;
+
+            const content = info.node.content;
+            const urlRegex = /\bhttps?:\/\/[^\s]+/gi;
+            const matches = content.match(urlRegex) || [];
+
+            const listEl = document.getElementById('linksList');
+            listEl.innerHTML = '';
+
+            if (matches.length === 0) {
+                listEl.innerHTML = '<p>No links found.</p>';
+            } else {
+                matches.forEach(url => {
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.target = '_blank';
+                    a.textContent = url;
+                    listEl.appendChild(a);
+                });
+            }
+
+            document.getElementById('linksDialog').style.display = 'block';
+        }
+
+        function closeLinksDialog() {
+            showingLinks = false;
+            document.getElementById('linksDialog').style.display = 'none';
+        }
+
+
+
+
+
+        //---- Finding and Replacing -------------------------------------------
+        function openReplaceDialog() {
+            finding = true;
+            document.getElementById('searchText').value = '';
+            document.getElementById('replaceText').value = '';
+            document.getElementById('replaceDialog').style.display = 'block';
+            document.getElementById('searchText').focus();
+        }
+
+        function closeReplaceDialog() {
+            finding = false;
+            document.getElementById('replaceDialog').style.display = 'none';
+        }
+
+        function doFind() {
+            const info = findNodeAndParentById(selectedId);
+            if (!info) return;
+
+            const searchVal = document.getElementById('searchText').value;
+            const resultsEl = document.getElementById('replaceResults');
+            const area = document.getElementById('editorArea');
+
+            if (!searchVal) {
+                resultsEl.textContent = 'Enter something to search for.';
+                return;
+            }
+
+            const content = info.node.content || '';
+            // Escape user input for regex
+            const regex = new RegExp(searchVal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+
+            // Create a list of match start indexes
+            findMatches = [];
+            let match;
+            while ((match = regex.exec(content)) !== null) {
+                findMatches.push({ start: match.index, end: match.index + match[0].length });
+            }
+
+            if (findMatches.length === 0) {
+                resultsEl.textContent = 'No matches found.';
+                return;
+            }
+
+            // Cycle to the next match
+            if (findIndex >= findMatches.length) findIndex = 0;
+            const current = findMatches[findIndex];
+
+            // Move the caret/selection to the match
+            area.focus();
+            area.setSelectionRange(current.start, current.end);
+
+            resultsEl.textContent = `Match ${findIndex + 1} of ${findMatches.length}`;
+            findIndex++;
+        }
+
+        function doReplaceAll() {
+            const info = findNodeAndParentById(selectedId);
+            if (!info) return;
+
+            const searchVal = document.getElementById('searchText').value;
+            const replaceVal = document.getElementById('replaceText').value;
+            const resultsEl = document.getElementById('replaceResults');
+
+            if (!searchVal) {
+                resultsEl.textContent = 'Enter something to search for.';
+                return;
+            }
+
+            const regex = new RegExp(searchVal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+            let content = info.node.content || '';
+            const matchCount = (content.match(regex) || []).length;
+
+            if (matchCount > 0) {
+                content = content.replace(regex, replaceVal);
+                info.node.content = content;
+                render();
+                resultsEl.textContent = `Replaced ${matchCount} occurrence(s).`;
+            } else {
+                resultsEl.textContent = 'No matches found.';
+            }
+        }
+
+        const searchInputEl = document.getElementById('searchText');
+        const replaceInputEl = document.getElementById('replaceText');
+
+        searchInputEl.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                doFind(); // cycles through matches
+            }
+        });
+
+        replaceInputEl.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                doReplaceAll(); // replaces all
+                closeReplaceDialog();
+            }
+        });
+
+
+
+
+
+
+
+
+
         //---- Search ----------------------------------------------------------
         function openSearch() {
             searchActive = true;
@@ -654,6 +905,16 @@ S = Save as
             if (editing) return; // only when not editing
             if (e.ctrlKey || e.metaKey || e.altKey) return;
 
+            if (finding) {
+                switch (e.key) {
+                    case 'Escape':
+                        closeReplaceDialog();
+                        break;
+                }
+
+                return;
+            }
+
             if (e.key === '/') {
                 openSearch();
                 e.preventDefault();
@@ -669,7 +930,16 @@ S = Save as
                     const info = findNodeAndParentById(selectedId); if (!info) return;
                     editing = true; render(); editorArea.focus(); editorArea.setSelectionRange(editorArea.value.length, editorArea.value.length);
                     break;
-                case 'Escape': did = false; break; // handled in textarea
+                case 'Escape':
+                    if (showingLinks) {
+                        closeLinksDialog();
+                        e.preventDefault();
+                    }
+                    else {
+                        did = false;
+                    }
+                    break; // handled in textarea
+                case 'f': openReplaceDialog(); break;
                 case 'r': addRoot(); break;
                 case 'R': renameFolder(); break;
                 case 'j': selectNextSibling(); break;
@@ -689,6 +959,7 @@ S = Save as
                 case 'S': saveAsHtml(""); break;
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
+                case '#': openLinksDialog(); break;
                 default: did = false; break;
             }
             if (did) { e.preventDefault(); render(); }
@@ -710,7 +981,6 @@ S = Save as
                     return;
                 } else {
                     selectedNode = null;
-                    setSelectedNode(null);
                 }
             }
         });
