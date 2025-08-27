@@ -185,6 +185,8 @@ C = Collapse all the tree nodes
 E = Expand all the tree nodes
 A = Add child tree node
 a = Add next sibling tree node
+] = Expand the treeview panel
+[ = Shrink the treeview panel
                         </pre>
                     </td>
                     <td style="vertical-align: top; padding-left: 10px;">
@@ -197,6 +199,7 @@ D = Delete the current node
 / = Search (begin with : to search labels)
 f = Find text in the current document
 ! = Replace text in the current document
+
 s = Save the current file
 S = Save as
                         </pre>
@@ -498,6 +501,23 @@ S = Save as
             ctx.siblings.splice(ctx.index, 1);
             selectedId = goTo ? (goTo.id || goTo) : null;
         }
+        function resizeTree(adjustment){
+            const app = document.querySelector('.app');
+            if (!app) return;
+
+            // Get the current grid-template-columns value
+            const style = window.getComputedStyle(app);
+            const gridCols = style.getPropertyValue('grid-template-columns').split(' ');
+
+            // Parse the first column (tree width)
+            let treeWidth = parseInt(gridCols[0]);
+            if (isNaN(treeWidth)) return;
+
+            treeWidth += adjustment;
+
+            // Update the grid-template-columns
+            app.style.gridTemplateColumns = `${treeWidth}px 1fr`;
+        }
 
 
         //---- Search ----------------------------------------------------------
@@ -667,6 +687,8 @@ S = Save as
                 case 'D': deleteNode(); break;
                 case 's': saveAsHtml(fileName); break;
                 case 'S': saveAsHtml(""); break;
+                case ']': resizeTree(30); break;
+                case '[': resizeTree(-30); break;
                 default: did = false; break;
             }
             if (did) { e.preventDefault(); render(); }
