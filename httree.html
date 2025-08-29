@@ -352,6 +352,7 @@ f = Find/Replace text in the current note
 
         /** @type {NodeT[]} */
         let treeData = [];
+        const showInitHelp = true;
         const readOnly = false;
         let selectedId = null;
         let editing = false;
@@ -664,20 +665,69 @@ f = Find/Replace text in the current note
 
             const content = info.node.content;
             const urlRegex = /\bhttps?:\/\/[^\s]+/gi;
-            const matches = content.match(urlRegex) || [];
+            const nodeLinkRegex = /_(.+?)_/g;
+
+            const urlMatches = content.match(urlRegex) || [];
+
+            // Collect node links
+            let nodeMatches = [];
+            let match;
+            while ((match = nodeLinkRegex.exec(content)) !== null) {
+                nodeMatches.push(match[1]);
+            }
 
             const listEl = document.getElementById('linksList');
             listEl.innerHTML = '';
 
-            if (matches.length === 0) {
+            if (urlMatches.length === 0 && nodeMatches.length === 0) {
                 listEl.innerHTML = '<p>No links found.</p>';
             } else {
-                matches.forEach(url => {
+                // Render URL links
+                urlMatches.forEach(url => {
                     const a = document.createElement('a');
                     a.href = url;
                     a.target = '_blank';
                     a.textContent = url;
                     listEl.appendChild(a);
+                    listEl.appendChild(document.createElement('br'));
+                });
+
+                // Render Node links
+                nodeMatches.forEach(title => {
+                    const lowerTitle = title.toLowerCase();
+                    let foundNode = null;
+
+                    // Search only node titles (like `:query`)
+                    (function walk(nodes) {
+                        for (const n of nodes) {
+                            if (n.title && n.title.toLowerCase() === lowerTitle) {
+                                foundNode = n;
+                                return;
+                            }
+                            if (n.children && n.children.length) walk(n.children);
+                            if (foundNode) return; // early exit if found
+                        }
+                    })(treeData);
+
+                    const link = document.createElement('a');
+                    link.href = '#';
+                    link.textContent = title;
+
+                    if (foundNode) {
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            expandToNode(foundNode.id);
+                            selectedId = foundNode.id;
+                            closeLinksDialog();
+                            render();
+                        });
+                    } else {
+                        link.style.color = '#888';
+                        link.title = 'Node not found';
+                    }
+
+                    listEl.appendChild(link);
+                    listEl.appendChild(document.createElement('br'));
                 });
             }
 
@@ -1045,6 +1095,10 @@ f = Find/Replace text in the current note
                 document.getElementById('readerHelp').style.display = 'none';
                 document.getElementById('mode').style.display = 'block';
                 document.getElementById('replaceTools').style.display = 'block';
+            }
+
+            if (showInitHelp) {
+                document.getElementById('helpDialog').style.display = 'block';
             }
         });
     </script>
