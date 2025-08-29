@@ -1,9 +1,7 @@
-<!DOCTYPE html
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Notes</title>
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Httree Help</title>
     <style>
         :root {
             --bg: #000;
@@ -226,9 +224,9 @@
         ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 2px; }
         ::-webkit-scrollbar-track { background: #0b0f17; }
     </style>
-</head>
+<style type="text/css" id="operaUserStyle"></style></head>
 <body>
-    <div class="app">
+    <div class="app" style="grid-template-columns: 320px 1fr;">
         <header style="display: none;">
             <span class="dot green"></span>
             <strong>Console Notes</strong>
@@ -253,11 +251,10 @@
             box-shadow: rgb(0, 0, 0) 0px 0px 40px;">
             <h3>Key Bindings</h3>
             <p></p>
-            <table style="border-collapse: collapse; border: none; width: 100%;">
-                <tr>
+            <table id="authorHelp" style="border-collapse: collapse; border: none; width: 100%;">
+                <tbody><tr>
                     <td style="vertical-align: top; padding-right: 10px;">
-                        <pre>
-r = Add root level node
+                        <pre>r = Add root level node
 R = Rename current Folder
 j = Select the next sibling tree node
 k = Select the previous sibling tree node
@@ -272,8 +269,7 @@ a = Add next sibling tree node
                         </pre>
                     </td>
                     <td style="vertical-align: top; padding-left: 10px;">
-                        <pre>
-H = Move current node to the parent node
+                        <pre>H = Move current node to the parent node
 L = Make current node a child node
 J = Move current node down
 K = Move current node up
@@ -288,7 +284,20 @@ S = Save as
                         </pre>
                     </td>
                 </tr>
-            </table>
+            </tbody></table>
+            <pre id="readerHelp">
+j = Select the next sibling tree node
+k = Select the previous sibling tree node
+l = Expand the current tree node
+h = Collapse the current tree node
+C = Collapse all the tree nodes
+E = Expand all the tree nodes
+] = Expand the treeview panel
+[ = Shrink the treeview panel
+/ = Search (begin with : to search labels)
+f = Find/Replace text in the current note 
+# = Show note links dialog
+            </pre>
             <p></p>
             <p style="display: none;">
                 <a href="#" target="_blank" style="color: #fff; text-decoration: underline;">
@@ -298,21 +307,21 @@ S = Save as
             <p>Press ESC to close.</p>
         </div>
 
-        <aside class="tree" id="tree"></aside>
+        <aside class="tree" id="tree"><ul><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65"></path> <path style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5117" width="1.0583334" height="0.24694447" x="1.5875001" y="1.3772104"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5737" width="1.0583334" height="0.24694447" x="1.5875001" y="1.8710994"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5739" width="1.0583334" height="0.24694447" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">Introduction</span></div></li><li><div class="node"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M1 3 L5 7 L9 3 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">The Interface</span></div><ul><li><div class="node"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M3 1 L7 5 L3 9 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Treeview</span></div></li><li><div class="node"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M1 3 L5 7 L9 3 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Editor</span></div><ul><li><div class="node selected"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65"></path> <path style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5117" width="1.0583334" height="0.24694447" x="1.5875001" y="1.3772104"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5737" width="1.0583334" height="0.24694447" x="1.5875001" y="1.8710994"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5739" width="1.0583334" height="0.24694447" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">Introduction to the Editor</span></div></li></ul></li></ul></li></ul></aside>
 
         <section class="editor">
             <div class="status">
-                <span id="path" class="dim">/</span>
+                <span id="path" class="dim">/The Interface/Editor/Introduction to the Editor</span>
                 <span id="mode" class="pill">NORMAL</span>
-                <span id="kind" class="pill">FOLDER</span>
+                <span id="kind" class="pill">FILE</span>
             </div>
-            <textarea id="editorArea" spellcheck="false" placeholder="Press 'i' to edit note…"></textarea>
+            <textarea id="editorArea" spellcheck="false" readonly="readonly"></textarea>
         </section>
     </div>
 
-    <div id="searchDialog" class="search-dialog">
-        <input type="text" id="searchInput" placeholder="Search..." />
-        <div id="searchList" class="search-results"></div>
+    <div id="searchDialog" class="search-dialog" style="display: none;">
+        <input type="text" id="searchInput" placeholder="Search...">
+        <div id="searchList" class="search-results"><div>Introduction</div><div>Introduction to the Treeview</div><div>Notes Versus Folders</div><div>Renaming Nodes</div><div class="selected">Adding Root Nodes</div><div>Introduction to Navigation</div></div>
     </div>
 
     <div id="linksDialog">
@@ -321,14 +330,16 @@ S = Save as
     </div>
 
     <div id="replaceDialog">
-        <h3>Find & Replace</h3>
+        <h3>Find &amp; Replace</h3>
         <label for="searchText">Find</label>
-        <input type="text" id="searchText" />
-        <label for="replaceText">Replace With</label>
-        <input type="text" id="replaceText" />
-        <div style="display: none;">
-            <button onclick="doFind()">Find</button>
-            <button onclick="doReplaceAll()">Replace All</button>
+        <input type="text" id="searchText">
+        <div id="replaceTools">
+            <label for="replaceText">Replace With</label>
+            <input type="text" id="replaceText">
+            <div style="display: none;">
+                <button onclick="doFind()">Find</button>
+                <button onclick="doReplaceAll()">Replace All</button>
+            </div>
         </div>
         <div id="replaceResults"></div>
     </div>
@@ -341,11 +352,12 @@ S = Save as
 
         /** @type {NodeT[]} */
         let treeData = [];
+        const readOnly = false;
         let selectedId = null;
         let editing = false;
         let showingLinks = false;
         let finding = false;
-        let fileName = "httree";
+        let fileName = "help";
 
         let searchActive = false;
         let searchMatches = [];
@@ -950,10 +962,12 @@ S = Save as
             let did = true;
             switch (k) {
                 case 'i':
-                    const info = findNodeAndParentById(selectedId); if (!info) return;
-                    editing = true; render();
-                    editorArea.focus();
-                    // editorArea.setSelectionRange(editorArea.value.length, editorArea.value.length);
+                    if (!readOnly) {
+                        const info = findNodeAndParentById(selectedId); if (!info) return;
+                        editing = true; render();
+                        editorArea.focus();
+                        // editorArea.setSelectionRange(editorArea.value.length, editorArea.value.length);
+                    }
                     break;
                 case 'Escape':
                     if (showingLinks) {
@@ -965,23 +979,23 @@ S = Save as
                     }
                     break; // handled in textarea
                 case 'f': openReplaceDialog(); break;
-                case 'r': addRoot(); break;
-                case 'R': renameFolder(); break;
+                case 'r': if (!readOnly) addRoot(); break;
+                case 'R': if (!readOnly) renameFolder(); break;
                 case 'j': selectNextSibling(); break;
                 case 'k': selectPrevSibling(); break;
                 case 'l': expandOrFirstChild(); break;
                 case 'h': collapseCurrent(); break;
                 case 'C': collapseAll(); break;
                 case 'E': expandAll(); break;
-                case 'A': addChild(); break;
-                case 'a': addAfter(); break;
-                case 'H': moveOutToParent(); break;
-                case 'L': moveIntoAsChild(); break;
-                case 'J': reorderAmongSiblings('down'); break;
-                case 'K': reorderAmongSiblings('up'); break;
-                case 'D': deleteNode(); break;
-                case 's': saveAsHtml(fileName); break;
-                case 'S': saveAsHtml(""); break;
+                case 'A': if (!readOnly) addChild(); break;
+                case 'a': if (!readOnly) addAfter(); break;
+                case 'H': if (!readOnly) moveOutToParent(); break;
+                case 'L': if (!readOnly) moveIntoAsChild(); break;
+                case 'J': if (!readOnly) reorderAmongSiblings('down'); break;
+                case 'K': if (!readOnly) reorderAmongSiblings('up'); break;
+                case 'D': if (!readOnly) deleteNode(); break;
+                case 's': if (!readOnly) saveAsHtml(fileName); break;
+                case 'S': if (!readOnly) saveAsHtml(""); break;
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
                 case '#': openLinksDialog(); break;
@@ -1020,7 +1034,20 @@ S = Save as
         window.addEventListener('load', function() {
             render();
             selectedId = treeData[0]?.id || null;
+
+            if (readOnly) {
+                document.getElementById('authorHelp').style.display = 'none';
+                document.getElementById('readerHelp').style.display = 'block';
+                document.getElementById('mode').style.display = 'none';
+                document.getElementById('replaceTools').style.display = 'none';
+            } else {
+                document.getElementById('authorHelp').style.display = 'block';
+                document.getElementById('readerHelp').style.display = 'none';
+                document.getElementById('mode').style.display = 'block';
+                document.getElementById('replaceTools').style.display = 'block';
+            }
         });
     </script>
-</body>
-</html>
+
+
+</body></html>
