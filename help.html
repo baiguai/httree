@@ -251,7 +251,7 @@
             box-shadow: rgb(0, 0, 0) 0px 0px 40px;">
             <h3>Key Bindings</h3>
             <p></p>
-            <table style="border-collapse: collapse; border: none; width: 100%;">
+            <table id="authorHelp" style="border-collapse: collapse; border: none; width: 100%;">
                 <tbody><tr>
                     <td style="vertical-align: top; padding-right: 10px;">
                         <pre>r = Add root level node
@@ -285,6 +285,19 @@ S = Save as
                     </td>
                 </tr>
             </tbody></table>
+            <pre id="readerHelp">
+j = Select the next sibling tree node
+k = Select the previous sibling tree node
+l = Expand the current tree node
+h = Collapse the current tree node
+C = Collapse all the tree nodes
+E = Expand all the tree nodes
+] = Expand the treeview panel
+[ = Shrink the treeview panel
+/ = Search (begin with : to search labels)
+f = Find/Replace text in the current note 
+# = Show note links dialog
+            </pre>
             <p></p>
             <p style="display: none;">
                 <a href="#" target="_blank" style="color: #fff; text-decoration: underline;">
@@ -302,7 +315,7 @@ S = Save as
                 <span id="mode" class="pill">NORMAL</span>
                 <span id="kind" class="pill">FILE</span>
             </div>
-            <textarea id="editorArea" spellcheck="false" placeholder="Press 'i' to edit note…" readonly="readonly"></textarea>
+            <textarea id="editorArea" spellcheck="false" readonly="readonly"></textarea>
         </section>
     </div>
 
@@ -320,11 +333,13 @@ S = Save as
         <h3>Find &amp; Replace</h3>
         <label for="searchText">Find</label>
         <input type="text" id="searchText">
-        <label for="replaceText">Replace With</label>
-        <input type="text" id="replaceText">
-        <div style="display: none;">
-            <button onclick="doFind()">Find</button>
-            <button onclick="doReplaceAll()">Replace All</button>
+        <div id="replaceTools">
+            <label for="replaceText">Replace With</label>
+            <input type="text" id="replaceText">
+            <div style="display: none;">
+                <button onclick="doFind()">Find</button>
+                <button onclick="doReplaceAll()">Replace All</button>
+            </div>
         </div>
         <div id="replaceResults"></div>
     </div>
@@ -339,6 +354,7 @@ S = Save as
         let treeData = [
   {"id":"7tvrov2y","title":"Introduction","content":"Introduction\n--------------------------------------------------------------------------------\n\nHttree is a plain text editor that is a stand alone HTML file. It is fully\nkeyboard driven. To quickly access the key-bindings press: ?\n\nIf you are familiar with VIM key-bindings you should find Httree fairly\ncomfortable, however these are used when not editing a note. They are used\nto manage your collection of notes - navigating the treeview, editing tree\nnodes, activating searches within the tree or the currently selected note,\nas well as finding and replacing text within the note (you will want to consult\nthe Find and Replace topic, there is some 'hidden' functionality there).\n\nBeing a stand alone HTML file, saving doesn't behave as a typical application\nwould so be sure to consult the Saving topic.\n\n\nCompatibility\n--------------------------------------------------------------------------------\n\nBeing a stand alone HTML file, Httree can be used on any device with a\nJavascript-enabled web browser on it. However virtual keyboards (like those\nfound on mobile phones) may be problematic. This is because they are typically\nonly visible when a text field is selected - and because they generally lack\nan escape key. However if you have a tablet with a physical keyboard, Httree\nSHOULD work fine for you.","children":[],"expanded":false},{"id":"14cvysn7","title":"The Interface","content":"","children":[{"id":"0t196wlf","title":"Treeview","content":"","children":[{"id":"cebifb4d","title":"Introduction to the Treeview","content":"Introduction to the Treeview\n--------------------------------------------------------------------------------\n\nHttree uses a treeview to organize your notes. You can create, move, rename,\nexpand/collapse nodes, and delete them using key-bindings. To see what those\nare use the ? key.\n\nAlthough each binding is explained here be aware that Httree is still being\nexpanded and improved so there may be additional bindings not noted yet so\nusing ? is a good idea to ensure you are aware of ALL the bindings.","children":[],"expanded":false},{"id":"kbar9bmx","title":"Notes Versus Folders","content":"Notes Versus Folders\n--------------------------------------------------------------------------------\n\nWhen tree nodes are created they are initially folders. If there is any text\npresent in that node it becomes a note (or file) node. You can revert it back\nto a folder node by delete all the text in the node's note.\n\nThe first line of text in a note node's note becomes the node's label, so\nto rename it simply change the first line of text in the note.","children":[],"expanded":false},{"id":"sa6zi82h","title":"Renaming Nodes","content":"Renaming Nodes\n--------------------------------------------------------------------------------\n\nThere are two different types of nodes in Httree: Folder nodes and File (or\nnote) nodes.\n\n\nRenaming Folder Nodes\nTo rename folder nodes use the key-binding: R\nThis will pop up a dialog for you to specify the new label, then hit Enter.\n\nRenaming File Nodes\nFile nodes use the first line of text within the note. So to rename those\nnodes, change the first line in the node's note.","children":[],"expanded":false},{"id":"d1wmxk91","title":"Deleting Nodes","content":"Deleting Nodes\n--------------------------------------------------------------------------------\n\nKey Binding: D\n\nUsing the D key allows you to delete the currently selected node.\n\n** Warning! **\nThis cannot be undone. HOWEVER! Consult the topics on Saving, because it\nMAY be possible to roll it back, depending on your saving habits.","children":[],"expanded":false},{"id":"einv7fsw","title":"Adding Nodes","content":"","children":[{"id":"2wy2kc0h","title":"Adding Root Nodes","content":"Adding Root Nodes\n--------------------------------------------------------------------------------\n\nKey Binding: r\n\nWhen you aren't editing a note and you press the r key, a new root level\nnode is created within the tree.\n\n\n** Remember **\nTree nodes can easily be moved up or down and in and out of other tree nodes.\nConsult those topics or view the key-bindings with ?","children":[],"expanded":false},{"id":"s39xlsla","title":"Adding Child Nodes","content":"Adding Child Nodes\n--------------------------------------------------------------------------------\n\nKey Binding: A\n\nWhen you have a node selected (even if it is a file node) you can add a child\nnode by using the A key. However remember that moving nodes in and out of\nother nodes is very easy to do in Httree so don't worry if you inadvertently\ncreate a node in the wrong place.","children":[],"expanded":false},{"id":"b3wf7fsh","title":"Adding Sibling Nodes","content":"Adding Sibling Nodes\n--------------------------------------------------------------------------------\n\nKey Binding: a\n\nTo add a sibling node below the currently selected node use the a key. This\neven works at the root level! So once you have one root node you can use\neither r or if a root node is currently selected you can use a.","children":[],"expanded":false}],"expanded":false},{"id":"xt56a250","title":"Navigation","content":"","children":[{"id":"2e6rgjdn","title":"Introduction to Navigation","content":"Introduction to Navigation\n--------------------------------------------------------------------------------\n\nIt is important to note that navigation is handled per node level. That is\nif you are navigating up and down among the children of another node, this\nwill not move you out of that parent node (if you continue to move up when\nthe first child is selected). You will want to use the left and right\nnavigation keys to enter or exit a node.","children":[],"expanded":false},{"id":"dus9eopn","title":"Moving Up and Down","content":"Moving Up and Down\n--------------------------------------------------------------------------------\n\nKey Bindings: k j\n\nMoving Up:\nTo move up through the nodes at the currently selected level of the treeview,\nuse the k key. This will only navigate within the current node's children (or\namong the root nodes if you are at that level). To move in or out of folders\nuse the left and right navigation keys.\n\nMoving Down:\nTo move down through the nodes, use the j key.","children":[],"expanded":false},{"id":"7stxmz4r","title":"Moving Left and Right","content":"Moving Left and Right\n--------------------------------------------------------------------------------\n\nKey Bindings: h l\n\nMoving Left:\nTo move left (rather to select the current node's parent node), use the h key.\n\nMoving Right:\nTo move into a child node (to move right), use the l key.","children":[],"expanded":false},{"id":"f3zxnip3","title":"Selecting 'Root' Node","content":"Selecting 'Root' Node\n--------------------------------------------------------------------------------\n\nThere is a trick that will allow you to quickly select the topmost root node\nin your tree - use the collapse all key-binding: C","children":[],"expanded":false}],"expanded":false},{"id":"rdhoauja","title":"Expanding and Collapsing","content":"","children":[{"id":"cxrglw4i","title":"Introduction to Expanding/Collapsing","content":"Introduction to Expanding/Collapsing\n--------------------------------------------------------------------------------\n\nThere are four ways to expand and collapse nodes:\n\n* Collapse All\n* Expand All\n* Moving Left or Right\n* Selecting a Search Result\n\nAs you move in and out of nodes (left or right) they will automatically expand\nor collapse for you. If you are like me and like to keep your treeview tidy\nlooking, you can use the collapse all. If you want to quickly see ALL of your\nnodes you can use the expand all. And if you are searching your tree and\nselect a search result the tree will be expanded so that you can see where\nthat node is.","children":[],"expanded":false},{"id":"gkosg1o6","title":"Collapse All","content":"Collapse All\n--------------------------------------------------------------------------------\n\nKey Binding: C\n\nThis will collapse all of your treeview nodes so that only the root nodes\nare visible. It is also a quick way to select the top-most root node!","children":[],"expanded":false},{"id":"a6mib1iz","title":"Expand All","content":"Expand All\n--------------------------------------------------------------------------------\n\nKey Binding: E\n\nThis will expand ALL the nodes within your treeview allowing you to quickly\nsee everything you have there.","children":[],"expanded":false}],"expanded":false},{"id":"2uwdlzdb","title":"Moving Nodes","content":"","children":[{"id":"mm800skt","title":"Moving a Node Up","content":"Moving a Node Up\n--------------------------------------------------------------------------------\n\nKey Binding: K\n\nUsing the K key will move the selected node up amongst its sibling nodes. It\nwill not move it out of the parent node even if you attempt to move a top most\nnode up again. To move it in or out of another node, use the move node left\nor right keys.","children":[],"expanded":false},{"id":"jlw1l2ut","title":"Moving a Node Down","content":"Moving a Node Down\n--------------------------------------------------------------------------------\n\nKey Binding: J\n\nUsing J will move the current node down among its siblings. To move it in or\nout of another node, use the move node left or right keys.","children":[],"expanded":false},{"id":"618subgw","title":"Moving a Node Left","content":"Moving a Node Left\n--------------------------------------------------------------------------------\n\nKey Binding: H\n\nUsing this key will cause the currently selected node to move up out of its\ncurrent parent node (rather it will move left). If it is a root node, this\nkey will have no effect.","children":[],"expanded":false},{"id":"98js4nmx","title":"Moving a Node Right","content":"Moving a Node Right\n--------------------------------------------------------------------------------\n\nKey Binding: L\n\nUsing the L key will cause the currently selected node to move into whichever\nsibling node is just above it (move right). If it is the only child node,\nthis key will have no effect.","children":[],"expanded":false}],"expanded":false}],"expanded":false},{"id":"0zb5ibtb","title":"Editor","content":"","children":[{"id":"mmwvu164","title":"Introduction to the Editor","content":"Introduction to the Editor\n--------------------------------------------------------------------------------\n\nThe editor in Httree is very basic. In time it may be expanded some, but the\ngoal of Httree is to be a straightforward, minimal, plain text editor that\nallows you to organize your information into a tree of topics grouped into\nfolders.","children":[],"expanded":true}],"expanded":true}],"expanded":true}
 ];
+        const readOnly = false;
         let selectedId = null;
         let editing = false;
         let showingLinks = false;
@@ -948,10 +964,12 @@ S = Save as
             let did = true;
             switch (k) {
                 case 'i':
-                    const info = findNodeAndParentById(selectedId); if (!info) return;
-                    editing = true; render();
-                    editorArea.focus();
-                    // editorArea.setSelectionRange(editorArea.value.length, editorArea.value.length);
+                    if (!readOnly) {
+                        const info = findNodeAndParentById(selectedId); if (!info) return;
+                        editing = true; render();
+                        editorArea.focus();
+                        // editorArea.setSelectionRange(editorArea.value.length, editorArea.value.length);
+                    }
                     break;
                 case 'Escape':
                     if (showingLinks) {
@@ -963,23 +981,23 @@ S = Save as
                     }
                     break; // handled in textarea
                 case 'f': openReplaceDialog(); break;
-                case 'r': addRoot(); break;
-                case 'R': renameFolder(); break;
+                case 'r': if (!readOnly) addRoot(); break;
+                case 'R': if (!readOnly) renameFolder(); break;
                 case 'j': selectNextSibling(); break;
                 case 'k': selectPrevSibling(); break;
                 case 'l': expandOrFirstChild(); break;
                 case 'h': collapseCurrent(); break;
                 case 'C': collapseAll(); break;
                 case 'E': expandAll(); break;
-                case 'A': addChild(); break;
-                case 'a': addAfter(); break;
-                case 'H': moveOutToParent(); break;
-                case 'L': moveIntoAsChild(); break;
-                case 'J': reorderAmongSiblings('down'); break;
-                case 'K': reorderAmongSiblings('up'); break;
-                case 'D': deleteNode(); break;
-                case 's': saveAsHtml(fileName); break;
-                case 'S': saveAsHtml(""); break;
+                case 'A': if (!readOnly) addChild(); break;
+                case 'a': if (!readOnly) addAfter(); break;
+                case 'H': if (!readOnly) moveOutToParent(); break;
+                case 'L': if (!readOnly) moveIntoAsChild(); break;
+                case 'J': if (!readOnly) reorderAmongSiblings('down'); break;
+                case 'K': if (!readOnly) reorderAmongSiblings('up'); break;
+                case 'D': if (!readOnly) deleteNode(); break;
+                case 's': if (!readOnly) saveAsHtml(fileName); break;
+                case 'S': if (!readOnly) saveAsHtml(""); break;
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
                 case '#': openLinksDialog(); break;
@@ -1018,6 +1036,18 @@ S = Save as
         window.addEventListener('load', function() {
             render();
             selectedId = treeData[0]?.id || null;
+
+            if (readOnly) {
+                document.getElementById('authorHelp').style.display = 'none';
+                document.getElementById('readerHelp').style.display = 'block';
+                document.getElementById('mode').style.display = 'none';
+                document.getElementById('replaceTools').style.display = 'none';
+            } else {
+                document.getElementById('authorHelp').style.display = 'block';
+                document.getElementById('readerHelp').style.display = 'none';
+                document.getElementById('mode').style.display = 'block';
+                document.getElementById('replaceTools').style.display = 'block';
+            }
         });
     </script>
 
