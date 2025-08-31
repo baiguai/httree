@@ -269,6 +269,7 @@ i = Edit current note
 / = Search (begin with : to search labels)
 f = Find/Replace text in the current note 
 # = Show note links dialog
+< = Show the history dialog
 
 s = Save the current file
 S = Save as
@@ -287,6 +288,7 @@ E = Expand all the tree nodes
 / = Search (begin with : to search labels)
 f = Find text in the current note 
 # = Show note links dialog
+< = Show the history dialog
             </pre>
 <p></p>
 <p style="display: none;">
@@ -328,6 +330,15 @@ f = Find text in the current note
 </div>
 <div id="replaceResults">Match 1 of 1</div>
 </div>
+
+<div id="historyDialog" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%);
+    width: 600px; max-height: 70%; background: #222; color: #fff; border: 2px solid #444;
+    border-radius: 2px; padding: 20px; z-index: 9999; font-family: monospace; overflow-y: auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);">
+  <h3>History</h3>
+  <div id="historyList"></div>
+</div>
+
 <script>
         //---- Data Model ------------------------------------------------------
         const makeId = () => Math.random().toString(36).slice(2, 10);
@@ -338,6 +349,10 @@ f = Find text in the current note
         let treeData = [
   {"id":"aa8cjfij","title":"Notes","content":"","children":[{"id":"b9r4fi05","title":"Development","content":"","children":[{"id":"d37au83q","title":"Links","content":"","children":[{"id":"mchn1txs","title":"Javascript Resources","content":"Javascript Resources\n--------------------------------------------------------------------------------\n\nEloquent Javascript\nhttps://eloquentjavascript.net/\n\n15 Free eBooks\nhttps://umatechnology.org/learn-javascript-with-these-15-free-e-books/","children":[],"expanded":true}],"expanded":true},{"id":"u5mm3qll","title":"Rust Onboarding","content":"Rust Onboarding\n--------------------------------------------------------------------------------\n\nComprehensive Rust\nhttps://google.github.io/comprehensive-rust/\n\nFree Offline Rust Book:\nrustup doc --book\n\nOnline Version:\nhttps://doc.rust-lang.org/stable/book/","children":[],"expanded":false}],"expanded":true}],"expanded":true}
 ];
+        let historyStack = [];
+        let showingHistory = false;
+        let historyIndex = 0;
+
         const showInitHelp = false;
         const readOnly = false;
         let selectedId = null;
@@ -396,6 +411,23 @@ f = Find text in the current note
                 segments.push(info.node.title || "Untitled");
             })(id);
             return '/' + segments.join('/');
+        }
+
+        function recordHistory(id) {
+            const node = findNodeAndParentById(id)?.node;
+            if (!node) return;
+            if (isFolder(node)) return; // only record notes
+        
+            // Remove any existing entry for this id
+            historyStack = historyStack.filter(entry => entry.id !== id);
+        
+            // Add it at the end (latest)
+            historyStack.push({ id, title: node.title || "(untitled)" });
+        
+            // Cap size at 100
+            if (historyStack.length > 100) {
+                historyStack.shift();
+            }
         }
 
 
@@ -474,6 +506,8 @@ f = Find text in the current note
             }
 
             modeEl.textContent = editing ? 'INSERT' : 'NORMAL';
+
+            if (selectedId) recordHistory(selectedId);
         }
 
 
@@ -727,6 +761,33 @@ f = Find text in the current note
         function closeLinksDialog() {
             showingLinks = false;
             document.getElementById('linksDialog').style.display = 'none';
+        }
+
+        function openHistoryDialog() {
+            showingHistory = true;
+            historyIndex = 0;
+            renderHistoryList();
+            document.getElementById('historyDialog').style.display = 'block';
+        }
+        
+        function closeHistoryDialog() {
+            showingHistory = false;
+            document.getElementById('historyDialog').style.display = 'none';
+        }
+        
+        function renderHistoryList() {
+            const listEl = document.getElementById('historyList');
+            listEl.innerHTML = '';
+            const recent = historyStack.slice(-15).reverse(); // latest first
+            recent.forEach((entry, i) => {
+                const div = document.createElement('div');
+                div.textContent = entry.title;
+                if (i === historyIndex) {
+                    div.classList.add('selected');
+                    div.style.background = '#444'; // ensure visible
+                }
+                listEl.appendChild(div);
+            });
         }
 
 
@@ -1039,6 +1100,10 @@ f = Find text in the current note
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
                 case '#': openLinksDialog(); break;
+                case '<':
+                    openHistoryDialog();
+                    e.preventDefault();
+                    return;
                 default: did = false; break;
             }
             if (did) { e.preventDefault(); render(); }
@@ -1207,6 +1272,33 @@ f = Find text in the current note
         }
     }
 
+    function handleHistoryKey(e) {
+        if (!showingHistory) return;
+        if (e.key === 'ArrowDown') {
+            historyIndex = Math.min(historyIndex + 1, Math.min(14, historyStack.length - 1));
+            renderHistoryList();
+            e.preventDefault();
+        } else if (e.key === 'ArrowUp') {
+            historyIndex = Math.max(historyIndex - 1, 0);
+            renderHistoryList();
+            e.preventDefault();
+        } else if (e.key === 'Enter') {
+            const recent = historyStack.slice(-15).reverse();
+            if (recent[historyIndex]) {
+                expandToNode(recent[historyIndex].id);
+                selectedId = recent[historyIndex].id;
+                closeHistoryDialog();
+                render();
+            }
+            e.preventDefault();
+        } else if (e.key === 'Escape' || e.key === 'q') {
+            closeHistoryDialog();
+            e.preventDefault();
+        }
+        return;
+    }
+
+    window.addEventListener('keydown', handleHistoryKey, { capture: true });
     window.addEventListener('keydown', handleLinksKey, { capture: true });
 </script>
 </body></html>
