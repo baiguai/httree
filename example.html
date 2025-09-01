@@ -257,6 +257,8 @@ A = Add child tree node
 a = Add next sibling tree node
 ] = Expand the treeview panel
 [ = Shrink the treeview panel
+g = Select top tree node
+G = Select bottom tree node
                         </pre>
 </td>
 <td style="vertical-align: top; padding-left: 10px;">
@@ -289,6 +291,8 @@ E = Expand all the tree nodes
 f = Find text in the current note 
 # = Show note links dialog
 < = Show the history dialog
+g = Select top tree node
+G = Select bottom tree node
             </pre>
 <p></p>
 <p style="display: none;">
@@ -349,6 +353,7 @@ f = Find text in the current note
         let treeData = [
   {"id":"aa8cjfij","title":"Notes","content":"","children":[{"id":"b9r4fi05","title":"Development","content":"","children":[{"id":"d37au83q","title":"Links","content":"","children":[{"id":"mchn1txs","title":"Javascript Resources","content":"Javascript Resources\n--------------------------------------------------------------------------------\n\nEloquent Javascript\nhttps://eloquentjavascript.net/\n\n15 Free eBooks\nhttps://umatechnology.org/learn-javascript-with-these-15-free-e-books/","children":[],"expanded":true}],"expanded":true},{"id":"u5mm3qll","title":"Rust Onboarding","content":"Rust Onboarding\n--------------------------------------------------------------------------------\n\nComprehensive Rust\nhttps://google.github.io/comprehensive-rust/\n\nFree Offline Rust Book:\nrustup doc --book\n\nOnline Version:\nhttps://doc.rust-lang.org/stable/book/","children":[],"expanded":false}],"expanded":true}],"expanded":true}
 ];
+
         let historyStack = [];
         let showingHistory = false;
         let historyIndex = 0;
@@ -602,6 +607,14 @@ f = Find text in the current note
             (function walk(list){
                 for (const n of list){ n.expanded = true; walk(n.children); }
             })(treeData);
+        }
+        function gotoTop(){
+            selectedId = treeData[0].id;
+            treeEl.scrollTo(0, 0, "smooth");
+        }
+        function gotoBottom(){
+            selectedId = treeData[treeData.length-1].id;
+            treeEl.scrollTo(0, treeEl.scrollHeight, "smooth");
         }
         function moveOutToParent(){
             const ctx = getSiblingsAndIndex(selectedId); if (!ctx || !ctx.parent) return; // already root
@@ -1088,6 +1101,8 @@ f = Find text in the current note
                 case 'h': collapseCurrent(); break;
                 case 'C': collapseAll(); break;
                 case 'E': expandAll(); break;
+                case 'g': gotoTop(); break;
+                case 'G': gotoBottom(); break;
                 case 'A': if (!readOnly) addChild(); break;
                 case 'a': if (!readOnly) addAfter(); break;
                 case 'H': if (!readOnly) moveOutToParent(); break;
