@@ -1194,13 +1194,17 @@ G = Select bottom tree node
             nodeMatches.push(match[1]);
         }
 
+        // Deduplicate using Set
+        const uniqueUrls = [...new Set(urlMatches)];
+        const uniqueNodes = [...new Set(nodeMatches.map(n => n.trim()))];
+
         const listEl = document.getElementById('linksList');
         listEl.innerHTML = '';
 
-        if (urlMatches.length === 0 && nodeMatches.length === 0) {
+        if (uniqueUrls.length === 0 && uniqueNodes.length === 0) {
             listEl.innerHTML = '<p>No links found.</p>';
         } else {
-            urlMatches.forEach(url => {
+            uniqueUrls.forEach(url => {
                 const a = document.createElement('a');
                 a.href = url;
                 a.target = '_blank';
@@ -1208,7 +1212,7 @@ G = Select bottom tree node
                 listEl.appendChild(a);
             });
 
-            nodeMatches.forEach(title => {
+            uniqueNodes.forEach(title => {
                 const lowerTitle = title.toLowerCase();
                 let foundNode = null;
 
