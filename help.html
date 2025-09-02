@@ -272,6 +272,7 @@ i = Edit current note
 f = Find/Replace text in the current note 
 # = Show note links dialog
 < = Show the history dialog
+X = Show broken note links
 
 s = Save the current file
 S = Save as
@@ -1115,6 +1116,7 @@ G = Select bottom tree node
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
                 case '#': openLinksDialog(); break;
+                case 'X': openMissingLinksDialog(); break;
                 case '<':
                     openHistoryDialog();
                     e.preventDefault();
@@ -1246,6 +1248,84 @@ G = Select bottom tree node
         linksCount = links.length;
         if (linksCount > 0) {
             links[0].classList.add('selected');
+        }
+
+        document.getElementById('linksDialog').style.display = 'block';
+    }
+
+    function openMissingLinksDialog() {
+        showingLinks = true;
+        const nodeLinkRegex = /_(.+?)_/g;
+
+        // Gather all node titles (case-insensitive)
+        const allTitles = new Set();
+        (function walkTitles(nodes) {
+            for (const n of nodes) {
+                if (n.title) {
+                    allTitles.add(n.title.trim().toLowerCase());
+                }
+                if (n.children && n.children.length) walkTitles(n.children);
+            }
+        })(treeData);
+
+        // Map of missingLink → set of nodes that reference it
+        const missingMap = new Map();
+
+        (function walk(nodes) {
+            for (const n of nodes) {
+                if (n.content) {
+                    let seenInThisNode = new Set(); // avoid dupes within the same note
+                    let match;
+                    while ((match = nodeLinkRegex.exec(n.content)) !== null) {
+                        const linkTitle = match[1].trim();
+                        if (!allTitles.has(linkTitle.toLowerCase())) {
+                            if (!seenInThisNode.has(linkTitle.toLowerCase())) {
+                                if (!missingMap.has(linkTitle)) {
+                                    missingMap.set(linkTitle, []);
+                                }
+                                missingMap.get(linkTitle).push({
+                                    nodeId: n.id,
+                                    nodeTitle: n.title || '(untitled)'
+                                });
+                                seenInThisNode.add(linkTitle.toLowerCase());
+                            }
+                        }
+                    }
+                }
+                if (n.children && n.children.length) walk(n.children);
+            }
+        })(treeData);
+
+        const listEl = document.getElementById('linksList');
+        listEl.innerHTML = '';
+
+        if (missingMap.size === 0) {
+            listEl.innerHTML = '<p>No missing links found 🎉</p>';
+        } else {
+            listEl.innerHTML = '<p>Missing Links:</p>';
+            for (const [missingTitle, refs] of missingMap.entries()) {
+                refs.forEach(ref => {
+                    const container = document.createElement('div');
+
+                    const link = document.createElement('a');
+                    link.href = '#';
+                    link.textContent = `"${missingTitle}" — linked from: ${ref.nodeTitle}`;
+                    link.style.color = '#888';
+                    link.title = 'Missing link — click to go to note';
+
+                    // Clicking takes you to the referencing note
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        expandToNode(ref.nodeId);
+                        selectedId = ref.nodeId;
+                        closeLinksDialog();
+                        render();
+                    });
+
+                    container.appendChild(link);
+                    listEl.appendChild(container);
+                });
+            }
         }
 
         document.getElementById('linksDialog').style.display = 'block';
