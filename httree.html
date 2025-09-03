@@ -247,8 +247,10 @@
 <td style="vertical-align: top; padding-right: 10px;">
 <pre>r = Add root level node
 R = Rename current Folder
-j = Select the next sibling tree node
-k = Select the previous sibling tree node
+j = Select the next tree node
+k = Select the previous tree node
+, = Select the next sibling tree node
+. = Select the previous sibling tree node
 l = Expand the current tree node
 h = Collapse the current tree node
 C = Collapse all the tree nodes
@@ -259,7 +261,7 @@ a = Add next sibling tree node
 [ = Shrink the treeview panel
 g = Select top tree node
 G = Select bottom tree node
-                        </pre>
+</pre>
 </td>
 <td style="vertical-align: top; padding-left: 10px;">
 <pre>H = Move current node to the parent node
@@ -276,12 +278,15 @@ X = Show broken note links
 
 s = Save the current file
 S = Save as
-                        </pre>
+</pre>
 </td>
 </tr>
 </tbody></table>
-<pre id="readerHelp" style="display: none;">j = Select the next sibling tree node
-k = Select the previous sibling tree node
+<pre id="readerHelp" style="display: none;">
+j = Select the next tree node
+k = Select the previous tree node
+, = Select the next sibling tree node
+. = Select the previous sibling tree node
 l = Expand the current tree node
 h = Collapse the current tree node
 C = Collapse all the tree nodes
@@ -294,7 +299,7 @@ f = Find text in the current note
 < = Show the history dialog
 g = Select top tree node
 G = Select bottom tree node
-            </pre>
+</pre>
 <p></p>
 <p style="display: none;">
 <a href="#" style="color: #fff; text-decoration: underline;" target="_blank">
@@ -598,17 +603,19 @@ G = Select bottom tree node
                 render();
             }
         }
-        function selectNextSibling() {
+        function selectNextSibling(curLevelOnly) {
             const info = findNodeAndParentById(selectedId);
             if (!info) return;
         
             // Case 1: current is a folder with children
-            if (isFolder(info.node) && info.node.children.length) {
-                if (!info.node.expanded) {
-                    info.node.expanded = true; // expand if collapsed
+            if (!curLevelOnly) {
+                if (isFolder(info.node) && info.node.children.length) {
+                    if (!info.node.expanded) {
+                        info.node.expanded = true; // expand if collapsed
+                    }
+                    selectedId = info.node.children[0].id;
+                    return;
                 }
-                selectedId = info.node.children[0].id;
-                return;
             }
         
             // Case 2: move to next sibling at this level
@@ -620,29 +627,32 @@ G = Select bottom tree node
             }
         
             // Case 3: last sibling → climb ancestors until one has a next sibling
-            let ancestorId = ctx.parent ? ctx.parent.id : null;
-            while (ancestorId) {
-                const actx = getSiblingsAndIndex(ancestorId);
-                if (!actx) break;
-        
-                if (actx.index < actx.siblings.length - 1) {
-                    selectedId = actx.siblings[actx.index + 1].id;
-                    return;
+            if (!curLevelOnly) {
+                let ancestorId = ctx.parent ? ctx.parent.id : null;
+                while (ancestorId) {
+                    const actx = getSiblingsAndIndex(ancestorId);
+                    if (!actx) break;
+            
+                    if (actx.index < actx.siblings.length - 1) {
+                        selectedId = actx.siblings[actx.index + 1].id;
+                        return;
+                    }
+            
+                    // go up another level
+                    ancestorId = actx.parent ? actx.parent.id : null;
                 }
-        
-                // go up another level
-                ancestorId = actx.parent ? actx.parent.id : null;
             }
         }
-        
-        function selectPrevSibling() {
+        function selectPrevSibling(curLevelOnly) {
             const ctx = getSiblingsAndIndex(selectedId);
             if (!ctx) return;
         
             // If we are the first child, go to parent instead
-            if (ctx.index === 0 && ctx.parent) {
-                selectedId = ctx.parent.id;
-                return;
+            if (!curLevelOnly) {
+                if (ctx.index === 0 && ctx.parent) {
+                    selectedId = ctx.parent.id;
+                    return;
+                }
             }
         
             // Otherwise go to previous sibling
@@ -1159,8 +1169,10 @@ G = Select bottom tree node
                 case 'f': openReplaceDialog(); break;
                 case 'r': if (!readOnly) addRoot(); break;
                 case 'R': if (!readOnly) renameFolder(); break;
-                case 'j': selectNextSibling(); break;
-                case 'k': selectPrevSibling(); break;
+                case 'j': selectNextSibling(false); break;
+                case 'k': selectPrevSibling(false); break;
+                case ',': selectNextSibling(true); break;
+                case '.': selectPrevSibling(true); break;
                 case 'l': expandOrFirstChild(); break;
                 case 'h': collapseCurrent(); break;
                 case 'C': collapseAll(); break;
