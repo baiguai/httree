@@ -512,6 +512,12 @@ G = Select bottom tree node
             modeEl.textContent = editing ? 'INSERT' : 'NORMAL';
 
             if (selectedId) recordHistory(selectedId);
+
+            // Ensure selected node is visible
+            setTimeout(() => {
+                const selEl = document.querySelector('.node.selected');
+                if (selEl) selEl.scrollIntoView({ block: "nearest" });
+            }, 0);
         }
 
 
@@ -574,13 +580,54 @@ G = Select bottom tree node
                 render();
             }
         }
-        function selectNextSibling(){
-            const ctx = getSiblingsAndIndex(selectedId); if (!ctx) return;
-            const next = Math.min(ctx.index + 1, ctx.siblings.length - 1);
-            selectedId = ctx.siblings[next].id;
+        function selectNextSibling() {
+            const info = findNodeAndParentById(selectedId);
+            if (!info) return;
+        
+            // Case 1: current is a folder with children
+            if (isFolder(info.node) && info.node.children.length) {
+                if (!info.node.expanded) {
+                    info.node.expanded = true; // expand if collapsed
+                }
+                selectedId = info.node.children[0].id;
+                return;
+            }
+        
+            // Case 2: move to next sibling at this level
+            const ctx = getSiblingsAndIndex(selectedId);
+            if (!ctx) return;
+            if (ctx.index < ctx.siblings.length - 1) {
+                selectedId = ctx.siblings[ctx.index + 1].id;
+                return;
+            }
+        
+            // Case 3: last sibling → climb ancestors until one has a next sibling
+            let ancestorId = ctx.parent ? ctx.parent.id : null;
+            while (ancestorId) {
+                const actx = getSiblingsAndIndex(ancestorId);
+                if (!actx) break;
+        
+                if (actx.index < actx.siblings.length - 1) {
+                    selectedId = actx.siblings[actx.index + 1].id;
+                    return;
+                }
+        
+                // go up another level
+                ancestorId = actx.parent ? actx.parent.id : null;
+            }
         }
-        function selectPrevSibling(){
-            const ctx = getSiblingsAndIndex(selectedId); if (!ctx) return;
+        
+        function selectPrevSibling() {
+            const ctx = getSiblingsAndIndex(selectedId);
+            if (!ctx) return;
+        
+            // If we are the first child, go to parent instead
+            if (ctx.index === 0 && ctx.parent) {
+                selectedId = ctx.parent.id;
+                return;
+            }
+        
+            // Otherwise go to previous sibling
             const prev = Math.max(ctx.index - 1, 0);
             selectedId = ctx.siblings[prev].id;
         }
