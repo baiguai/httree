@@ -247,10 +247,13 @@
 <td style="vertical-align: top; padding-right: 10px;">
 <pre>r = Add root level node
 R = Rename current Folder
-j = Select the next sibling tree node
-k = Select the previous sibling tree node
+j = Select the next tree node
+k = Select the previous tree node
+, = Select the next sibling level tree node
+. = Select the previous sibling level tree node
 l = Expand the current tree node
 h = Collapse the current tree node
+u = go up a tree node level
 C = Collapse all the tree nodes
 E = Expand all the tree nodes
 A = Add child tree node
@@ -259,7 +262,7 @@ a = Add next sibling tree node
 [ = Shrink the treeview panel
 g = Select top tree node
 G = Select bottom tree node
-                        </pre>
+</pre>
 </td>
 <td style="vertical-align: top; padding-left: 10px;">
 <pre>H = Move current node to the parent node
@@ -271,19 +274,22 @@ i = Edit current note
 / = Search (begin with : to search labels)
 f = Find/Replace text in the current note 
 # = Show note links dialog
-< = Show the history dialog
+&lt; = Show the history dialog
 X = Show broken note links
 
 s = Save the current file
 S = Save as
-                        </pre>
+</pre>
 </td>
 </tr>
 </tbody></table>
-<pre id="readerHelp" style="display: none;">j = Select the next sibling tree node
-k = Select the previous sibling tree node
+<pre id="readerHelp" style="display: none;">j = Select the next tree node
+k = Select the previous tree node
+, = Select the next sibling level tree node
+. = Select the previous sibling level tree node
 l = Expand the current tree node
 h = Collapse the current tree node
+u = go up a tree node level
 C = Collapse all the tree nodes
 E = Expand all the tree nodes
 ] = Expand the treeview panel
@@ -291,10 +297,10 @@ E = Expand all the tree nodes
 / = Search (begin with : to search labels)
 f = Find text in the current note 
 # = Show note links dialog
-< = Show the history dialog
+&lt; = Show the history dialog
 g = Select top tree node
 G = Select bottom tree node
-            </pre>
+</pre>
 <p></p>
 <p style="display: none;">
 <a href="#" style="color: #fff; text-decoration: underline;" target="_blank">
@@ -303,45 +309,42 @@ G = Select bottom tree node
 </p>
 <p>Press ESC to close.</p>
 </div>
-<aside class="tree" id="tree"><ul><li><div class="node selected"><span class="twisty"><svg height="6" viewbox="0 0 6 6" width="6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" fill="currentColor" r="1"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg height="16" id="svg5" version="1.1" viewbox="0 0 4.2333334 4.2333334" width="16" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65" style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"></path> <path d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404" style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"></path> <rect height="0.24694447" id="rect5117" style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" width="1.0583334" x="1.5875001" y="1.3772104"></rect> <rect height="0.24694447" id="rect5737" style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" width="1.0583334" x="1.5875001" y="1.8710994"></rect> <rect height="0.24694447" id="rect5739" style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" width="1.0583334" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">Introduction</span></div></li><li><div class="node"><span class="twisty"><svg height="10" viewbox="0 0 10 10" width="10" xmlns="http://www.w3.org/2000/svg"><path d="M3 1 L7 5 L3 9 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg height="16" id="svg5" version="1.1" viewbox="0 0 4.2333334 4.2333334" width="16" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65" style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"></path> <path d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924" style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"></path> <rect height="9.260417" id="rect1561" style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" width="17.197916" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">The Interface</span></div></li><li><div class="node"><span class="twisty"><svg height="10" viewbox="0 0 10 10" width="10" xmlns="http://www.w3.org/2000/svg"><path d="M3 1 L7 5 L3 9 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg height="16" id="svg5" version="1.1" viewbox="0 0 4.2333334 4.2333334" width="16" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65" style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"></path> <path d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924" style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"></path> <rect height="9.260417" id="rect1561" style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" width="17.197916" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Saving</span></div></li><li><div class="node"><span class="twisty"><svg height="10" viewbox="0 0 10 10" width="10" xmlns="http://www.w3.org/2000/svg"><path d="M3 1 L7 5 L3 9 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg height="16" id="svg5" version="1.1" viewbox="0 0 4.2333334 4.2333334" width="16" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65" style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"></path> <path d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924" style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"></path> <rect height="9.260417" id="rect1561" style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" width="17.197916" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Configuration</span></div></li><li><div class="node"><span class="twisty"><svg height="10" viewbox="0 0 10 10" width="10" xmlns="http://www.w3.org/2000/svg"><path d="M3 1 L7 5 L3 9 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg height="16" id="svg5" version="1.1" viewbox="0 0 4.2333334 4.2333334" width="16" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65" style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"></path> <path d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924" style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"></path> <rect height="9.260417" id="rect1561" style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" width="17.197916" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Linking</span></div></li></ul></aside>
+<aside class="tree" id="tree"><ul><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65"></path> <path style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5117" width="1.0583334" height="0.24694447" x="1.5875001" y="1.3772104"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5737" width="1.0583334" height="0.24694447" x="1.5875001" y="1.8710994"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5739" width="1.0583334" height="0.24694447" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">Introduction</span></div></li><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65"></path> <path style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5117" width="1.0583334" height="0.24694447" x="1.5875001" y="1.3772104"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5737" width="1.0583334" height="0.24694447" x="1.5875001" y="1.8710994"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5739" width="1.0583334" height="0.24694447" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">Quick Links</span></div></li><li><div class="node"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M1 3 L5 7 L9 3 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Getting Started</span></div><ul><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65"></path> <path style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5117" width="1.0583334" height="0.24694447" x="1.5875001" y="1.3772104"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5737" width="1.0583334" height="0.24694447" x="1.5875001" y="1.8710994"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5739" width="1.0583334" height="0.24694447" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">Downloading WorldWeaver</span></div></li><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65"></path> <path style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5117" width="1.0583334" height="0.24694447" x="1.5875001" y="1.3772104"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5737" width="1.0583334" height="0.24694447" x="1.5875001" y="1.8710994"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5739" width="1.0583334" height="0.24694447" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">Importing the Database</span></div></li><li><div class="node"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M3 1 L7 5 L3 9 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">WorldWeaver Files</span></div></li><li><div class="node"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M1 3 L5 7 L9 3 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Norman Script</span></div><ul><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65"></path> <path style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5117" width="1.0583334" height="0.24694447" x="1.5875001" y="1.3772104"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5737" width="1.0583334" height="0.24694447" x="1.5875001" y="1.8710994"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5739" width="1.0583334" height="0.24694447" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">Introduction to Norman Script</span></div></li><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65"></path> <path style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5117" width="1.0583334" height="0.24694447" x="1.5875001" y="1.3772104"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5737" width="1.0583334" height="0.24694447" x="1.5875001" y="1.8710994"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5739" width="1.0583334" height="0.24694447" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">Elements</span></div></li></ul></li></ul></li><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Reference</span></div></li><li><div class="node"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M1 3 L5 7 L9 3 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Tutorials</span></div><ul><li><div class="node"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M1 3 L5 7 L9 3 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Building the Sample Game</span></div><ul><li><div class="node selected"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65"></path> <path style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5117" width="1.0583334" height="0.24694447" x="1.5875001" y="1.3772104"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5737" width="1.0583334" height="0.24694447" x="1.5875001" y="1.8710994"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5739" width="1.0583334" height="0.24694447" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">About the Sample Game</span></div></li></ul></li></ul></li><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">History</span></div></li><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Developers</span></div></li></ul></aside>
 <section class="editor">
 <div class="status">
-<span class="dim" id="path">/Introduction</span>
+<span class="dim" id="path">/Tutorials/Building the Sample Game/About the Sample Game</span>
 <span class="pill" id="mode" style="display: block;">NORMAL</span>
 <span class="pill" id="kind">FILE</span>
 </div>
-<textarea id="editorArea" readonly="readonly" spellcheck="false"></textarea>
+<textarea id="editorArea" spellcheck="false" readonly="readonly"></textarea>
 </section>
 </div>
 <div class="search-dialog" id="searchDialog" style="display: none;">
-<input id="searchInput" placeholder="Search..." type="text"/>
-<div class="search-results" id="searchList"><div>Resizing the Tree Panel</div><div class="selected">Introduction to Saving</div><div>Save</div><div>Save As</div></div>
+<input id="searchInput" placeholder="Search..." type="text">
+<div class="search-results" id="searchList"><div class="selected">Introduction</div><div>History</div></div>
 </div>
 <div id="linksDialog" style="display: none;">
 <h3>Links in Note</h3>
-<div id="linksList"><a href="#">Persistent Settings</a><br/></div>
+<div id="linksList"><a href="#" data-node-id="bfhdzh84" class="">Building the Sample Game</a><a href="#" data-node-id="cw7biu3c" class="selected">About the Sample Game</a></div>
 </div>
 <div id="replaceDialog" style="display: none;">
 <h3>Find &amp; Replace</h3>
 <label for="searchText">Find</label>
-<input id="searchText" type="text"/>
+<input id="searchText" type="text">
 <div id="replaceTools" style="display: block;">
 <label for="replaceText">Replace With</label>
-<input id="replaceText" type="text"/>
+<input id="replaceText" type="text">
 <div style="display: none;">
 <button onclick="doFind()">Find</button>
 <button onclick="doReplaceAll()">Replace All</button>
 </div>
 </div>
-<div id="replaceResults">Match 1 of 1</div>
+<div id="replaceResults">Match 1 of 3</div>
 </div>
 
-<div id="historyDialog" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%);
-    width: 600px; max-height: 70%; background: #222; color: #fff; border: 2px solid #444;
-    border-radius: 2px; padding: 20px; z-index: 9999; font-family: monospace; overflow-y: auto;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);">
+<div id="historyDialog" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%); width: 600px; max-height: 70%; background: rgb(34, 34, 34); color: rgb(255, 255, 255); border: 2px solid rgb(68, 68, 68); border-radius: 2px; padding: 20px; z-index: 9999; font-family: monospace; overflow-y: auto; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
   <h3>History</h3>
-  <div id="historyList"></div>
+  <div id="historyList"><div>About the Sample Game</div><div class="selected" style="background: rgb(68, 68, 68);">Introduction to Norman Script</div><div>worldweaver.html</div><div>Importing the Database</div><div>Downloading WorldWeaver</div><div>Quick Links</div><div>Elements</div><div>Introduction</div></div>
 </div>
 
 <script>
@@ -350,10 +353,21 @@ G = Select bottom tree node
 
         /** @typedef {{ id:string, title:string, content:string, children:NodeT[], expanded:boolean }} NodeT */
 
+        // !@!
         /** @type {NodeT[]} */
         let treeData = [
   {"id":"aa8cjfij","title":"Notes","content":"","children":[{"id":"b9r4fi05","title":"Development","content":"","children":[{"id":"d37au83q","title":"Links","content":"","children":[{"id":"mchn1txs","title":"Javascript Resources","content":"Javascript Resources\n--------------------------------------------------------------------------------\n\nEloquent Javascript\nhttps://eloquentjavascript.net/\n\n15 Free eBooks\nhttps://umatechnology.org/learn-javascript-with-these-15-free-e-books/","children":[],"expanded":true}],"expanded":true},{"id":"u5mm3qll","title":"Rust Onboarding","content":"Rust Onboarding\n--------------------------------------------------------------------------------\n\nComprehensive Rust\nhttps://google.github.io/comprehensive-rust/\n\nFree Offline Rust Book:\nrustup doc --book\n\nOnline Version:\nhttps://doc.rust-lang.org/stable/book/","children":[],"expanded":false}],"expanded":true}],"expanded":true}
 ];
+
+
+        // !@!
+        const SAFE_MAP = {
+            "</script": "^^^script^^^",
+            "</style": "^^^style^^^",
+            "]]>": "^^^cdata^^^",
+            "];": "^^^array^^^",
+            "\\);": "^^^func^^^"
+        };
 
         let historyStack = [];
         let showingHistory = false;
@@ -537,23 +551,23 @@ G = Select bottom tree node
             render();
         }
 
-
         function safeStoreText(text) {
             if (!text) return "";
-            return text
-                .replace(/<\/script/gi, "<\\/script")   // prevent script tag breakouts
-                .replace(/<\/style/gi, "<\\/style")     // style tag safety
-                .replace(/]]>/g, "]]\\>");              // prevent CDATA close
-        }
-        
-        function safeRestoreText(text) {
-            if (!text) return "";
-            return text
-                .replace(/<\\\/script/gi, "</script")
-                .replace(/<\\\/style/gi, "</style")
-                .replace(/]]\\>/g, "]]>");
+            for (const [raw, safe] of Object.entries(SAFE_MAP)) {
+              text = text.replace(new RegExp(raw, "gi"), safe);
+            }
+            return text;
         }
 
+        function safeRestoreText(text) {
+            if (!text) return "";
+            for (const [raw, safe] of Object.entries(SAFE_MAP)) {
+                // escape special chars in safe before making regex
+                const esc = safe.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                text = text.replace(new RegExp(esc, "gi"), raw);
+            }
+            return text;
+        }
 
         editorArea.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -600,17 +614,19 @@ G = Select bottom tree node
                 render();
             }
         }
-        function selectNextSibling() {
+        function selectNextSibling(curLevelOnly) {
             const info = findNodeAndParentById(selectedId);
             if (!info) return;
         
             // Case 1: current is a folder with children
-            if (isFolder(info.node) && info.node.children.length) {
-                if (!info.node.expanded) {
-                    info.node.expanded = true; // expand if collapsed
+            if (!curLevelOnly) {
+                if (isFolder(info.node) && info.node.children.length) {
+                    if (!info.node.expanded) {
+                        info.node.expanded = true; // expand if collapsed
+                    }
+                    selectedId = info.node.children[0].id;
+                    return;
                 }
-                selectedId = info.node.children[0].id;
-                return;
             }
         
             // Case 2: move to next sibling at this level
@@ -622,36 +638,39 @@ G = Select bottom tree node
             }
         
             // Case 3: last sibling → climb ancestors until one has a next sibling
-            let ancestorId = ctx.parent ? ctx.parent.id : null;
-            while (ancestorId) {
-                const actx = getSiblingsAndIndex(ancestorId);
-                if (!actx) break;
-        
-                if (actx.index < actx.siblings.length - 1) {
-                    selectedId = actx.siblings[actx.index + 1].id;
-                    return;
+            if (!curLevelOnly) {
+                let ancestorId = ctx.parent ? ctx.parent.id : null;
+                while (ancestorId) {
+                    const actx = getSiblingsAndIndex(ancestorId);
+                    if (!actx) break;
+            
+                    if (actx.index < actx.siblings.length - 1) {
+                        selectedId = actx.siblings[actx.index + 1].id;
+                        return;
+                    }
+            
+                    // go up another level
+                    ancestorId = actx.parent ? actx.parent.id : null;
                 }
-        
-                // go up another level
-                ancestorId = actx.parent ? actx.parent.id : null;
             }
         }
-        
-        function selectPrevSibling() {
+        function selectPrevSibling(curLevelOnly) {
             const ctx = getSiblingsAndIndex(selectedId);
             if (!ctx) return;
         
             // If we are the first child, go to parent instead
-            if (ctx.index === 0 && ctx.parent) {
-                selectedId = ctx.parent.id;
-                return;
+            if (!curLevelOnly) {
+                if (ctx.index === 0 && ctx.parent) {
+                    selectedId = ctx.parent.id;
+                    return;
+                }
             }
         
             // Otherwise go to previous sibling
             const prev = Math.max(ctx.index - 1, 0);
             selectedId = ctx.siblings[prev].id;
         }
-        function expandOrFirstChild(){
+        function moveRight(){
             const info = findNodeAndParentById(selectedId); if (!info) return;
             if (info.node.children.length && !info.node.expanded) {
                 info.node.expanded = true;
@@ -659,9 +678,13 @@ G = Select bottom tree node
                 selectedId = info.node.children[0].id;
             }
         }
-        function collapseCurrent(){
+        function moveLeft(doCollapse){
             const info = findNodeAndParentById(selectedId); if (!info) return;
-            if (info.node.expanded) info.node.expanded = false; else if (info.parent) selectedId = info.parent.id;
+            if (info.node.expanded && doCollapse) {
+                info.node.expanded = false;
+            } else {
+                if (info.parent) selectedId = info.parent.id;
+            }
         }
         function collapseAll(){
             (function walk(list){
@@ -768,7 +791,7 @@ G = Select bottom tree node
 
             const content = safeRestoreText(info.node.content);
             const urlRegex = /\bhttps?:\/\/[^\s]+/gi;
-            const nodeLinkRegex = /_(.+?)_/g;
+            const nodeLinkRegex = /(?:^|\s)_(.+?)_(?=\s|[.,!?;:)]|$)/g;
 
             const urlMatches = content.match(urlRegex) || [];
 
@@ -1161,10 +1184,13 @@ G = Select bottom tree node
                 case 'f': openReplaceDialog(); break;
                 case 'r': if (!readOnly) addRoot(); break;
                 case 'R': if (!readOnly) renameFolder(); break;
-                case 'j': selectNextSibling(); break;
-                case 'k': selectPrevSibling(); break;
-                case 'l': expandOrFirstChild(); break;
-                case 'h': collapseCurrent(); break;
+                case 'j': selectNextSibling(false); break;
+                case 'k': selectPrevSibling(false); break;
+                case ',': selectNextSibling(true); break;
+                case '.': selectPrevSibling(true); break;
+                case 'l': moveRight(); break;
+                case 'h': moveLeft(true); break;
+                case 'u': moveLeft(false); break;
                 case 'C': collapseAll(); break;
                 case 'E': expandAll(); break;
                 case 'g': gotoTop(); break;
@@ -1219,8 +1245,6 @@ G = Select bottom tree node
 
         //---- Init ------------------------------------------------------------
         window.addEventListener('load', function() {
-            render();
-
             if (readOnly) {
                 document.getElementById('authorHelp').style.display = 'none';
                 document.getElementById('readerHelp').style.display = 'block';
@@ -1238,6 +1262,7 @@ G = Select bottom tree node
             }
 
             selectedId = treeData[0]?.id || null;
+            render();
         });
     
     let linksIndex = 0;
@@ -1251,7 +1276,7 @@ G = Select bottom tree node
 
         const content = safeRestoreText(info.node.content);
         const urlRegex = /\bhttps?:\/\/[^\s]+/gi;
-        const nodeLinkRegex = /_(.+?)_/g;
+        const nodeLinkRegex = /(?:^|\s)_(.+?)_(?=\s|[.,!?;:)]|$)/g;
 
         const urlMatches = content.match(urlRegex) || [];
 
@@ -1320,7 +1345,7 @@ G = Select bottom tree node
 
     function openMissingLinksDialog() {
         showingLinks = true;
-        const nodeLinkRegex = /_(.+?)_/g;
+        const nodeLinkRegex = /(?:^|\s)_(.+?)_(?=\s|[.,!?;:)]|$)/g;
 
         // Gather all node titles (case-insensitive)
         const allTitles = new Set();
@@ -1365,7 +1390,7 @@ G = Select bottom tree node
         listEl.innerHTML = '';
 
         if (missingMap.size === 0) {
-            listEl.innerHTML = '<p>No missing links found 🎉</p>';
+            listEl.innerHTML = '<p>No missing links found</p>';
         } else {
             listEl.innerHTML = '<p>Missing Links:</p>';
             for (const [missingTitle, refs] of missingMap.entries()) {
@@ -1465,4 +1490,10 @@ G = Select bottom tree node
     window.addEventListener('keydown', handleHistoryKey, { capture: true });
     window.addEventListener('keydown', handleLinksKey, { capture: true });
 </script>
+
+
+
+
+
+
 </body></html>
