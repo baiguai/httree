@@ -381,6 +381,7 @@ G = Select bottom tree node
         let fileName = "help";
         let mode_insert = false;
         let mode_repeat = 1;
+        let mode_counting = false;
         let mode_going = false;
 
         let searchActive = false;
@@ -616,20 +617,26 @@ G = Select bottom tree node
         
             // Normal mode logic
             if (!isNaN(parseInt(e.key, 10))) {
-                // Build repeat count
                 const digit = parseInt(e.key, 10);
-                if (mode_repeat === 1) {
-                    mode_repeat = digit; // replace default
+                if (!mode_counting) {
+                    if (digit !== 0) {
+                        mode_repeat = digit;
+                        mode_counting = true;
+                        return;
+                    }
                 } else {
-                    mode_repeat = (mode_repeat * 10) + digit; // build multi-digit count
+                    mode_repeat = (mode_repeat * 10) + digit;
+                    return;
                 }
-                return;
             }
 
 
             // Cancel any multi-key flags
             if (e.key !== 'g') {
                 mode_going = false;
+            }
+            if (mode_counting && isNaN(parseInt(e.key, 10))) {
+                mode_counting = false;
             }
 
         
@@ -706,6 +713,8 @@ G = Select bottom tree node
                             for (let i = 0; i < lineIndex; i++) {
                                 pos += lines[i].length + 1;
                             }
+                            performed = true;
+                            mode_repeat = 1;
                             editorArea.selectionStart = editorArea.selectionEnd = pos;
                         } else {
                             mode_going = false;
@@ -727,6 +736,8 @@ G = Select bottom tree node
             // Reset repeat count after command
             if (performed) {
                 mode_repeat = 1;
+                mode_counting = false;
+                mode_going = false;
             }
         
             // --- Helper for j/k ---
