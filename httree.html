@@ -279,6 +279,7 @@ X = Show broken note links
 
 s = Save the current file
 S = Save as
+U = Upgrade (import existing data)
 
 V = Author Vim keys help
 ! = Display options dialog
@@ -415,12 +416,16 @@ variable to true in this .html file.
   <h3>History</h3>
   <div id="historyList"><div>The Options Dialog</div><div class="selected" style="background: rgb(68, 68, 68);">Editor Vim Help</div><div>Read Only Mode</div><div>The Options Dialog</div><div>Help Dialog</div><div>Dialogs Introduction</div><div>Introduction to Configuration</div><div>Help Dialog</div><div>Modes</div><div>Introduction</div><div>Switching Between Modes</div><div>The Modes</div></div>
 </div>
+<input type="file" id="filePicker" accept=".html" style="display:none;" />
 
 <script>
         //---- Data Model ------------------------------------------------------
         const makeId = () => Math.random().toString(36).slice(2, 10);
 
         /** @typedef {{ id:string, title:string, content:string, children:NodeT[], expanded:boolean }} NodeT */
+
+        /** @type {NodeT[]} */
+        let treeData = [];
 
         // !@!
         const readOnly = false;
@@ -571,6 +576,14 @@ variable to true in this .html file.
                 const title = document.createElement('span');
                 title.className = 'title';
                 title.textContent = n.title || '(untitled)';
+
+                row.addEventListener('click', () => {
+                    selectedId = n.id;
+                    if (n.children.length) {
+                        n.expanded = !n.expanded; // toggle when clicking row
+                    }
+                    render();
+                });
 
                 row.appendChild(twist); row.appendChild(icon); row.appendChild(title);
                 row.addEventListener('click', () => { selectedId = n.id; render(); });
@@ -959,6 +972,7 @@ variable to true in this .html file.
             selectedId = node.id;
         }
         function addAfter(){
+            if (!treeData || treeData.length === 0) return;
             ensureSelection();
             const ctx = getSiblingsAndIndex(selectedId);
             if (!ctx) return;
@@ -967,6 +981,7 @@ variable to true in this .html file.
             selectedId = node.id;
         }
         function addChild(){
+            if (!treeData || treeData.length === 0) return;
             ensureSelection();
             const info = findNodeAndParentById(selectedId);
             if (!info) return;
@@ -976,6 +991,7 @@ variable to true in this .html file.
             selectedId = node.id;
         }
         function renameFolder() {
+            if (!treeData || treeData.length === 0) return;
             ensureSelection();
             let selectedNode = findNodeAndParentById(selectedId).node;
             if (isFolder(selectedNode)) {
@@ -1685,6 +1701,9 @@ variable to true in this .html file.
                 e.preventDefault();
                 return;
             }
+            if (e.key === 'U' && !editing && !dialogOpen()) {
+                document.getElementById('filePicker').click()
+            }
 
             if (e.key === 'Escape') {
                 repeatCount = 1;
@@ -1962,6 +1981,38 @@ variable to true in this .html file.
 
         return openDialog;
     }
+
+
+
+    document.getElementById("filePicker").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            file.text().then(content => {
+                const match = content.match(/let\s+treeData\s*=\s*(\[[\s\S]*?\]);/);
+                if (!match) {
+                    alert("No treeData found in selected file.");
+                    return;
+                }
+
+                try {
+                    const importedTreeData = JSON.parse(match[1]);
+
+                    // Replace current in-memory treeData
+                    treeData = importedTreeData;
+
+                    alert("treeData imported successfully!");
+
+                    selectedId = treeData[0]?.id || null;
+
+                    // Re-render with new data
+                    render();
+                } catch (err) {
+                    console.error("Failed to parse treeData:", err);
+                    alert("Error parsing treeData.");
+                }
+            });
+        }
+    });
 
 
 
