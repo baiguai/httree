@@ -392,7 +392,7 @@ variable to true in this .html file.
 </div>
 <div class="search-dialog" id="searchDialog" style="display: none;">
 <input id="searchInput" placeholder="Search..." type="text">
-<div class="search-results" id="searchList"><div>Save</div><div class="selected">Save As</div></div>
+<div class="search-results" id="searchList"><div class="selected">Other Options</div></div>
 </div>
 <div id="linksDialog" style="display: none;">
 <h3>Links in Note</h3>
@@ -1559,7 +1559,7 @@ variable to true in this .html file.
 
         function exportNoteAsTxt() {
             const editorArea = document.getElementById("editorArea");
-            if (!editorArea) return;
+            if (!editorArea || editorArea.value === "") return;
 
             let content = editorArea.value;
 
