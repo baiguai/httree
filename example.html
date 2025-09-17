@@ -1,7 +1,7 @@
 <!DOCTYPE html><html><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport">
-<title>Example</title>
+<title>Httree</title>
 <style>
         :root {
             --bg: #000;
@@ -278,6 +278,7 @@ X = Show broken note links
 
 s = Save the current file
 S = Save as
+T = Export current note as .txt
 U = Upgrade (import existing data)
 
 V = Author Vim keys help
@@ -303,6 +304,7 @@ f = Find text in the current note
 &lt; = Show the history dialog
 g = Select top tree node
 G = Select bottom tree node
+T = Export current note as .txt
 
 V = Editor Vim keys help
 </pre>
@@ -577,6 +579,14 @@ variable to true in this .html file.
                 const title = document.createElement('span');
                 title.className = 'title';
                 title.textContent = n.title || '(untitled)';
+
+                row.addEventListener('click', () => {
+                    selectedId = n.id;
+                    if (n.children.length) {
+                        n.expanded = !n.expanded; // toggle when clicking row
+                    }
+                    render();
+                });
 
                 row.appendChild(twist); row.appendChild(icon); row.appendChild(title);
                 row.addEventListener('click', () => { selectedId = n.id; render(); });
@@ -965,6 +975,7 @@ variable to true in this .html file.
             selectedId = node.id;
         }
         function addAfter(){
+            if (!treeData || treeData.length === 0) return;
             ensureSelection();
             const ctx = getSiblingsAndIndex(selectedId);
             if (!ctx) return;
@@ -973,6 +984,7 @@ variable to true in this .html file.
             selectedId = node.id;
         }
         function addChild(){
+            if (!treeData || treeData.length === 0) return;
             ensureSelection();
             const info = findNodeAndParentById(selectedId);
             if (!info) return;
@@ -982,6 +994,7 @@ variable to true in this .html file.
             selectedId = node.id;
         }
         function renameFolder() {
+            if (!treeData || treeData.length === 0) return;
             ensureSelection();
             let selectedNode = findNodeAndParentById(selectedId).node;
             if (isFolder(selectedNode)) {
@@ -1544,6 +1557,38 @@ variable to true in this .html file.
             a.click();
         }
 
+        function exportNoteAsTxt() {
+            const editorArea = document.getElementById("editorArea");
+            if (!editorArea) return;
+
+            let content = editorArea.value;
+
+            // Remove inter-note links (titles surrounded by underscores)
+            const nodeLinkRegex = /(?:^|\s)_(.+?)_(?=\s|[.,!?;:)]|$)/g;
+            content = content.replace(nodeLinkRegex, (match, p1, offset, str) => {
+                // preserve whitespace before the match, just strip the link markup
+                const leadingSpace = /^\s/.test(match) ? " " : "";
+                return leadingSpace + p1;
+            });
+
+            // Ask for filename (no extension needed)
+            const name = prompt("Save note as .txt (enter name without extension):", "");
+            if (!name) return;
+
+            const fileName = name + ".txt";
+
+            // Create and trigger download
+            const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
 
         //---- Key Handling ----------------------------------------------------
         function handleGlobalKey(e){
@@ -1637,6 +1682,7 @@ variable to true in this .html file.
                 case 'D': if (!readOnly) deleteNode(); break;
                 case 's': if (!readOnly) saveAsHtml(fileName); break;
                 case 'S': if (!readOnly) saveAsHtml(""); break;
+                case 'T': exportNoteAsTxt(); break;
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
                 case '#': openLinksDialog(); break;
