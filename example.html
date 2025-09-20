@@ -333,7 +333,12 @@ k = Move up
 $ = Jump to the end of the line
 w = Move forward one word
 W or b = Move back one word
+V = Enter line select mode
+v = Enter standard select mode
+y = Copy the selected text
 x = Delete the character under the cursor
+    (if in Select mode, cut the selected
+    text to the clipboard)
 D = Delete the current line
 gg = Go to the start of the note
 #g = Go to the specified line
@@ -464,6 +469,12 @@ variable to true in this .html file.
         let mode_counting = false;
         let mode_going = false;
         let mode_deleting = false;
+
+        let mode_visual = false;
+        let mode_visual_line = false;
+        let visual_start = 0;
+        let visual_end = 0;
+        let vim_clipboard = '';
 
         let searchActive = false;
         let searchMatches = [];
@@ -627,7 +638,17 @@ variable to true in this .html file.
                 editorArea.setAttribute('readonly', 'readonly');
             }
 
-            modeEl.textContent = editing ? modeEl.textContent : 'TREE';
+            if (editing) {
+                if (mode_insert) {
+                    modeEl.textContent = 'INSERT';
+                } else if (mode_visual) {
+                    modeEl.textContent = mode_visual_line ? 'VISUAL LINE' : 'VISUAL';
+                } else {
+                    modeEl.textContent = 'NORMAL';
+                }
+            } else {
+                modeEl.textContent = 'TREE';
+            }
 
             if (selectedId) recordHistory(selectedId);
 
@@ -674,10 +695,14 @@ variable to true in this .html file.
         editorArea.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 e.preventDefault();
+                e.stopPropagation();
 
                 if (mode_insert && mode_vim) {
                     setVimMode(false);
                     editorArea.setSelectionRange(editorArea.selectionStart,editorArea.selectionStart);
+                } else if (mode_visual && mode_vim) {
+                    exitVisualMode();
+                    setVimMode(false);
                 } else {
                     editing = false;
                     editorArea.blur();
@@ -709,6 +734,10 @@ variable to true in this .html file.
 
             if (mode_insert) {
                 return;
+            }
+
+            if (mode_visual) {
+                visualKeys(e);
             }
 
             e.preventDefault();
@@ -755,14 +784,14 @@ variable to true in this .html file.
                     break;
         
                 case "h": // Move left
-                    editorArea.selectionStart = Math.max(0, editorArea.selectionStart - count);
-                    editorArea.selectionEnd = editorArea.selectionStart;
+                    let newPosBack = Math.max(0, editorArea.selectionStart - count);
+                    moveChar(newPosBack, true);
                     performed = true;
                     break;
         
                 case "l": // Move right
-                    editorArea.selectionStart = Math.min(editorArea.value.length, editorArea.selectionStart + count);
-                    editorArea.selectionEnd = editorArea.selectionStart;
+                    let newPosFwd = Math.min(editorArea.value.length, editorArea.selectionStart + count);
+                    moveChar(newPosFwd, false);
                     performed = true;
                     break;
         
@@ -788,6 +817,15 @@ variable to true in this .html file.
                     performed = true;
                     break;
 
+                case "v": // Enter visual mode
+                    enterVisualMode(false);
+                    performed = true;
+                    break;
+                case "V": // Enter visual line mode
+                    enterVisualMode(true);
+                    performed = true;
+                    break;
+
                 case "w": // Forward word(s)
                     for (let i = 0; i < count; i++) moveWord(1);
                     performed = true;
@@ -807,6 +845,27 @@ variable to true in this .html file.
                     performed = true;
                     break;
 
+                case "p": // Paste from system clipboard
+                    navigator.clipboard.readText().then(text => {
+                        if (text) {
+                            const start = editorArea.selectionStart;
+                            editorArea.setRangeText(text, start, start, "end");
+                            editorArea.selectionStart = editorArea.selectionEnd = start + text.length;
+                            syncFile();
+                        }
+                    }).catch(err => {
+                        console.error("Clipboard read failed:", err);
+                        // fallback to internal clipboard
+                        if (vim_clipboard) {
+                            const start = editorArea.selectionStart;
+                            editorArea.setRangeText(vim_clipboard, start, start, "end");
+                            editorArea.selectionStart = editorArea.selectionEnd = start + vim_clipboard.length;
+                            syncFile();
+                        }
+                    });
+                    performed = true;
+                    break;
+
                 case "g": // Possible gg
                     if (mode_going) {
                         if (count > 1) {
@@ -818,9 +877,10 @@ variable to true in this .html file.
                                 pos += lines[i].length + 1;
                             }
                             performed = true;
-                            editorArea.selectionStart = editorArea.selectionEnd = pos;
+
+                            moveChar(pos, true);
                         } else {
-                            editorArea.selectionStart = editorArea.selectionEnd = 0;
+                            moveChar(0, true);
                             performed = true;
                         }
 
@@ -887,7 +947,8 @@ variable to true in this .html file.
                     break;
 
                 case "G": // End of buffer, or Nth line
-                    editorArea.selectionStart = editorArea.selectionEnd = editorArea.value.length;
+                    const bufEnd = editorArea.selectionEnd = editorArea.value.length;
+                    moveChar(bufEnd, false);
                     performed = true;
                     scrollToCursor();
                     break;
@@ -904,7 +965,13 @@ variable to true in this .html file.
             // --- Helper for j/k ---
             function moveCursorVertical(direction) {
                 const text = editorArea.value;
-                const pos = editorArea.selectionStart;
+                let pos = 0;
+
+                if (mode_visual) {
+                    pos = visual_end;
+                } else {
+                    pos = editorArea.selectionStart;
+                }
         
                 // Find current line start/end
                 const lineStart = text.lastIndexOf("\n", pos - 1) + 1;
@@ -926,12 +993,24 @@ variable to true in this .html file.
         
                 // Keep column if possible, else move to end of line
                 const targetPos = Math.min(targetLineStart + currentCol, targetLineEnd);
-                editorArea.selectionStart = editorArea.selectionEnd = targetPos;
+
+                if (mode_visual) {
+                    visual_end = targetPos;
+                    updateVisualSelection();
+                } else {
+                    editorArea.selectionStart = editorArea.selectionEnd = targetPos;
+                }
             }
 
             function moveWord(direction) {
                 const text = editorArea.value;
-                let pos = editorArea.selectionStart;
+                let pos = 0;
+
+                if (mode_visual) {
+                    pos = visual_end;
+                } else {
+                    pos = editorArea.selectionStart;
+                }
 
                 if (direction > 0) {
                     // Skip current non-word chars
@@ -945,10 +1024,111 @@ variable to true in this .html file.
                     while (pos > 0 && /\w/.test(text[pos - 1])) pos--;
                 }
 
-                editorArea.selectionStart = editorArea.selectionEnd = pos;
+                if (mode_visual) {
+                    visual_end = pos;
+                    updateVisualSelection();
+                } else {
+                    editorArea.selectionStart = editorArea.selectionEnd = pos;
+                }
+            }
+
+            function moveChar(newPos, goingBack) {
+                const text = editorArea.value;
+
+                if (mode_visual) {
+                    visual_end = newpos;
+                    if (goingBack) {
+                        visual_end = newPos + 1;
+                    }
+                    updateVisualSelection();
+                } else {
+                    editorArea.selectionStart = editorArea.selectionEnd = newPos;
+                }
             }
         }
         // ---------------------------------------------------------------------
+
+        function visualKeys(e) {
+            e.preventDefault();
+            
+            switch (e.key) {
+                case "Escape":
+                    exitVisualMode();
+                    break;
+                case "h": // Move left and extend selection
+                    visual_end = Math.max(0, visual_end - 1);
+                    updateVisualSelection();
+                    break;
+                case "l": // Move right and extend selection  
+                    visual_end = Math.min(editorArea.value.length, visual_end + 1);
+                    updateVisualSelection();
+                    break;
+                case "d": // Delete selection (no copy)
+                    let start = Math.min(visual_start, visual_end);
+                    let end = Math.max(visual_start, visual_end);
+                
+                    if (mode_visual_line) {
+                        // Full line delete
+                        const text = editorArea.value;
+                        const lineStart = text.lastIndexOf("\n", start - 1) + 1;
+                        const lineEndPos = text.indexOf("\n", end);
+                        const lineEnd = lineEndPos === -1 ? text.length : lineEndPos + 1;
+                        editorArea.setRangeText("", lineStart, lineEnd, "start");
+                        editorArea.selectionStart = editorArea.selectionEnd = lineStart;
+                    } else {
+                        // Character-wise delete
+                        editorArea.setRangeText("", start, end + 1, "start");
+                        editorArea.selectionStart = editorArea.selectionEnd = start;
+                    }
+                
+                    syncFile();
+                    exitVisualMode();
+                    break;
+                case "y": // Yank (copy)
+                    vim_clipboard = getVisualSelection();
+                    if (vim_clipboard) {
+                        navigator.clipboard.writeText(vim_clipboard).catch(err => {
+                            console.error("Clipboard write failed:", err);
+                        });
+                    }
+                    exitVisualMode();
+                    break;
+                case "x": // Cut (copy + delete selection)
+                    vim_clipboard = getVisualSelection();
+                    if (vim_clipboard) {
+                        navigator.clipboard.writeText(vim_clipboard).catch(err => {
+                            console.error("Clipboard write failed:", err);
+                        });
+                    }
+                
+                    // Delete the selected text
+                    let startCut = Math.min(visual_start, visual_end);
+                    let endCut = Math.max(visual_start, visual_end);
+                
+                    if (mode_visual_line) {
+                        // Full line cut
+                        const text = editorArea.value;
+                        const lineStart = text.lastIndexOf("\n", startCut - 1) + 1;
+                        const lineEndPos = text.indexOf("\n", endCut);
+                        const lineEnd = lineEndPos === -1 ? text.length : lineEndPos + 1;
+                        editorArea.setRangeText("", lineStart, lineEnd, "start");
+                        editorArea.selectionStart = editorArea.selectionEnd = lineStart;
+                    } else {
+                        // Character-wise cut
+                        editorArea.setRangeText("", startCut, endCut + 1, "start");
+                        editorArea.selectionStart = editorArea.selectionEnd = startCut;
+                    }
+                
+                    syncFile();
+                    exitVisualMode();
+                    break;
+                case "d": // Delete
+                    vim_clipboard = getVisualSelection();
+                    deleteVisualSelection();
+                    break;
+                // Add more movement commands as needed
+            }
+        }
 
 
 
@@ -1447,8 +1627,69 @@ variable to true in this .html file.
 
 
 
+        //---- Visual Mode Helpers ---------------------------------------------
+        function enterVisualMode(lineMode = false) {
+            mode_visual = true;
+            mode_visual_line = lineMode;
+            visual_start = editorArea.selectionStart;
+            visual_end = editorArea.selectionStart;
+            modeEl.textContent = 'VISUAL';
+            updateVisualSelection();
+        }
+        
+        function exitVisualMode() {
+            mode_visual = false;
+            mode_visual_line = false;
+            // Position cursor at the end of the selection
+            const cursorPos = Math.max(visual_start, visual_end);
+            editorArea.selectionStart = editorArea.selectionEnd = cursorPos;
+            modeEl.textContent = 'NORMAL';
+        }
+        
+        function updateVisualSelection() {
+            if (!mode_visual) return;
+            
+            let start = Math.min(visual_start, visual_end);
+            let end = Math.max(visual_start, visual_end);
+            
+            if (mode_visual_line) {
+                // Extend to full lines
+                const text = editorArea.value;
+                const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+                const lineEndPos = text.indexOf('\n', end);
+                const lineEnd = lineEndPos === -1 ? text.length : lineEndPos + 1;
+                start = lineStart;
+                end = lineEnd;
+            } else {
+                // Character-wise - include character at cursor
+                // if (end < editorArea.value.length) end += 1;
+            }
+            
+            editorArea.setSelectionRange(start, end);
+        }
 
-
+        function getVisualSelection() {
+            if (!mode_visual) return '';
+            
+            let start = Math.min(visual_start, visual_end);
+            let end = Math.max(visual_start, visual_end);
+            
+            if (mode_visual_line) {
+                const text = editorArea.value;
+                const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+                const lineEndPos = text.indexOf('\n', end);
+                const lineEnd = lineEndPos === -1 ? text.length : lineEndPos + 1;
+                return text.substring(lineStart, lineEnd);
+            } else {
+                if (end < editorArea.value.length) end += 1;
+                return editorArea.value.substring(start, end);
+            }
+        }
+        
+        function deleteVisualSelection() {
+            // Similar logic to getVisualSelection but deletes the text
+            // and exits visual mode
+        }
 
 
 
@@ -1538,7 +1779,7 @@ variable to true in this .html file.
                     selectSearchResult(searchIndex);
                     closeSearch();
                 }
-            } else if (e.key === 'Escape' || e.key === 'q') {
+            } else if (e.key === 'Escape') {
                 closeSearch();
             }
         });
@@ -1770,12 +2011,16 @@ variable to true in this .html file.
                 e.preventDefault();
                 openOptionsDialog();
             }
-            if (e.key === 'V' && !editing && !dialogOpen()) {
+            if (e.key === 'V' && !editing && vimEditDialogOpen()) {
                 if (mode_vim) {
                     helpDialogVimEdit.style.display = 'block';
                 } else {
                     helpDialogVimDisabled.style.display = 'block';
                 }
+
+                helpDialog.style.display = 'none';
+                helpDialogVimDisabled.style.display = 'none';
+
                 e.preventDefault();
                 return;
             }
@@ -2060,6 +2305,16 @@ variable to true in this .html file.
         return openDialog;
     }
 
+    function vimEditDialogOpen() {
+        let openDialog = false;
+
+        if (helpDialog.style.display === "block") {
+            openDialog = true;
+        }
+
+        return openDialog;
+    }
+
 
 
     document.getElementById("filePicker").addEventListener("change", (e) => {
@@ -2122,13 +2377,6 @@ variable to true in this .html file.
         render();
     });
 </script>
-
-
-
-
-
-
-
 
 
 
