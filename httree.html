@@ -156,6 +156,24 @@
             overflow-y: auto;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
         }
+        #marksDialog {
+            display: none;
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            max-height: 70%;
+            background: #222;
+            color: #fff;
+            border: 2px solid #444;
+            border-radius: 2px;
+            padding: 20px;
+            z-index: 9999;
+            font-family: monospace;
+            overflow-y: auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
         #linksDialog h3 {
             margin-top: 0;
         }
@@ -407,6 +425,10 @@ variable to true in this .html file.
 <h3>Links in Note</h3>
 <div id="linksList"><a href="#" data-node-id="kqr4o4g3" class="selected">The Options Dialog</a></div>
 </div>
+<div id="marksDialog" style="display: none;">
+<h3>Bookmarks</h3>
+<div id="marksList"></div>
+</div>
 <div id="replaceDialog" style="display: none;">
 <h3>Find &amp; Replace</h3>
 <label for="searchText">Find</label>
@@ -437,6 +459,9 @@ variable to true in this .html file.
         /** @type {NodeT[]} */
         let treeData = [];
 
+
+        let bookmarks = [];
+
         // !@!
         const readOnly = false;
 
@@ -461,6 +486,8 @@ variable to true in this .html file.
         let selectedId = null;
         let editing = false;
         let showingLinks = false;
+        let showingMarks = false;
+        let marksIndex = 0;
         let finding = false;
         let mode_vim = true;
         let mode_insert = false;
@@ -484,6 +511,8 @@ variable to true in this .html file.
         const optionsDialog = document.getElementById('optionsDialog');
         const searchDialog = document.getElementById('searchDialog');
         const replaceDialog = document.getElementById('replaceDialog');
+        const marksDialog = document.getElementById('marksDialog');
+        let marksList = document.getElementById('marksList');
         const searchInput = document.getElementById('searchInput');
         const searchList = document.getElementById('searchList');
         const optShowInitHelp = document.getElementById('optShowInitHelp');
@@ -1348,6 +1377,30 @@ variable to true in this .html file.
 
             syncFile();
         }
+        function setMark() {
+            ensureSelection();
+            let currentNode = findNodeAndParentById(selectedId).node;
+            let path = computePath(currentNode.id);
+
+            if (currentNode) {
+                bookmarks.push({
+                    id: currentNode.id,
+                    caption: currentNode.title,
+                    path: path
+                });
+                alert(`Bookmarked: ${currentNode.title}`);
+            }
+        }
+
+        function getNodePath(node) {
+            let path = [];
+            let cur = node;
+            while (cur) {
+                path.unshift(cur.caption);
+                cur = cur.parent;
+            }
+            return path.join(" / ");
+        }
 
 
         //---- Options ---------------------------------------------------------
@@ -1478,6 +1531,26 @@ variable to true in this .html file.
                 }
                 listEl.appendChild(div);
             });
+        }
+
+        function renderMarksList() {
+            const listEl = document.getElementById('historyList');
+            listEl.innerHTML = '';
+            const recent = historyStack.slice(-15).reverse(); // latest first
+            recent.forEach((entry, i) => {
+                const div = document.createElement('div');
+                div.textContent = entry.title;
+                if (i === historyIndex) {
+                    div.classList.add('selected');
+                    div.style.background = '#444'; // ensure visible
+                }
+                listEl.appendChild(div);
+            });
+        }
+
+        function closeMarksDialog() {
+            marksDialog.style.display = "none";
+            showingMarks = false;
         }
 
 
@@ -1851,6 +1924,11 @@ variable to true in this .html file.
 
             htmlContent = htmlContent.replace(/let\s+treeData\s*=\s*\[[\s\S]*?\];/, `let treeData = ${formattedDatabase};`);
 
+            htmlContent = htmlContent.replace(
+                /let\s+bookmarks\s*=\s*\[[\s\S]*?\];/,
+                "let bookmarks = " + JSON.stringify(bookmarks, null, 4) + ";"
+            );
+
             let blob = new Blob([htmlContent], { type: "text/html" });
             let a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
@@ -1985,6 +2063,8 @@ variable to true in this .html file.
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
                 case '#': openLinksDialog(); break;
+                case 'm': setMark(); break;
+                case '`': openMarksDialog(); break;
                 case 'X': openMissingLinksDialog(); break;
                 case 'y': if (!readOnly) copyNode(); break;
                 case 'p': if (!readOnly) pasteNode(); break;
@@ -2232,6 +2312,30 @@ variable to true in this .html file.
         document.getElementById('linksDialog').style.display = 'block';
     }
 
+    function openMarksDialog() {
+        if (bookmarks.length === 0) {
+            alert("No bookmarks yet.");
+            return;
+        }
+
+        showingMarks = true;
+        marksIndex = 0;
+    
+        function render() {
+            let html = "<br><table>";
+            bookmarks.forEach((bm, i) => {
+                let sel = (i === marksIndex) ? "style='background:#444;'" : "";
+                html += `<tr ${sel}><td>${bm.caption}</td><td>${bm.path}</td></tr>`;
+            });
+            html += "</table>";
+            marksList.innerHTML = html;
+            showingMarks = true;
+        }
+    
+        marksDialog.style.display = "block";
+        render();
+    }
+
     function activateSelectedLink() {
         const listEl = document.getElementById('linksList');
         const links = listEl.querySelectorAll('a');
@@ -2269,6 +2373,40 @@ variable to true in this .html file.
         } else if (e.key === 'Escape') {
             closeLinksDialog();
             e.preventDefault();
+        }
+    }
+
+    function handleMarksKey(e) {
+        if (!showingMarks) return;
+
+        if (e.key === "ArrowDown") {
+            marksIndex = (marksIndex + 1) % bookmarks.length;
+            render();
+            e.preventDefault();
+        } else if (e.key === "ArrowUp") {
+            marksIndex = (marksIndex - 1 + bookmarks.length) % bookmarks.length;
+            render();
+            e.preventDefault();
+        } else if (e.key === "d") {
+            // Delete selected bookmark
+            bookmarks.splice(marksIndex, 1);
+            if (marksIndex >= bookmarks.length) marksIndex = bookmarks.length - 1;
+            if (bookmarks.length === 0) {
+                closeMarksDialog();
+            } else {
+                render();
+            }
+            e.preventDefault();
+        } else if (e.key === "Enter") {
+            let bm = bookmarks[marksIndex];
+            let node = findNode(bm.id);
+            if (node) {
+                currentNode = node;
+                selectNode(node);
+                closeMarksDialog();
+            }
+        } else if (e.key === "Escape") {
+            closeMarksDialog();
         }
     }
 
@@ -2370,6 +2508,7 @@ variable to true in this .html file.
 
     window.addEventListener('keydown', handleHistoryKey, { capture: true });
     window.addEventListener('keydown', handleLinksKey, { capture: true });
+    window.addEventListener('keydown', handleMarksKey, { capture: true });
 
     //---- Init ------------------------------------------------------------
     window.addEventListener('load', function() {
