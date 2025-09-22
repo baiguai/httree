@@ -1,7 +1,7 @@
 <!DOCTYPE html><html><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport">
-<title>Example</title>
+<title>Httree</title>
 <style>
         :root {
             --bg: #000;
@@ -132,7 +132,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .search-results div.selected {
+        .search-results div.selected, .marks-list div.selected {
             background: #444;
         }
 
@@ -144,6 +144,24 @@
             left: 50%;
             transform: translateX(-50%);
             width: 600px;
+            max-height: 70%;
+            background: #222;
+            color: #fff;
+            border: 2px solid #444;
+            border-radius: 2px;
+            padding: 20px;
+            z-index: 9999;
+            font-family: monospace;
+            overflow-y: auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+        #marksDialog {
+            display: none;
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
             max-height: 70%;
             background: #222;
             color: #fff;
@@ -216,6 +234,14 @@
         #replaceDialog .close {
             background: #444;
             color: #fff;
+        }
+
+        #msg {
+          opacity: 0;
+          transition: opacity 0.6s ease; /* fade in/out */
+        }
+        #msg.visible {
+          opacity: 1;
         }
 
 
@@ -393,7 +419,8 @@ variable to true in this .html file.
 <div class="status">
 <span class="pill" id="mode" style="display: block;">TREE</span>
 <span class="pill" id="kind">FOLDER</span>
-<span class="dim" id="path">/Notes</span>
+<span class="dim" id="path">/</span>
+<span class="pill" id="msg"></span>
 </div>
 <textarea id="editorArea" spellcheck="false" readonly="readonly"></textarea>
 </section>
@@ -405,6 +432,12 @@ variable to true in this .html file.
 <div id="linksDialog" style="display: none;">
 <h3>Links in Note</h3>
 <div id="linksList"><a href="#" data-node-id="kqr4o4g3" class="selected">The Options Dialog</a></div>
+</div>
+<div id="marksDialog" style="display: none;">
+<h3>Bookmarks</h3>
+<div id="marksList"></div>
+<p><br>Press Esc to close<br>
+Press d to delete a bookmark</p>
 </div>
 <div id="replaceDialog" style="display: none;">
 <h3>Find &amp; Replace</h3>
@@ -438,6 +471,9 @@ variable to true in this .html file.
   {"id":"aa8cjfij","title":"Notes","content":"","children":[{"id":"b9r4fi05","title":"Development","content":"","children":[{"id":"d37au83q","title":"Links","content":"","children":[{"id":"mchn1txs","title":"Javascript Resources","content":"Javascript Resources\n--------------------------------------------------------------------------------\n\nEloquent Javascript\nhttps://eloquentjavascript.net/\n\n15 Free eBooks\nhttps://umatechnology.org/learn-javascript-with-these-15-free-e-books/","children":[],"expanded":true}],"expanded":true},{"id":"u5mm3qll","title":"Rust Onboarding","content":"Rust Onboarding\n--------------------------------------------------------------------------------\n\nComprehensive Rust\nhttps://google.github.io/comprehensive-rust/\n\nFree Offline Rust Book:\nrustup doc --book\n\nOnline Version:\nhttps://doc.rust-lang.org/stable/book/","children":[],"expanded":false}],"expanded":true}],"expanded":true}
 ];
 
+
+        let bookmarks = [];
+
         // !@!
         const readOnly = false;
 
@@ -462,6 +498,8 @@ variable to true in this .html file.
         let selectedId = null;
         let editing = false;
         let showingLinks = false;
+        let showingMarks = false;
+        let marksIndex = 0;
         let finding = false;
         let mode_vim = true;
         let mode_insert = false;
@@ -485,6 +523,9 @@ variable to true in this .html file.
         const optionsDialog = document.getElementById('optionsDialog');
         const searchDialog = document.getElementById('searchDialog');
         const replaceDialog = document.getElementById('replaceDialog');
+        const marksDialog = document.getElementById('marksDialog');
+        const historyDialog = document.getElementById('historyDialog');
+        const marksList = document.getElementById('marksList');
         const searchInput = document.getElementById('searchInput');
         const searchList = document.getElementById('searchList');
         const optShowInitHelp = document.getElementById('optShowInitHelp');
@@ -527,17 +568,30 @@ variable to true in this .html file.
             if (firstLine) n.title = firstLine.slice(0, 80);
             else if (!n.title || !n.title.startsWith("New")) n.title = "New Folder";
         }
-        function computePath(id){
+        function computePath(id, lengthMax = 50) {
             const segments = [];
-            (function walk(id){
+            (function walk(id, isRootCall = true) {
                 const info = findNodeAndParentById(id);
                 if (!info) return;
-                if (info.parent) walk(info.parent.id);
-                segments.push(info.node.title || "Untitled");
-            })(id);
-            return '/' + segments.join('/');
+                if (info.parent) walk(info.parent.id, false);
+                if (!isRootCall) {
+                    // only push if not the starting node
+                    segments.push(info.node.title || "Untitled");
+                }
+            })(id, true);
+        
+            let path = '/' + segments.join('/');
+        
+            if (path.length > lengthMax) {
+                // Trim from the left side until it fits
+                while (path.length > lengthMax && segments.length > 1) {
+                    segments.shift(); // remove first segment
+                    path = '/…/' + segments.join('/');
+                }
+            }
+        
+            return path;
         }
-
         function recordHistory(id) {
             const node = findNodeAndParentById(id)?.node;
             if (!node) return;
@@ -554,6 +608,23 @@ variable to true in this .html file.
                 historyStack.shift();
             }
         }
+        function showMessage(msgText, duration = 3000) {
+            // clear any existing timers
+            clearTimeout(msgTimeout);
+        
+            // set text and fade in
+            msgEl.textContent = msgText;
+            msgEl.classList.add("visible");
+        
+            // schedule fade out
+            msgTimeout = setTimeout(() => {
+                msgEl.classList.remove("visible");
+                // after fade-out transition ends, clear text
+                setTimeout(() => {
+                    msgEl.textContent = "";
+                }, 600); // matches CSS transition duration
+            }, duration);
+        }
 
 
         //---- Rendering -------------------------------------------------------
@@ -562,6 +633,8 @@ variable to true in this .html file.
         const modeEl = document.getElementById('mode');
         const kindEl = document.getElementById('kind');
         const pathEl = document.getElementById('path');
+        const msgEl = document.getElementById('msg');
+        let msgTimeout;
 
         function render(){
             // Render tree
@@ -1349,6 +1422,30 @@ variable to true in this .html file.
 
             syncFile();
         }
+        function setMark() {
+            ensureSelection();
+            let currentNode = findNodeAndParentById(selectedId).node;
+            let path = computePath(currentNode.id);
+
+            if (currentNode) {
+                bookmarks.push({
+                    id: currentNode.id,
+                    caption: currentNode.title,
+                    path: path
+                });
+                showMessage(`Bookmarked: ${currentNode.title}`);
+            }
+        }
+
+        function getNodePath(node) {
+            let path = [];
+            let cur = node;
+            while (cur) {
+                path.unshift(cur.caption);
+                cur = cur.parent;
+            }
+            return path.join(" / ");
+        }
 
 
         //---- Options ---------------------------------------------------------
@@ -1479,6 +1576,21 @@ variable to true in this .html file.
                 }
                 listEl.appendChild(div);
             });
+        }
+
+        function renderMarksList() {
+            let html = "<br><table>";
+            bookmarks.forEach((bm, i) => {
+                let sel = (i === marksIndex) ? "style='background:#444;'" : "";
+                html += `<tr ${sel}><td>${bm.caption}</td><td>${bm.path}</td></tr>`;
+            });
+            html += "</table>";
+            marksList.innerHTML = html;
+        }
+
+        function closeMarksDialog() {
+            marksDialog.style.display = "none";
+            showingMarks = false;
         }
 
 
@@ -1852,6 +1964,11 @@ variable to true in this .html file.
 
             htmlContent = htmlContent.replace(/let\s+treeData\s*=\s*\[[\s\S]*?\];/, `let treeData = ${formattedDatabase};`);
 
+            htmlContent = htmlContent.replace(
+                /let\s+bookmarks\s*=\s*\[[\s\S]*?\];/,
+                "let bookmarks = " + JSON.stringify(bookmarks, null, 4) + ";"
+            );
+
             let blob = new Blob([htmlContent], { type: "text/html" });
             let a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
@@ -1981,12 +2098,14 @@ variable to true in this .html file.
                 case 'K': if (!readOnly) reorderAmongSiblings('up'); break;
                 case 'D': if (!readOnly) deleteNode(); break;
                 case 's': if (!readOnly) saveAsHtml(fileName); break;
-                case 'S': if (!readOnly) saveAsHtml(""); break;
+                case 'S': saveAsHtml(""); break;
                 case 'T': exportNoteAsTxt(); break;
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
                 case '#': openLinksDialog(); break;
-                case 'X': openMissingLinksDialog(); break;
+                case 'm': setMark(); break;
+                case '`': openMarksDialog(); break;
+                case 'X': if (!readOnly) openMissingLinksDialog(); break;
                 case 'y': if (!readOnly) copyNode(); break;
                 case 'p': if (!readOnly) pasteNode(); break;
                 case '<':
@@ -2233,6 +2352,29 @@ variable to true in this .html file.
         document.getElementById('linksDialog').style.display = 'block';
     }
 
+    function openMarksDialog() {
+        if (bookmarks.length === 0) {
+            alert("No bookmarks yet.");
+            return;
+        }
+
+        marksIndex = 0;
+    
+        function render() {
+            let html = "<br><table>";
+            bookmarks.forEach((bm, i) => {
+                let sel = (i === marksIndex) ? "style='background:#444;'" : "";
+                html += `<tr ${sel}><td>${bm.caption}</td><td>${bm.path}</td></tr>`;
+            });
+            html += "</table>";
+            marksList.innerHTML = html;
+        }
+    
+        showingMarks = true;
+        marksDialog.style.display = "block";
+        render();
+    }
+
     function activateSelectedLink() {
         const listEl = document.getElementById('linksList');
         const links = listEl.querySelectorAll('a');
@@ -2254,12 +2396,12 @@ variable to true in this .html file.
         const links = listEl.querySelectorAll('a');
         if (links.length === 0) return;
 
-        if (e.key === 'ArrowDown') {
+        if (e.key === 'ArrowDown' || e.key === 'j') {
             links[linksIndex].classList.remove('selected');
             linksIndex = (linksIndex + 1) % links.length;
             links[linksIndex].classList.add('selected');
             e.preventDefault();
-        } else if (e.key === 'ArrowUp') {
+        } else if (e.key === 'ArrowUp' || e.key === 'k') {
             links[linksIndex].classList.remove('selected');
             linksIndex = (linksIndex - 1 + links.length) % links.length;
             links[linksIndex].classList.add('selected');
@@ -2273,13 +2415,48 @@ variable to true in this .html file.
         }
     }
 
+    function handleMarksKey(e) {
+        if (!showingMarks) return;
+
+        if (e.key === "ArrowDown" || e.key === 'j') {
+            marksIndex = (marksIndex + 1) % bookmarks.length;
+            renderMarksList();
+            e.preventDefault();
+        } else if (e.key === "ArrowUp" || e.key === 'k') {
+            marksIndex = (marksIndex - 1 + bookmarks.length) % bookmarks.length;
+            renderMarksList();
+            e.preventDefault();
+        } else if (e.key === "d") {
+            // Delete selected bookmark
+            bookmarks.splice(marksIndex, 1);
+            if (marksIndex >= bookmarks.length) marksIndex = bookmarks.length - 1;
+            if (bookmarks.length === 0) {
+                closeMarksDialog();
+            } else {
+                renderMarksList();
+            }
+            e.preventDefault();
+        } else if (e.key === "Enter") {
+            let bm = bookmarks[marksIndex];
+            // let node = findNode(bm.id);
+            if (bm) {
+                expandToNode(bm.id);
+                selectedId = bm.id;
+                closeMarksDialog();
+                render();
+            }
+        } else if (e.key === "Escape") {
+            closeMarksDialog();
+        }
+    }
+
     function handleHistoryKey(e) {
         if (!showingHistory) return;
-        if (e.key === 'ArrowDown') {
+        if (e.key === 'ArrowDown' || e.key === 'j') {
             historyIndex = Math.min(historyIndex + 1, Math.min(14, historyStack.length - 1));
             renderHistoryList();
             e.preventDefault();
-        } else if (e.key === 'ArrowUp') {
+        } else if (e.key === 'ArrowUp' || e.key === 'k') {
             historyIndex = Math.max(historyIndex - 1, 0);
             renderHistoryList();
             e.preventDefault();
@@ -2318,6 +2495,12 @@ variable to true in this .html file.
             openDialog = true;
         }
         if (replaceDialog.style.display === "block") {
+            openDialog = true;
+        }
+        if (marksDialog.style.display === "block") {
+            openDialog = true;
+        }
+        if (historyDialog.style.display === "block") {
             openDialog = true;
         }
 
@@ -2371,6 +2554,7 @@ variable to true in this .html file.
 
     window.addEventListener('keydown', handleHistoryKey, { capture: true });
     window.addEventListener('keydown', handleLinksKey, { capture: true });
+    window.addEventListener('keydown', handleMarksKey, { capture: true });
 
     //---- Init ------------------------------------------------------------
     window.addEventListener('load', function() {
