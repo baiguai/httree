@@ -311,6 +311,9 @@ S = Save as
 T = Export current note as .txt
 U = Upgrade (import existing data)
 
+m = Bookmark current node
+` = Show bookmarks
+
 V = Author Vim keys help
 ! = Display options dialog
 </pre>
@@ -335,6 +338,9 @@ f = Find text in the current note
 g = Select top tree node
 G = Select bottom tree node
 T = Export current note as .txt
+
+m = Bookmark current node
+` = Show bookmarks
 
 V = Editor Vim keys help
 </pre>
@@ -1090,20 +1096,18 @@ Press d to delete a bookmark</p>
                 if (mode_deleting) {
                     const text = editorArea.value;
                     const pos = editorArea.selectionStart;
-            
+                
                     // Find start of current line
                     const lineStart = text.lastIndexOf("\n", pos - 1) + 1;
-            
+                
                     // Find end of current line INCLUDING newline
                     let lineEnd = text.indexOf("\n", pos);
                     if (lineEnd === -1) {
-                        // last line → delete through end of buffer
                         lineEnd = text.length;
                     } else {
-                        // include the newline itself
                         lineEnd += 1;
                     }
-            
+                
                     // Repeat delete for count > 1
                     for (let i = 1; i < count; i++) {
                         const nextEnd = text.indexOf("\n", lineEnd);
@@ -1114,13 +1118,18 @@ Press d to delete a bookmark</p>
                             lineEnd = nextEnd + 1;
                         }
                     }
-            
+                
+                    // Delete the range
                     editorArea.setRangeText("", lineStart, lineEnd, "start");
-            
-                    // Place cursor at start of deleted line
-                    editorArea.selectionStart = editorArea.selectionEnd = lineStart;
+                
+                    // Re-fetch updated text after deletion
+                    const newText = editorArea.value;
+                
+                    // Place cursor at start of deleted line (or end of buffer if needed)
+                    const newPos = Math.min(lineStart, newText.length);
+                    editorArea.selectionStart = editorArea.selectionEnd = newPos;
+                
                     syncFile();
-            
                     performed = true;
                 } else {
                     let start, end;
@@ -1142,6 +1151,8 @@ Press d to delete a bookmark</p>
                     
                         editorArea.selectionStart = editorArea.selectionEnd = newPos;
                         syncFile();
+                    } else {
+                        mode_deleting = true;
                     }
                 }
             }
