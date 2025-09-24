@@ -47,11 +47,6 @@
             width: 100%;  /* force full width */
           }
 
-          button {
-            background: #000;
-            border: solid 1px #555;
-            color: #fff;
-          }
         }
 
         .tree-dialog {
@@ -343,6 +338,12 @@
           opacity: 1;
         }
 
+        button {
+          background: #000;
+          border: solid 1px #555;
+          color: #fff;
+        }
+
 
         /* Scrollbars */
         ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -360,6 +361,8 @@
 <header id="mobileMenu" style="display: none;">
   <button id="hamburger" class="hamburger" style="display:none;">☰</button>
   <button id="mblSearch" onclick="activateTree(); openSearch();">Search</button>
+  <button id="mblLinks" onclick="activateTree(); openLinksDialog();">Links</button>
+  &nbsp;
   <button id="mblSave" onclick="saveAsHtml(fileName);">Save</button>
 </header>
 <header style="display: none;">
@@ -559,7 +562,7 @@ variable to true in this .html file.
 <input id="searchInput" placeholder="Search..." type="text">
 <div class="search-results" id="searchList"><div class="selected">Other Options</div></div>
 </div>
-<div id="linksDialog" style="display: none;">
+<div id="linksDialog" onDblClick="closeLinksDialog();" style="display: none;">
 <h3>Links in Note</h3>
 <div id="linksList"><a href="#" data-node-id="kqr4o4g3" class="selected">The Options Dialog</a></div>
 </div>
@@ -1691,14 +1694,20 @@ Press d to delete a bookmark</p>
                     link.textContent = title;
 
                     if (foundNode) {
-                        link.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            expandToNode(foundNode.id);
-                            selectedId = foundNode.id;
+                        link.dataset.nodeId = foundNode.id;
+                    }
+                    
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault(); // stop jumping to top
+                        if (link.dataset.nodeId) {
+                            expandToNode(link.dataset.nodeId);
+                            selectedId = link.dataset.nodeId;
                             closeLinksDialog();
                             render();
-                        });
-                    } else {
+                        }
+                    });
+
+                    if (!foundNode) {
                         link.style.color = '#888';
                         link.title = 'Node not found';
                     }
@@ -2372,81 +2381,6 @@ Press d to delete a bookmark</p>
     let linksIndex = 0;
     let linksCount = 0;
 
-    function openLinksDialog() {
-        showingLinks = true;
-        linksIndex = 0;
-        const info = findNodeAndParentById(selectedId);
-        if (!info || !info.node.content) return;
-
-        const content = safeRestoreText(info.node.content);
-        const urlRegex = /\bhttps?:\/\/[^\s]+/gi;
-        const nodeLinkRegex = /(?:^|\s)_(.+?)_(?=\s|[.,!?;:)]|$)/g;
-
-        const urlMatches = content.match(urlRegex) || [];
-
-        let nodeMatches = [];
-        let match;
-        while ((match = nodeLinkRegex.exec(content)) !== null) {
-            nodeMatches.push(match[1]);
-        }
-
-        // Deduplicate using Set
-        const uniqueUrls = [...new Set(urlMatches)];
-        const uniqueNodes = [...new Set(nodeMatches.map(n => n.trim()))];
-
-        const listEl = document.getElementById('linksList');
-        listEl.innerHTML = '';
-
-        if (uniqueUrls.length === 0 && uniqueNodes.length === 0) {
-            listEl.innerHTML = '<p>No links found.</p>';
-        } else {
-            uniqueUrls.forEach(url => {
-                const a = document.createElement('a');
-                a.href = url;
-                a.target = '_blank';
-                a.textContent = url;
-                listEl.appendChild(a);
-            });
-
-            uniqueNodes.forEach(title => {
-                const lowerTitle = title.toLowerCase();
-                let foundNode = null;
-
-                (function walk(nodes) {
-                    for (const n of nodes) {
-                        if (n.title && n.title.toLowerCase() === lowerTitle) {
-                            foundNode = n;
-                            return;
-                        }
-                        if (n.children && n.children.length) walk(n.children);
-                        if (foundNode) return;
-                    }
-                })(treeData);
-
-                const link = document.createElement('a');
-                link.href = '#';
-                link.textContent = title;
-
-                if (foundNode) {
-                    link.dataset.nodeId = foundNode.id;
-                } else {
-                    link.style.color = '#888';
-                    link.title = 'Node not found';
-                }
-
-                listEl.appendChild(link);
-            });
-        }
-
-        const links = listEl.querySelectorAll('a');
-        linksCount = links.length;
-        if (linksCount > 0) {
-            links[0].classList.add('selected');
-        }
-
-        linksDialog.style.display = 'block';
-    }
-
     function openMissingLinksDialog() {
         showingLinks = true;
         const nodeLinkRegex = /(?:^|\s)_(.+?)_(?=\s|[.,!?;:)]|$)/g;
@@ -2567,19 +2501,21 @@ Press d to delete a bookmark</p>
         if (!showingLinks) return;
         const listEl = document.getElementById('linksList');
         const links = listEl.querySelectorAll('a');
-        if (links.length === 0) return;
 
         if (e.key === 'ArrowDown' || e.key === 'j') {
+            if (links.length === 0) return;
             links[linksIndex].classList.remove('selected');
             linksIndex = (linksIndex + 1) % links.length;
             links[linksIndex].classList.add('selected');
             e.preventDefault();
         } else if (e.key === 'ArrowUp' || e.key === 'k') {
+            if (links.length === 0) return;
             links[linksIndex].classList.remove('selected');
             linksIndex = (linksIndex - 1 + links.length) % links.length;
             links[linksIndex].classList.add('selected');
             e.preventDefault();
         } else if (e.key === 'Enter') {
+            if (links.length === 0) return;
             activateSelectedLink();
             e.preventDefault();
         } else if (e.key === 'Escape') {
