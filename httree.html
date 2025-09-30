@@ -1822,7 +1822,7 @@ variable to true in this .html file.
             if (!info || !info.node.content) return;
 
             const content = safeRestoreText(info.node.content);
-            const urlRegex = /\bhttps?:\/\/[^\s]+/gi;
+            const urlRegex = /\b(http|file)s?:\/\/[^\s]+/gi;
             const nodeLinkRegex = /(?:^|\s)_(.+?)_(?=\s|[.,!?;:)]|$)/g;
 
             const urlMatches = content.match(urlRegex) || [];
