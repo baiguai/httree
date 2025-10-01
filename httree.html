@@ -993,6 +993,15 @@ variable to true in this .html file.
             mode_insert = true;
             editing = true;
             render();
+
+            // Close dialogs - this is for mobile envs
+            closeOptionsDialog();
+            closeLinksDialog();
+            closeHistoryDialog();
+            closeMarksDialog();
+            closeReplaceDialog();
+            closeSearch();
+
             editorArea.focus();
             // editorArea.setSelectionRange(0, 0); 
             // scrollToCursor();
