@@ -915,7 +915,6 @@ variable to true in this .html file.
                     modeEl.textContent = 'TREE';
                     editing = false;
                     mode_insert = false;
-                    mode_vim = false;
                     if (n.children.length) {
                         n.expanded = !n.expanded; // toggle when clicking row
                         editorArea.content = "";
@@ -992,8 +991,8 @@ variable to true in this .html file.
 
         editorArea.addEventListener('click', () => {
             mode_insert = true;
-            mode_vim = false;
-            editing = true; render();
+            editing = true;
+            render();
             editorArea.focus();
             // editorArea.setSelectionRange(0, 0); 
             // scrollToCursor();
@@ -1561,7 +1560,6 @@ variable to true in this .html file.
             modeEl.textContent = 'TREE';
             editing = false;
             mode_insert = false;
-            mode_vim = false;
         }
 
         function setVimMode(insertMode) {
@@ -2914,6 +2912,7 @@ variable to true in this .html file.
     function toggleMobileMenu() {
         if (mobileMenu.style.display === "none") {
             mobileMenu.style.display = "block";
+            mode_vim = false;
         } else {
             mobileMenu.style.display = "none";
         }
