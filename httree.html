@@ -252,7 +252,8 @@
         top: 10%;
         left: 50%;
         transform: translateX(-50%);
-        width: 600px;
+        width: 90%;                /* take almost full width on mobile */
+        max-width: 600px;          /* cap at desktop size */
         max-height: 70%;
         background: #222;
         color: #fff;
@@ -803,6 +804,7 @@ variable to true in this .html file.
         }
         function isFolder(n){ return (n.content || "").trim().length === 0; }
         function updateTitleFromContent(n){
+            if (n.content === "") return;
             const firstLine = (n.content||"").split(/\r?\n/)[0].trim();
             if (firstLine) n.title = firstLine.slice(0, 80);
             else if (!n.title || !n.title.startsWith("New")) n.title = "New Folder";
@@ -915,7 +917,6 @@ variable to true in this .html file.
                     modeEl.textContent = 'TREE';
                     editing = false;
                     mode_insert = false;
-                    mode_vim = false;
                     if (n.children.length) {
                         n.expanded = !n.expanded; // toggle when clicking row
                         editorArea.content = "";
@@ -992,8 +993,17 @@ variable to true in this .html file.
 
         editorArea.addEventListener('click', () => {
             mode_insert = true;
-            mode_vim = false;
-            editing = true; render();
+            editing = true;
+            render();
+
+            // Close dialogs - this is for mobile envs
+            closeOptionsDialog();
+            closeLinksDialog();
+            closeHistoryDialog();
+            closeMarksDialog();
+            closeReplaceDialog();
+            closeSearch();
+
             editorArea.focus();
             // editorArea.setSelectionRange(0, 0); 
             // scrollToCursor();
@@ -1561,7 +1571,6 @@ variable to true in this .html file.
             modeEl.textContent = 'TREE';
             editing = false;
             mode_insert = false;
-            mode_vim = false;
         }
 
         function setVimMode(insertMode) {
@@ -2914,6 +2923,7 @@ variable to true in this .html file.
     function toggleMobileMenu() {
         if (mobileMenu.style.display === "none") {
             mobileMenu.style.display = "block";
+            mode_vim = false;
         } else {
             mobileMenu.style.display = "none";
         }
@@ -2954,6 +2964,7 @@ variable to true in this .html file.
     
     function openTreeDialog() {
         treeDialog.style.display = 'block';
+        mode_vim = false;
 
         if (readOnly) {
             addNodeBtn.style.display = "none";
