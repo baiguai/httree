@@ -1,7 +1,7 @@
-<!DOCTYPE html><html style="--app-height: 987px;"><head>
+<!DOCTYPE html><html style="--app-height: 981px;"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport">
-<title>Httree</title>
+<title>Httree Help</title>
 <style>
     .app {
         display: grid;
@@ -251,7 +251,8 @@
         top: 10%;
         left: 50%;
         transform: translateX(-50%);
-        width: 600px;
+        width: 90%;                /* take almost full width on mobile */
+        max-width: 600px;          /* cap at desktop size */
         max-height: 70%;
         background: #222;
         color: #fff;
@@ -804,6 +805,7 @@ variable to true in this .html file.
         }
         function isFolder(n){ return (n.content || "").trim().length === 0; }
         function updateTitleFromContent(n){
+            if (n.content === "") return;
             const firstLine = (n.content||"").split(/\r?\n/)[0].trim();
             if (firstLine) n.title = firstLine.slice(0, 80);
             else if (!n.title || !n.title.startsWith("New")) n.title = "New Folder";
