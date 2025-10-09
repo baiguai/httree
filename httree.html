@@ -55,6 +55,24 @@
             height: 100%;
             overflow: auto;
         }
+
+        .tree-dialog {
+            width: 90vw;  /* Use most of the viewport width */
+            max-width: none;
+            min-width: unset;
+            transform: translate(-50%, -50%);
+        }
+
+        .tree-dialog-content {
+            gap: 10px;
+            padding: 14px;
+        }
+
+        .tree-dialog button {
+            font-size: 1em;
+            white-space: normal; /* Allow wrapping if needed */
+            word-break: break-word; /* Wrap long words gracefully */
+        }
     }
 
     .tree-dialog {
@@ -68,21 +86,30 @@
         border: 2px solid var(--border);
         box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         z-index: 2000;
+    
+        /* Default width (desktop-friendly) */
+        min-width: 300px;
+        max-width: 90vw;
+        border-radius: 8px;
     }
-
+    
+    /* Ensure content doesn’t feel cramped */
     .tree-dialog-content {
         display: flex;
         flex-direction: column;
-        gap: 6px;
-        padding: 8px;
+        gap: 8px;
+        padding: 12px;
     }
-
+    
+    /* Buttons: give them a bit more breathing room */
     .tree-dialog button {
-        padding: 4px;
+        padding: 8px;
         background: var(--bg);
         color: var(--fg);
         border: 1px solid var(--btn-border);
+        border-radius: 4px;
         cursor: pointer;
+        white-space: nowrap; /* Prevent text from wrapping */
     }
 
     :root {
@@ -1990,6 +2017,9 @@ variable to true in this .html file.
                         link.style.color = '#888';
                         link.title = 'Node not found';
                     }
+
+                    linksIndex = 0;
+                    links[linksIndex].classList.add('selected');
 
                     listEl.appendChild(link);
                     listEl.appendChild(document.createElement('br'));
