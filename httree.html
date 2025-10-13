@@ -1855,7 +1855,7 @@
             syncFile();
             showMessage("Wrapped to 80 characters");
         }
-        function setMark() {
+        function setMark(e) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -2672,7 +2672,7 @@
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
                 case '#': openLinksDialog(); break;
-                case 'm': setMark(); break;
+                case 'm': setMark(e); break;
                 case '`': openMarksDialog(); break;
                 case 'X': openMissingLinksDialog(); break;
                 case 'y': copyNode(); break;
