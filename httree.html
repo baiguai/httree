@@ -1840,22 +1840,23 @@
             if (!/\|/.test(sel)) return;
 
             const rawLines = sel.trim().split(/\r?\n/);
-
-            // Detect and remove divider rows (|----|----| or ----)
             const dividerPattern = /^\s*\|?\s*-+\s*(\|\s*-+\s*)*\|?\s*$/;
-            const hasDivider = rawLines.some(line => dividerPattern.test(line));
-            const contentLines = rawLines.filter(line => !dividerPattern.test(line));
 
+            // Detect whether any divider line exists
+            const hasDivider = rawLines.some(line => dividerPattern.test(line));
+
+            // Build table rows ignoring dividers for now
+            const contentLines = rawLines.filter(line => !dividerPattern.test(line));
             if (contentLines.length === 0) return;
 
-            // Parse table cells
+            // Parse cells
             const table = contentLines.map(line =>
                 line.split("|")
                     .map(c => c.trimEnd())
                     .filter((c, i, arr) => !(i === 0 && c === "") && !(i === arr.length - 1 && c === ""))
             );
 
-            // Determine max width for each column
+            // Compute max width for each column
             const widths = [];
             table.forEach(row => {
                 row.forEach((cell, i) => {
@@ -1863,11 +1864,11 @@
                 });
             });
 
-            // Helper to make divider row
+            // Create a properly sized divider row
             const makeSep = () =>
                 "|" + widths.map(w => " " + "-".repeat(w) + " ").join("|") + "|";
 
-            // Pad all cells
+            // Format rows cleanly
             const padded = table.map(row =>
                 "|" + row.map((cell, i) => {
                     const trimmed = cell.trim();
@@ -1876,21 +1877,26 @@
                 }).join("|") + "|"
             );
 
-            // If there were divider rows, rebuild keeping their positions;
-            // otherwise just return padded rows.
-            let finalRows = [];
+            // Rebuild the output respecting divider placement
+            const finalRows = [];
+            let nextRow = 0;
 
-            if (hasDivider) {
-                let contentIndex = 0;
-                for (const line of rawLines) {
-                    if (dividerPattern.test(line)) {
-                        finalRows.push(makeSep());
-                    } else if (contentIndex < padded.length) {
-                        finalRows.push(padded[contentIndex++]);
-                    }
+            for (let i = 0; i < rawLines.length; i++) {
+                const line = rawLines[i];
+
+                if (dividerPattern.test(line)) {
+                    // Proper divider → regenerate it at correct width
+                    finalRows.push(makeSep());
+                } else if (nextRow < padded.length) {
+                    // Proper content → add it in order
+                    finalRows.push(padded[nextRow++]);
                 }
-            } else {
-                finalRows = padded;
+            }
+
+            // If there were no dividers at all, just use the padded content
+            if (!hasDivider) {
+                finalRows.length = 0;
+                finalRows.push(...padded);
             }
 
             ta.setRangeText(finalRows.join("\n"), start, end, "select");
