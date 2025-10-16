@@ -604,7 +604,7 @@
 
         let copiedNoteId = null;
 
-        let fileName = "httree_notes";
+        let fileName = "httree_help";
         let showInitHelp = false;
         let selectedId = null;
         let editing = false;
@@ -1565,7 +1565,9 @@
                 modeEl.textContent = 'INSERT';
             } else {
                 mode_insert = false;
-                exitVisualMode();
+                if (mode_visual) {
+                    exitVisualMode();
+                }
                 modeEl.textContent = 'NORMAL';
             }
         }

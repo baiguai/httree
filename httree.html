@@ -1564,7 +1564,9 @@
                 modeEl.textContent = 'INSERT';
             } else {
                 mode_insert = false;
-                exitVisualMode();
+                if (mode_visual) {
+                    exitVisualMode();
+                }
                 modeEl.textContent = 'NORMAL';
             }
         }
