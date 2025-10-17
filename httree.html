@@ -446,12 +446,12 @@
 <div class="app">
 <header id="mobileMenu" style="display: none;">
     <button id="hamburger" class="hamburger" style="display:none;">☰</button>
-    <button id="mblSearch" onclick="activateTree(); openSearch();">Search</button>
-    <button id="mblLinks" onclick="activateTree(); openLinksDialog();">Links</button>
+    <button id="mblSearch" onclick="closeDialogs(); activateTree(); openSearch();">Search</button>
+    <button id="mblLinks" onclick="closeDialogs(); activateTree(); openLinksDialog();">Links</button>
     &nbsp;
-    <button id="mblExport" onclick="exportNoteAsTxt();">Export Note</button>
-    <button id="mblSave" onclick="saveAsHtml('');">Save As</button>
-    <button id="mblSave" onclick="saveAsHtml(fileName);">Save</button>
+    <button id="mblExport" onclick="closeDialogs(); exportNoteAsTxt();">Export Note</button>
+    <button id="mblSave" onclick="closeDialogs(); saveAsHtml('');">Save As</button>
+    <button id="mblSave" onclick="closeDialogs(); saveAsHtml(fileName);">Save</button>
 </header>
 
 <div id="treeDialog" class="tree-dialog">
@@ -557,9 +557,9 @@
 </div>
 
 
-<aside class="tree" id="tree" onclick="activateTree();"></aside>
+<aside class="tree" id="tree" onclick="closeDialogs(); activateTree();"></aside>
 <section class="editor">
-    <div id="statusBar" class="status" onDblClick="toggleMobileMenu();" title="Double click to toggle Mobile Mode">
+    <div id="statusBar" class="status" onClick="closeDialogs();" onDblClick="toggleMobileMenu();" title="Double click to toggle Mobile Mode">
         <span class="pill" id="mode" style="display: block;">TREE</span>
         <span class="pill" id="kind">FILE</span>
         <span class="dim" id="path">/Introduction</span>
@@ -1003,12 +1003,7 @@
             render();
 
             // Close dialogs - this is for mobile envs
-            closeOptionsDialog();
-            closeLinksDialog();
-            closeHistoryDialog();
-            closeMarksDialog();
-            closeReplaceDialog();
-            closeSearch();
+            closeDialogs();
 
             editorArea.focus();
             // editorArea.setSelectionRange(0, 0); 
@@ -2028,12 +2023,13 @@
                         link.title = 'Node not found';
                     }
 
-                    linksIndex = 0;
-                    links[linksIndex].classList.add('selected');
-
                     listEl.appendChild(link);
                     listEl.appendChild(document.createElement('br'));
                 });
+
+                const links = listEl.querySelectorAll('a');
+                linksIndex = 0;
+                links[linksIndex].classList.add('selected');
             }
 
             linksDialog.style.display = 'block';
@@ -2084,6 +2080,15 @@
         function closeMarksDialog() {
             marksDialog.style.display = "none";
             showingMarks = false;
+        }
+
+        function closeDialogs() {
+            closeSearch();
+            closeHelpDialog();
+            closeOptionsDialog();
+            closeLinksDialog();
+            closeHistoryDialog();
+            closeMarksDialog();
         }
 
 
@@ -3052,8 +3057,6 @@
 
                     // Replace current in-memory treeData
                     treeData = importedTreeData;
-
-                    alert("treeData imported successfully!");
 
                     selectedId = treeData[0]?.id || null;
 
