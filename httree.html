@@ -730,6 +730,8 @@
             { key: "V", mode: "NORMAL", description: "Enter line select mode" },
             { key: "v", mode: "NORMAL", description: "Enter standard select mode" },
             { key: "x", mode: "NORMAL", description: "Delete the character under the cursor" },
+            { key: "r", mode: "NORMAL", description: "Updates the undo cache with the current note text" },
+            { key: "u", mode: "NORMAL", description: "Restores the note text to the undo cache value" },
 
             { key: "y", mode: "VISUAL", description: "Virtual copy the selected text" },
             { key: "x", mode: "VISUAL", description: "Virtual cut the selected text" },
@@ -1268,8 +1270,8 @@
                     }
                     break;
                 case "r":
-                    if (e.ctrlKey && !mode_insert) {
-                        doRedo();
+                    if (!mode_insert) {
+                        addUndo();
                         performed = true;
                     }
                     break;
