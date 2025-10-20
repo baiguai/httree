@@ -1,7 +1,7 @@
 <!DOCTYPE html><html style="--app-height: 987px;"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport">
-<title>Httree</title>
+<title>Httree Example</title>
 <style>
     .app {
         display: grid;
@@ -445,12 +445,12 @@
 <div class="app">
 <header id="mobileMenu" style="display: none;">
     <button id="hamburger" class="hamburger" style="display:none;">☰</button>
-    <button id="mblSearch" onclick="activateTree(); openSearch();">Search</button>
-    <button id="mblLinks" onclick="activateTree(); openLinksDialog();">Links</button>
+    <button id="mblSearch" onclick="closeDialogs(); activateTree(); openSearch();">Search</button>
+    <button id="mblLinks" onclick="closeDialogs(); activateTree(); openLinksDialog();">Links</button>
     &nbsp;
-    <button id="mblExport" onclick="exportNoteAsTxt();">Export Note</button>
-    <button id="mblSave" onclick="saveAsHtml('');">Save As</button>
-    <button id="mblSave" onclick="saveAsHtml(fileName);">Save</button>
+    <button id="mblExport" onclick="closeDialogs(); exportNoteAsTxt();">Export Note</button>
+    <button id="mblSave" onclick="closeDialogs(); saveAsHtml('');">Save As</button>
+    <button id="mblSave" onclick="closeDialogs(); saveAsHtml(fileName);">Save</button>
 </header>
 
 <div id="treeDialog" class="tree-dialog">
@@ -556,9 +556,9 @@
 </div>
 
 
-<aside class="tree" id="tree" onclick="activateTree();"><ul><li><div class="node selected"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M1 3 L5 7 L9 3 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Notes</span></div><ul><li><div class="node"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M1 3 L5 7 L9 3 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Development</span></div><ul><li><div class="node"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M1 3 L5 7 L9 3 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Links</span></div><ul><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65"></path> <path style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5117" width="1.0583334" height="0.24694447" x="1.5875001" y="1.3772104"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5737" width="1.0583334" height="0.24694447" x="1.5875001" y="1.8710994"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5739" width="1.0583334" height="0.24694447" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">Javascript Resources</span></div></li></ul></li><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65"></path> <path style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5117" width="1.0583334" height="0.24694447" x="1.5875001" y="1.3772104"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5737" width="1.0583334" height="0.24694447" x="1.5875001" y="1.8710994"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5739" width="1.0583334" height="0.24694447" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">Rust Onboarding</span></div></li></ul></li></ul></li></ul></aside>
+<aside class="tree" id="tree" onclick="closeDialogs(); activateTree();"><ul><li><div class="node selected"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M1 3 L5 7 L9 3 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Notes</span></div><ul><li><div class="node"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M1 3 L5 7 L9 3 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Development</span></div><ul><li><div class="node"><span class="twisty"><svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="M1 3 L5 7 L9 3 Z" fill="currentColor"></path></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <g id="g5951" transform="matrix(0.18666667,0,0,0.18666667,-0.22930552,-0.10583338)"> <g id="layer1"> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="M 2.6458333,3.96875 H 11.90625 l 2.645833,2.6458332 h 7.9375 V 19.84375 H 2.6458333 Z" id="path65"></path> <path style="fill:#466779;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 3.96875,5.2916667 h 7.408333 l 2.38125,2.38125 h 7.408334 V 18.520833 H 3.96875 Z" id="path924"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:7.9375;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect1561" width="17.197916" height="9.260417" x="3.96875" y="9.260417"></rect> </g> </g> </svg></span><span class="title">Links</span></div><ul><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65"></path> <path style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5117" width="1.0583334" height="0.24694447" x="1.5875001" y="1.3772104"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5737" width="1.0583334" height="0.24694447" x="1.5875001" y="1.8710994"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5739" width="1.0583334" height="0.24694447" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">Javascript Resources</span></div></li></ul></li><li><div class="node"><span class="twisty"><svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="3" r="1" fill="currentColor"></circle></svg></span><span class="icon"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--> <!-- Created with Inkscape (http://www.inkscape.org/) --> <svg width="16" height="16" viewBox="0 0 4.2333334 4.2333334" version="1.1" id="svg5" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> <defs id="defs2"></defs> <path style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z" id="path65"></path> <path style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z" id="path4404"></path> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5117" width="1.0583334" height="0.24694447" x="1.5875001" y="1.3772104"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5737" width="1.0583334" height="0.24694447" x="1.5875001" y="1.8710994"></rect> <rect style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers" id="rect5739" width="1.0583334" height="0.24694447" x="1.5875001" y="2.3649883"></rect> </svg></span><span class="title">Rust Onboarding</span></div></li></ul></li></ul></li></ul></aside>
 <section class="editor">
-    <div id="statusBar" class="status" ondblclick="toggleMobileMenu();" title="Double click to toggle Mobile Mode">
+    <div id="statusBar" class="status" onclick="closeDialogs();" ondblclick="toggleMobileMenu();" title="Double click to toggle Mobile Mode">
         <span class="pill" id="mode" style="display: block;">TREE</span>
         <span class="pill" id="kind">FOLDER</span>
         <span class="dim" id="path">/</span>
@@ -626,6 +626,8 @@
         let visual_end = 0;
         let vim_clipboard = '';
 
+        let undoValue = "";
+
         let searchActive = false;
         let searchMatches = [];
         let searchIndex = 0;
@@ -653,8 +655,6 @@
         const helpReadOnly = [
             { key: "j", mode: "TREE", description: "Select next tree node" },
             { key: "k", mode: "TREE", description: "Select the previous tree node" },
-            { key: ",", mode: "TREE", description: "Select the next sibling level tree node" },
-            { key: ".", mode: "TREE", description: "Select the previous sibling level tree node" },
             { key: "l", mode: "TREE", description: "Expand the current tree node" },
             { key: "h", mode: "TREE", description: "Collapse the current tree node" },
             { key: "u", mode: "TREE", description: "Go up a tree node level" },
@@ -672,14 +672,15 @@
             { key: "m", mode: "TREE", description: "Bookmark current node" },
             { key: "`", mode: "TREE", description: "Show bookmarks" },
         ];
+
+//            { key: ",", mode: "TREE", description: "Select the next sibling level tree node" },
+//            { key: ".", mode: "TREE", description: "Select the previous sibling level tree node" },
         
         const helpVimEnabled = [
             { key: "r", mode: "TREE", description: "Add root level node" },
             { key: "R", mode: "TREE", description: "Rename current Folder" },
             { key: "j", mode: "TREE", description: "Select the next tree node" },
             { key: "k", mode: "TREE", description: "Select the previous tree node" },
-            { key: ",", mode: "TREE", description: "Select the next sibling level tree node" },
-            { key: ".", mode: "TREE", description: "Select the previous sibling level tree node" },
             { key: "l", mode: "TREE", description: "Expand the current tree node" },
             { key: "h", mode: "TREE", description: "Collapse the current tree node" },
             { key: "u", mode: "TREE", description: "Go up a tree node level" },
@@ -730,6 +731,8 @@
             { key: "V", mode: "NORMAL", description: "Enter line select mode" },
             { key: "v", mode: "NORMAL", description: "Enter standard select mode" },
             { key: "x", mode: "NORMAL", description: "Delete the character under the cursor" },
+            { key: "r", mode: "NORMAL", description: "Updates the undo cache with the current note text" },
+            { key: "u", mode: "NORMAL", description: "Restores the note text to the undo cache value" },
 
             { key: "y", mode: "VISUAL", description: "Virtual copy the selected text" },
             { key: "x", mode: "VISUAL", description: "Virtual cut the selected text" },
@@ -747,8 +750,6 @@
             { key: "R", mode: "TREE", description: "Rename current Folder" },
             { key: "j", mode: "TREE", description: "Select the next tree node" },
             { key: "k", mode: "TREE", description: "Select the previous tree node" },
-            { key: ",", mode: "TREE", description: "Select the next sibling level tree node" },
-            { key: ".", mode: "TREE", description: "Select the previous sibling level tree node" },
             { key: "l", mode: "TREE", description: "Expand the current tree node" },
             { key: "h", mode: "TREE", description: "Collapse the current tree node" },
             { key: "u", mode: "TREE", description: "go up a tree node level" },
@@ -960,6 +961,7 @@
                 if (!editing) {
                     if (currentEditorNodeId !== selInfo.node.id) {
                         editorArea.value = safeRestoreText(selInfo.node.content) || '';
+                        addUndo();
                         currentEditorNodeId = selInfo.node.id;
                     }
                     editorArea.setAttribute('readonly', 'readonly');
@@ -1007,12 +1009,7 @@
             render();
 
             // Close dialogs - this is for mobile envs
-            closeOptionsDialog();
-            closeLinksDialog();
-            closeHistoryDialog();
-            closeMarksDialog();
-            closeReplaceDialog();
-            closeSearch();
+            closeDialogs();
 
             editorArea.focus();
             // editorArea.setSelectionRange(0, 0); 
@@ -1022,10 +1019,15 @@
         function syncFile() {
             const info = findNodeAndParentById(selectedId);
             if (!info) return;
+
             info.node.content = safeStoreText(editorArea.value);
             updateTitleFromContent(info.node);
             // File vs folder might have changed; keep UI responsive
             render();
+        }
+
+        function addUndo() {
+            undoValue = editorArea.value;
         }
 
         function safeStoreText(text) {
@@ -1260,6 +1262,19 @@
                     let moveEnd = editorArea.selectionEnd = (after$ === -1 ? editorArea.value.length : after$);
                     moveChar(moveEnd, false);
                     performed = true;
+                    break;
+
+                case "u":
+                    if (!mode_insert) {
+                        doUndo();
+                        performed = true;
+                    }
+                    break;
+                case "r":
+                    if (!mode_insert) {
+                        addUndo();
+                        performed = true;
+                    }
                     break;
 
                 case "v": // Enter visual mode
@@ -1547,7 +1562,9 @@
 
 
         //---- Commands --------------------------------------------------------
-        function ensureSelection(){ if (!selectedId && treeData[0]) selectedId = treeData[0].id; }
+        function ensureSelection(){
+            if (!selectedId && treeData[0]) selectedId = treeData[0].id;
+        }
 
         function keyPerformed() {
             mode_repeat = 1;
@@ -1568,6 +1585,9 @@
                 modeEl.textContent = 'INSERT';
             } else {
                 mode_insert = false;
+                if (mode_visual) {
+                    exitVisualMode();
+                }
                 modeEl.textContent = 'NORMAL';
             }
         }
@@ -1646,7 +1666,7 @@
                 return;
             }
         
-            // Case 3: last sibling → climb ancestors until one has a next sibling
+            // Case 3: last sibling climb ancestors until one has a next sibling
             if (!curLevelOnly) {
                 let ancestorId = ctx.parent ? ctx.parent.id : null;
                 while (ancestorId) {
@@ -1840,47 +1860,69 @@
                     return value.slice(ls, le === -1 ? value.length : le);
                 })();
 
-            // Only process if text contains at least one '|'
             if (!/\|/.test(sel)) return;
 
-            const lines = sel.trim().split(/\r?\n/);
-            const table = lines.map(line =>
+            const rawLines = sel.trim().split(/\r?\n/);
+            const dividerPattern = /^\s*\|?\s*-+\s*(\|\s*-+\s*)*\|?\s*$/;
+
+            // Detect whether any divider line exists
+            const hasDivider = rawLines.some(line => dividerPattern.test(line));
+
+            // Build table rows ignoring dividers for now
+            const contentLines = rawLines.filter(line => !dividerPattern.test(line));
+            if (contentLines.length === 0) return;
+
+            // Parse cells
+            const table = contentLines.map(line =>
                 line.split("|")
-                    .map(c => c.trim())
+                    .map(c => c.trimEnd())
                     .filter((c, i, arr) => !(i === 0 && c === "") && !(i === arr.length - 1 && c === ""))
             );
 
-            // Determine max width of each column
+            // Compute max width for each column
             const widths = [];
             table.forEach(row => {
                 row.forEach((cell, i) => {
-                    widths[i] = Math.max(widths[i] || 0, cell.length);
+                    widths[i] = Math.max(widths[i] || 0, cell.trim().length);
                 });
             });
 
-            // Helper to make a separator row
+            // Create a properly sized divider row
             const makeSep = () =>
                 "|" + widths.map(w => " " + "-".repeat(w) + " ").join("|") + "|";
 
-            // Pad cells for alignment
+            // Format rows cleanly
             const padded = table.map(row =>
                 "|" + row.map((cell, i) => {
-                    const pad = widths[i] - cell.length;
-                    return " " + cell + " ".repeat(pad) + " ";
+                    const trimmed = cell.trim();
+                    const pad = widths[i] - trimmed.length;
+                    return " " + trimmed + " ".repeat(pad) + " ";
                 }).join("|") + "|"
             );
 
-            // Add separator row after header if not already present
-            if (padded.length > 1 && !/^ *\| *-/.test(lines[1])) {
-                padded.splice(1, 0, makeSep());
+            // Rebuild the output respecting divider placement
+            const finalRows = [];
+            let nextRow = 0;
+
+            for (let i = 0; i < rawLines.length; i++) {
+                const line = rawLines[i];
+
+                if (dividerPattern.test(line)) {
+                    // Proper divider → regenerate it at correct width
+                    finalRows.push(makeSep());
+                } else if (nextRow < padded.length) {
+                    // Proper content → add it in order
+                    finalRows.push(padded[nextRow++]);
+                }
             }
 
-            // Add separator row at the end as well
-            padded.push(makeSep());
+            // If there were no dividers at all, just use the padded content
+            if (!hasDivider) {
+                finalRows.length = 0;
+                finalRows.push(...padded);
+            }
 
-            // Replace selection
-            const formatted = padded.join("\n");
-            ta.setRangeText(formatted, start, end, "select");
+            ta.setRangeText(finalRows.join("\n"), start, end, "select");
         }
         function setMark(e) {
             e.preventDefault();
@@ -1940,7 +1982,7 @@
 
             const content = safeRestoreText(info.node.content);
             const urlRegex = /\b(http|file)s?:\/\/[^\s]+/gi;
-            const nodeLinkRegex = /(?:^|\s)_(.+?)_(?=\s|[.,!?;:)]|$)/g;
+            const nodeLinkRegex = /(?:^|\s|\()_(.+?)_(?=\s|[.,!?;:)]|$)/g;
 
             const urlMatches = content.match(urlRegex) || [];
 
@@ -2007,12 +2049,13 @@
                         link.title = 'Node not found';
                     }
 
-                    linksIndex = 0;
-                    links[linksIndex].classList.add('selected');
-
                     listEl.appendChild(link);
                     listEl.appendChild(document.createElement('br'));
                 });
+
+                const links = listEl.querySelectorAll('a');
+                linksIndex = 0;
+                links[linksIndex].classList.add('selected');
             }
 
             linksDialog.style.display = 'block';
@@ -2063,6 +2106,15 @@
         function closeMarksDialog() {
             marksDialog.style.display = "none";
             showingMarks = false;
+        }
+
+        function closeDialogs() {
+            closeSearch();
+            closeHelpDialog();
+            closeOptionsDialog();
+            closeLinksDialog();
+            closeHistoryDialog();
+            closeMarksDialog();
         }
 
 
@@ -2202,6 +2254,14 @@
                     }
                 }
             }
+        }
+
+
+
+        //---- Undo / Redo -----------------------------------------------------
+        function doUndo() {
+            editorArea.value = undoValue;
+            syncFile();
         }
 
 
@@ -2638,18 +2698,20 @@
                         editorArea.focus();
                         editorArea.setSelectionRange(0, 0); 
                         scrollToCursor();
+                        addUndo();
                         if (mode_vim) {
                             setVimMode(false);
                             return;
-                         } else {
+                        } else {
                             setVimMode(true);
                             return;
-                         }
+                        }
                     }
                     break;
                 case 'I':
                     if (!readOnly) {
                         e.preventDefault();
+                        addUndo();
                         const info = findNodeAndParentById(selectedId); if (!info) return;
                         editing = true; render();
                         editorArea.focus();
@@ -2671,7 +2733,7 @@
                 case 'f': if (!editing) openReplaceDialog(); break;
                 case 'r': if (!readOnly) addRoot(); break;
                 case 'R': if (!readOnly) renameFolder(); break;
-                case 'j': if (!dialogOpen()) selectNextSibling(false); break;
+                case 'j': if (!dialogOpen()) selectNextSibling(true); break;
                 case 'k': if (!dialogOpen()) selectPrevSibling(false); break;
                 case ',': selectNextSibling(true); break;
                 case '.': selectPrevSibling(true); break;
@@ -3031,8 +3093,6 @@
 
                     // Replace current in-memory treeData
                     treeData = importedTreeData;
-
-                    alert("treeData imported successfully!");
 
                     selectedId = treeData[0]?.id || null;
 
