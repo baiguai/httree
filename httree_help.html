@@ -620,7 +620,7 @@
 
         let copiedNoteId = null;
 
-        let fileName = "help";
+        let fileName = "httree_help";
         let showInitHelp = false;
         let selectedId = null;
         let editing = false;
@@ -2100,6 +2100,7 @@
 
             saveAsDialog.style.display = 'block';
             titleInput.focus();
+            titleInput.select();
 
             function closeDialog() {
                 saveAsDialog.style.display = 'none';
@@ -2111,6 +2112,7 @@
                     e.preventDefault();
                     const newTitle = titleInput.value.trim() || 'Untitled';
                     const newFile = fileInput.value.trim() || 'untitled';
+                    fileName = newFile;
                     document.title = newTitle;
                     closeDialog();
                     saveAsHtml(newFile);
