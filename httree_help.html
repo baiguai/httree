@@ -514,24 +514,24 @@
 
 <div class="search-dialog" id="searchDialog" style="display: none;">
     <input id="searchInput" placeholder="Search..." type="text">
-    <div class="search-results" id="searchList"><div class="selected">Deleting Nodes</div></div>
+    <div class="search-results" id="searchList"><div class="selected">Other Options</div></div>
 </div>
 
-<div class="search-dialog" id="helpDialogUnified" style="display: none;">
+<div class="search-dialog" id="helpDialogUnified" style="display:none;">
   <input id="helpFilter" type="text" placeholder="Filter help (Start with : to search keys only)...">
-  <div id="helpResults" class="search-results"><div><b>r</b> <span class="dim">(TREE) - </span>Add root level node</div><div><b>R</b> <span class="dim">(TREE) - </span>Rename current Folder</div><div><b>j</b> <span class="dim">(TREE) - </span>Select the next tree node</div><div><b>k</b> <span class="dim">(TREE) - </span>Select the previous tree node</div><div><b>l</b> <span class="dim">(TREE) - </span>Expand the current tree node</div><div><b>h</b> <span class="dim">(TREE) - </span>Collapse the current tree node</div><div><b>u</b> <span class="dim">(TREE) - </span>Go up a tree node level</div><div><b>C</b> <span class="dim">(TREE) - </span>Collapse all the tree nodes</div><div><b>E</b> <span class="dim">(TREE) - </span>Expand all the tree nodes</div><div><b>A</b> <span class="dim">(TREE) - </span>Add child tree node</div><div><b>a</b> <span class="dim">(TREE) - </span>Add next sibling tree node</div><div><b>]</b> <span class="dim">(TREE) - </span>Expand the treeview panel</div><div><b>[</b> <span class="dim">(TREE) - </span>Shrink the treeview panel</div><div><b>gg</b> <span class="dim">(TREE) - </span>Select first root tree node</div><div><b>G</b> <span class="dim">(TREE) - </span>Select last root tree node</div><div><b>y</b> <span class="dim">(TREE) - </span>Copy note node</div><div><b>p</b> <span class="dim">(TREE) - </span>Paste copied note node</div><div><b>H</b> <span class="dim">(TREE) - </span>Move current node to the parent node</div><div><b>L</b> <span class="dim">(TREE) - </span>Make current node a child node</div><div><b>J</b> <span class="dim">(TREE) - </span>Move current node down</div><div><b>K</b> <span class="dim">(TREE) - </span>Move current node up</div><div><b>D</b> <span class="dim">(TREE) - </span>Delete the current node</div><div><b>i</b> <span class="dim">(TREE) - </span>Edit current note - NORMAL mode</div><div><b>I</b> <span class="dim">(TREE) - </span>Edit current note - INSERT mode</div><div><b>/</b> <span class="dim">(TREE) - </span>Search (begin with : to search labels)</div><div><b>f</b> <span class="dim">(TREE) - </span>Find/Replace text in the current note </div><div><b>#</b> <span class="dim">(TREE) - </span>Show note links dialog</div><div><b>&lt;</b> <span class="dim">(TREE) - </span>Show the history dialog</div><div><b>X</b> <span class="dim">(TREE) - </span>Show broken note links</div><div><b>s</b> <span class="dim">(TREE) - </span>Save the current file</div><div><b>S</b> <span class="dim">(TREE) - </span>Save as</div><div><b>T</b> <span class="dim">(TREE) - </span>Export current note as .txt</div><div><b>U</b> <span class="dim">(TREE) - </span>Upgrade (import existing data)</div><div><b>m</b> <span class="dim">(TREE) - </span>Bookmark current node</div><div><b>`</b> <span class="dim">(TREE) - </span>Show bookmarks</div><div><b>!</b> <span class="dim">(TREE) - </span>Display options dialog</div><div><b>a</b> <span class="dim">(NORMAL) - </span>Enter insert mode, where you can write text normally</div><div><b>h</b> <span class="dim">(NORMAL) - </span>Move left</div><div><b>l</b> <span class="dim">(NORMAL) - </span>Move right</div><div><b>j</b> <span class="dim">(NORMAL) - </span>Move down</div><div><b>k</b> <span class="dim">(NORMAL) - </span>Move up</div><div><b>0</b> <span class="dim">(NORMAL) - </span>Jump to the beginning of the line</div><div><b>$</b> <span class="dim">(NORMAL) - </span>Jump to the end of the line</div><div><b>w</b> <span class="dim">(NORMAL) - </span>Move forward one word</div><div><b>W</b> <span class="dim">(NORMAL) - </span>Move back a word</div><div><b>D</b> <span class="dim">(NORMAL) - </span>Delete everything right of the cursor</div><div><b>dd</b> <span class="dim">(NORMAL) - </span>Delete current row</div><div><b>gg</b> <span class="dim">(NORMAL) - </span>Go to the start of the note</div><div><b>#gg</b> <span class="dim">(NORMAL) - </span>Go to the specified line (where # is a number)</div><div><b>G</b> <span class="dim">(NORMAL) - </span>Go to the end of the note</div><div><b>V</b> <span class="dim">(NORMAL) - </span>Enter line select mode</div><div><b>v</b> <span class="dim">(NORMAL) - </span>Enter standard select mode</div><div><b>x</b> <span class="dim">(NORMAL) - </span>Delete the character under the cursor</div><div><b>r</b> <span class="dim">(NORMAL) - </span>Updates the undo cache with the current note text</div><div><b>u</b> <span class="dim">(NORMAL) - </span>Restores the note text to the undo cache value</div><div><b>y</b> <span class="dim">(VISUAL) - </span>Virtual copy the selected text</div><div><b>x</b> <span class="dim">(VISUAL) - </span>Virtual cut the selected text</div><div><b>d</b> <span class="dim">(VISUAL) - </span>Delete selected text</div><div><b>Control+-</b> <span class="dim">(INSERT/NORMAL) - </span>Insert horizontal line</div><div><b>Control+\</b> <span class="dim">(INSERT/NORMAL) - </span>Wrap selected text</div><div><b>Control+;</b> <span class="dim">(INSERT/NORMAL) - </span>Converts the selected text to a table</div><div><b>&lt;number&gt;</b> <span class="dim">(NORMAL) - </span>If you enter a number first, some commands will repeat that many times.</div></div>
+  <div id="helpResults" class="search-results"></div>
   <p><a href="https://hcjsuite.infinityfreeapp.com/httree_help.html" target="_blank">Full Help System</a></p>
   <p style="margin-top:6px;">Press ESC to close.</p>
 </div>
 
 <div id="linksDialog" ondblclick="closeLinksDialog();" style="display: none;">
     <h3>Links in Note</h3>
-    <div id="linksList"><a href="#" data-node-id="si1l1krb" class="selected">Vim Keys Notes</a><br><a href="#" data-node-id="eg9zuwag">Saving</a><br><a href="#" data-node-id="gl90gp34">Introduction to Mobile Mode</a><br></div>
+    <div id="linksList"><a href="#" data-node-id="kqr4o4g3" class="selected">The Options Dialog</a></div>
 </div>
 
 <div id="marksDialog" style="display: none;">
     <h3>Bookmarks</h3>
-    <div id="marksList"><br><table><tbody><tr style="background:#444;"><td>Vim Keys Notes</td><td>/Keys</td></tr></tbody></table></div>
+    <div id="marksList"></div>
     <p>
         <br>
         Press Esc to close
@@ -557,7 +557,18 @@
 
 <div id="historyDialog" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%); width: 600px; max-height: 70%; background: rgb(34, 34, 34); color: rgb(255, 255, 255); border: 2px solid rgb(68, 68, 68); border-radius: 2px; padding: 20px; z-index: 9999; font-family: monospace; overflow-y: auto; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
     <h3>History</h3>
-    <div id="historyList"><div class="selected" style="background: rgb(68, 68, 68);">Introduction</div></div>
+    <div id="historyList"></div>
+</div>
+
+<div id="saveAsDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgb(0, 0, 0); color: rgb(255, 255, 255); border: 2px solid rgb(68, 68, 68); border-radius: 6px; padding: 20px; width: 320px; z-index: 9999; font-family: monospace; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
+    <h3>Save As</h3>
+    <label>Title<br>
+        <input id="saveAsTitle" type="text" style="width:100%; background:#111; color:#fff; border:1px solid #555; margin-bottom:10px;">
+    </label>
+    <label>File Name<br>
+        <input id="saveAsFileName" type="text" style="width:100%; background:#111; color:#fff; border:1px solid #555; margin-bottom:10px;">
+    </label>
+    <p style="color:#888; font-size:0.9em;">Press Enter to save, Esc to cancel.</p>
 </div>
 
 
@@ -609,7 +620,7 @@
 
         let copiedNoteId = null;
 
-        let fileName = "httree_help";
+        let fileName = "help";
         let showInitHelp = false;
         let selectedId = null;
         let editing = false;
@@ -640,6 +651,7 @@
         const helpDialogVimEdit = document.getElementById('helpDialogVimEdit');
         const helpDialogVimDisabled = document.getElementById('helpDialogVimDisabled');
         const optionsDialog = document.getElementById('optionsDialog');
+        const saveAsDialog = document.getElementById('saveAsDialog');
         const searchDialog = document.getElementById('searchDialog');
         const replaceDialog = document.getElementById('replaceDialog');
         const linksDialog = document.getElementById('linksDialog');
@@ -2078,6 +2090,38 @@
             renderHistoryList();
             document.getElementById('historyDialog').style.display = 'block';
         }
+
+        function openSaveAsDialog(defaultTitle = document.title, defaultFile = fileName) {
+            const titleInput = document.getElementById('saveAsTitle');
+            const fileInput = document.getElementById('saveAsFileName');
+
+            titleInput.value = defaultTitle || '';
+            fileInput.value = defaultFile || '';
+
+            saveAsDialog.style.display = 'block';
+            titleInput.focus();
+
+            function closeDialog() {
+                saveAsDialog.style.display = 'none';
+                document.removeEventListener('keydown', keyHandler);
+            }
+
+            function keyHandler(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const newTitle = titleInput.value.trim() || 'Untitled';
+                    const newFile = fileInput.value.trim() || 'untitled';
+                    document.title = newTitle;
+                    closeDialog();
+                    saveAsHtml(newFile);
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeDialog();
+                }
+            }
+
+            document.addEventListener('keydown', keyHandler);
+        }
         
         function closeHistoryDialog() {
             showingHistory = false;
@@ -2758,7 +2802,7 @@
                 case 'K': reorderAmongSiblings('up'); break;
                 case 'D': deleteNode(); break;
                 case 's': saveAsHtml(fileName); break;
-                case 'S': saveAsHtml(""); break;
+                case 'S': openSaveAsDialog(); break;
                 case 'T': exportNoteAsTxt(); break;
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
@@ -3066,6 +3110,9 @@
             openDialog = true;
         }
         if (historyDialog.style.display === "block") {
+            openDialog = true;
+        }
+        if (saveAsDialog.style.display === "block") {
             openDialog = true;
         }
 

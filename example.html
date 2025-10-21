@@ -14,6 +14,10 @@
         height: var(--app-height);
     }
 
+    a {
+        color: #c6ceff;
+    }
+
     @media (max-width: 768px) {
         .app {
             grid-template-columns: 1fr;
@@ -516,6 +520,7 @@
 <div class="search-dialog" id="helpDialogUnified" style="display:none;">
   <input id="helpFilter" type="text" placeholder="Filter help (Start with : to search keys only)...">
   <div id="helpResults" class="search-results"></div>
+  <p><a href="https://hcjsuite.infinityfreeapp.com/httree_help.html" target="_blank">Full Help System</a></p>
   <p style="margin-top:6px;">Press ESC to close.</p>
 </div>
 
@@ -553,6 +558,17 @@
 <div id="historyDialog" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%); width: 600px; max-height: 70%; background: rgb(34, 34, 34); color: rgb(255, 255, 255); border: 2px solid rgb(68, 68, 68); border-radius: 2px; padding: 20px; z-index: 9999; font-family: monospace; overflow-y: auto; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
     <h3>History</h3>
     <div id="historyList"></div>
+</div>
+
+<div id="saveAsDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgb(0, 0, 0); color: rgb(255, 255, 255); border: 2px solid rgb(68, 68, 68); border-radius: 6px; padding: 20px; width: 320px; z-index: 9999; font-family: monospace; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
+    <h3>Save As</h3>
+    <label>Title<br>
+        <input id="saveAsTitle" type="text" style="width:100%; background:#111; color:#fff; border:1px solid #555; margin-bottom:10px;">
+    </label>
+    <label>File Name<br>
+        <input id="saveAsFileName" type="text" style="width:100%; background:#111; color:#fff; border:1px solid #555; margin-bottom:10px;">
+    </label>
+    <p style="color:#888; font-size:0.9em;">Press Enter to save, Esc to cancel.</p>
 </div>
 
 
@@ -604,7 +620,7 @@
 
         let copiedNoteId = null;
 
-        let fileName = "example";
+        let fileName = "help";
         let showInitHelp = false;
         let selectedId = null;
         let editing = false;
@@ -635,6 +651,7 @@
         const helpDialogVimEdit = document.getElementById('helpDialogVimEdit');
         const helpDialogVimDisabled = document.getElementById('helpDialogVimDisabled');
         const optionsDialog = document.getElementById('optionsDialog');
+        const saveAsDialog = document.getElementById('saveAsDialog');
         const searchDialog = document.getElementById('searchDialog');
         const replaceDialog = document.getElementById('replaceDialog');
         const linksDialog = document.getElementById('linksDialog');
@@ -1129,6 +1146,7 @@
             if (e.key === 'Escape') {
                 e.preventDefault();
                 e.stopPropagation();
+                syncFile();
 
                 if (mode_insert && mode_vim) {
                     setVimMode(false);
@@ -2072,6 +2090,38 @@
             renderHistoryList();
             document.getElementById('historyDialog').style.display = 'block';
         }
+
+        function openSaveAsDialog(defaultTitle = document.title, defaultFile = fileName) {
+            const titleInput = document.getElementById('saveAsTitle');
+            const fileInput = document.getElementById('saveAsFileName');
+
+            titleInput.value = defaultTitle || '';
+            fileInput.value = defaultFile || '';
+
+            saveAsDialog.style.display = 'block';
+            titleInput.focus();
+
+            function closeDialog() {
+                saveAsDialog.style.display = 'none';
+                document.removeEventListener('keydown', keyHandler);
+            }
+
+            function keyHandler(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const newTitle = titleInput.value.trim() || 'Untitled';
+                    const newFile = fileInput.value.trim() || 'untitled';
+                    document.title = newTitle;
+                    closeDialog();
+                    saveAsHtml(newFile);
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeDialog();
+                }
+            }
+
+            document.addEventListener('keydown', keyHandler);
+        }
         
         function closeHistoryDialog() {
             showingHistory = false;
@@ -2752,7 +2802,7 @@
                 case 'K': reorderAmongSiblings('up'); break;
                 case 'D': deleteNode(); break;
                 case 's': saveAsHtml(fileName); break;
-                case 'S': saveAsHtml(""); break;
+                case 'S': openSaveAsDialog(); break;
                 case 'T': exportNoteAsTxt(); break;
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
@@ -3060,6 +3110,9 @@
             openDialog = true;
         }
         if (historyDialog.style.display === "block") {
+            openDialog = true;
+        }
+        if (saveAsDialog.style.display === "block") {
             openDialog = true;
         }
 
