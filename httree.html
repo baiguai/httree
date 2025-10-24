@@ -2031,7 +2031,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
             // --- Collect underscore note links not already captured ---
             while ((match = nodeLinkRegex.exec(content)) !== null) {
-                const title = match[1].trim();
+                const title = match[1].trim().replace(/^_+|_+$/g, "");
                 const wrapped = `_${title}_`;
                 if (!foundLinks.some(l => l.target === wrapped)) {
                     foundLinks.push({ label: title, target: wrapped });
@@ -2044,7 +2044,14 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             } else {
                 for (const { label, target, fromMarkdown } of foundLinks) {
                     const a = document.createElement('a');
-                    a.textContent = fromMarkdown ? label : target;
+                    let displayLabel = fromMarkdown ? label : target;
+                    
+                    // If it's a wrapped note link (e.g. _Some Note_), show only the inner text
+                    if (/^_.+_$/.test(displayLabel)) {
+                        displayLabel = displayLabel.slice(1, -1);
+                    }
+                    
+                    a.textContent = displayLabel;
 
                     if (/^(https?|file):\/\//i.test(target)) {
                         // External URL
