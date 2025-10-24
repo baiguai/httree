@@ -514,7 +514,7 @@
 
 <div class="search-dialog" id="searchDialog" style="display: none;">
     <input id="searchInput" placeholder="Search..." type="text">
-    <div class="search-results" id="searchList"><div class="selected">Linking to Other Nodes</div><div>Export Current Note</div><div>Using the Links Dialog</div></div>
+    <div class="search-results" id="searchList"><div class="selected">Other Options</div></div>
 </div>
 
 <div class="search-dialog" id="helpDialogUnified" style="display:none;">
@@ -526,7 +526,7 @@
 
 <div id="linksDialog" ondblclick="closeLinksDialog();" style="display: none;">
     <h3>Links in Note</h3>
-    <div id="linksList"><a href="https://intfiction.org/" target="_blank" class="">Int Fiction</a><br><a href="https://intfiction.org/" target="_blank" class="">Int Fiction</a><br><a href="#" data-node-id="7tvrov2y" class="selected">_Introduction_</a><br><a href="#" data-node-id="8tu8ax56" class="">_Using the Links Dialog_</a><br></div>
+    <div id="linksList"><a href="#" data-node-id="kqr4o4g3" class="selected">The Options Dialog</a></div>
 </div>
 
 <div id="marksDialog" style="display: none;">
@@ -557,7 +557,7 @@
 
 <div id="historyDialog" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%); width: 600px; max-height: 70%; background: rgb(34, 34, 34); color: rgb(255, 255, 255); border: 2px solid rgb(68, 68, 68); border-radius: 2px; padding: 20px; z-index: 9999; font-family: monospace; overflow-y: auto; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
     <h3>History</h3>
-    <div id="historyList"><div>Introduction</div><div class="selected" style="background: rgb(68, 68, 68);">Linking to Other Nodes</div></div>
+    <div id="historyList"></div>
 </div>
 
 <div id="saveAsDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgb(0, 0, 0); color: rgb(255, 255, 255); border: 2px solid rgb(68, 68, 68); border-radius: 6px; padding: 20px; width: 320px; z-index: 9999; font-family: monospace; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
@@ -2030,7 +2030,7 @@
 
             // --- Collect underscore note links not already captured ---
             while ((match = nodeLinkRegex.exec(content)) !== null) {
-                const title = match[1].trim();
+                const title = match[1].trim().replace(/^_+|_+$/g, "");
                 const wrapped = `_${title}_`;
                 if (!foundLinks.some(l => l.target === wrapped)) {
                     foundLinks.push({ label: title, target: wrapped });
@@ -2043,7 +2043,14 @@
             } else {
                 for (const { label, target, fromMarkdown } of foundLinks) {
                     const a = document.createElement('a');
-                    a.textContent = fromMarkdown ? label : target;
+                    let displayLabel = fromMarkdown ? label : target;
+                    
+                    // If it's a wrapped note link (e.g. _Some Note_), show only the inner text
+                    if (/^_.+_$/.test(displayLabel)) {
+                        displayLabel = displayLabel.slice(1, -1);
+                    }
+                    
+                    a.textContent = displayLabel;
 
                     if (/^(https?|file):\/\//i.test(target)) {
                         // External URL
