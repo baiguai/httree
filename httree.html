@@ -1880,26 +1880,30 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                     return value.slice(ls, le === -1 ? value.length : le);
                 })();
 
-            if (!/\|/.test(sel)) return;
+            if (!/\|/.test(sel)) return; // no table detected
 
             const rawLines = sel.trim().split(/\r?\n/);
-            const dividerPattern = /^\s*\|?\s*-+\s*(\|\s*-+\s*)*\|?\s*$/;
 
-            // Detect whether any divider line exists
+            // Matches:
+            //   | ---- | ---- |   (old markdown style)
+            //   +------+------+
+            //   ----             (plain)
+            const dividerPattern = /^\s*(?:[\|+]\s*-+\s*(?:[\|+]\s*-+\s*)*[\|+]|-+)\s*$/;
+
             const hasDivider = rawLines.some(line => dividerPattern.test(line));
 
-            // Build table rows ignoring dividers for now
+            // Filter out dividers for measuring widths
             const contentLines = rawLines.filter(line => !dividerPattern.test(line));
             if (contentLines.length === 0) return;
 
-            // Parse cells
+            // Parse rows into cells
             const table = contentLines.map(line =>
                 line.split("|")
                     .map(c => c.trimEnd())
                     .filter((c, i, arr) => !(i === 0 && c === "") && !(i === arr.length - 1 && c === ""))
             );
 
-            // Compute max width for each column
+            // Compute max width per column
             const widths = [];
             table.forEach(row => {
                 row.forEach((cell, i) => {
@@ -1907,11 +1911,10 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                 });
             });
 
-            // Create a properly sized divider row
-            const makeSep = () =>
-                "|" + widths.map(w => " " + "-".repeat(w) + " ").join("|") + "|";
+            // Build ASCII-style separator
+            const makeSep = () => "+" + widths.map(w => "-".repeat(w + 2)).join("+") + "+";
 
-            // Format rows cleanly
+            // Build padded table rows
             const padded = table.map(row =>
                 "|" + row.map((cell, i) => {
                     const trimmed = cell.trim();
@@ -1920,23 +1923,21 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                 }).join("|") + "|"
             );
 
-            // Rebuild the output respecting divider placement
+            // Rebuild all lines: regenerate every separator, reformat all content
             const finalRows = [];
-            let nextRow = 0;
+            let rowIndex = 0;
 
-            for (let i = 0; i < rawLines.length; i++) {
-                const line = rawLines[i];
-
+            for (const line of rawLines) {
                 if (dividerPattern.test(line)) {
-                    // Proper divider → regenerate it at correct width
+                    // Always rebuild separator lines
                     finalRows.push(makeSep());
-                } else if (nextRow < padded.length) {
-                    // Proper content → add it in order
-                    finalRows.push(padded[nextRow++]);
+                } else if (rowIndex < padded.length) {
+                    // Replace content rows with padded versions
+                    finalRows.push(padded[rowIndex++]);
                 }
             }
 
-            // If there were no dividers at all, just use the padded content
+            // If no dividers were present at all, just output the padded content
             if (!hasDivider) {
                 finalRows.length = 0;
                 finalRows.push(...padded);
