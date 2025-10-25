@@ -618,6 +618,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         let historyStack = [];
         let showingHistory = false;
         let historyIndex = 0;
+        const historyStackMax = 200;
 
         let copiedNoteId = null;
 
@@ -874,7 +875,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             historyStack.push({ id, title: node.title || "(untitled)" });
         
             // Cap size at 100
-            if (historyStack.length > 100) {
+            if (historyStack.length > historyStackMax) {
                 historyStack.shift();
             }
         }
@@ -2144,6 +2145,8 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                     fileName = newFile;
                     document.title = newTitle;
                     closeDialog();
+                    historyStack = [];
+                    bookmarks = [];
                     saveAsHtml(newFile);
                 } else if (e.key === 'Escape') {
                     e.preventDefault();
@@ -2674,6 +2677,10 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             htmlContent = htmlContent.replace(
                 /let\s+bookmarks\s*=\s*\[[\s\S]*?\];/,
                 "let bookmarks = " + JSON.stringify(bookmarks, null, 4) + ";"
+            );
+            htmlContent = htmlContent.replace(
+                /let\s+historyStack\s*=\s*\[[\s\S]*?\];/,
+                "let historyStack = " + JSON.stringify(historyStack, null, 4) + ";"
             );
 
             let blob = new Blob([htmlContent], { type: "text/html" });
