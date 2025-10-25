@@ -1,4 +1,4 @@
-<!DOCTYPE html><html style="--app-height: 987px;"><head>
+<!DOCTYPE html><html style="--app-height: 1058px;"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport">
 <title>Httree Example</title>
@@ -12,6 +12,10 @@
         "tree editor";
         width: 100%;
         height: var(--app-height);
+    }
+
+    a {
+        color: #c6ceff;
     }
 
     @media (max-width: 768px) {
@@ -516,6 +520,7 @@
 <div class="search-dialog" id="helpDialogUnified" style="display:none;">
   <input id="helpFilter" type="text" placeholder="Filter help (Start with : to search keys only)...">
   <div id="helpResults" class="search-results"></div>
+  <p><a href="https://hcjsuite.infinityfreeapp.com/httree_help.html" target="_blank">Full Help System</a></p>
   <p style="margin-top:6px;">Press ESC to close.</p>
 </div>
 
@@ -553,6 +558,17 @@
 <div id="historyDialog" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%); width: 600px; max-height: 70%; background: rgb(34, 34, 34); color: rgb(255, 255, 255); border: 2px solid rgb(68, 68, 68); border-radius: 2px; padding: 20px; z-index: 9999; font-family: monospace; overflow-y: auto; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
     <h3>History</h3>
     <div id="historyList"></div>
+</div>
+
+<div id="saveAsDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgb(0, 0, 0); color: rgb(255, 255, 255); border: 2px solid rgb(68, 68, 68); border-radius: 6px; padding: 20px; width: 320px; z-index: 9999; font-family: monospace; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
+    <h3>Save As</h3>
+    <label>Title<br>
+        <input id="saveAsTitle" type="text" style="width:100%; background:#111; color:#fff; border:1px solid #555; margin-bottom:10px;">
+    </label>
+    <label>File Name<br>
+        <input id="saveAsFileName" type="text" style="width:100%; background:#111; color:#fff; border:1px solid #555; margin-bottom:10px;">
+    </label>
+    <p style="color:#888; font-size:0.9em;">Press Enter to save, Esc to cancel.</p>
 </div>
 
 
@@ -601,6 +617,7 @@
         let historyStack = [];
         let showingHistory = false;
         let historyIndex = 0;
+        const historyStackMax = 200;
 
         let copiedNoteId = null;
 
@@ -635,6 +652,7 @@
         const helpDialogVimEdit = document.getElementById('helpDialogVimEdit');
         const helpDialogVimDisabled = document.getElementById('helpDialogVimDisabled');
         const optionsDialog = document.getElementById('optionsDialog');
+        const saveAsDialog = document.getElementById('saveAsDialog');
         const searchDialog = document.getElementById('searchDialog');
         const replaceDialog = document.getElementById('replaceDialog');
         const linksDialog = document.getElementById('linksDialog');
@@ -856,7 +874,7 @@
             historyStack.push({ id, title: node.title || "(untitled)" });
         
             // Cap size at 100
-            if (historyStack.length > 100) {
+            if (historyStack.length > historyStackMax) {
                 historyStack.shift();
             }
         }
@@ -1129,6 +1147,7 @@
             if (e.key === 'Escape') {
                 e.preventDefault();
                 e.stopPropagation();
+                syncFile();
 
                 if (mode_insert && mode_vim) {
                     setVimMode(false);
@@ -1845,85 +1864,86 @@
             syncFile();
             showMessage("Wrapped to 80 characters");
         }
-        function formatMarkdownTable() {
-            const ta = document.getElementById("editorArea");
-            const start = ta.selectionStart;
-            const end = ta.selectionEnd;
-            const value = ta.value;
+function formatMarkdownTable() {
+    const ta = document.getElementById("editorArea");
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const value = ta.value;
 
-            // Get selection or current line if none
-            const sel = start !== end
-                ? value.slice(start, end)
-                : (() => {
-                    const ls = value.lastIndexOf("\n", start - 1) + 1;
-                    const le = value.indexOf("\n", start);
-                    return value.slice(ls, le === -1 ? value.length : le);
-                })();
+    // Get selection or current line if none
+    const sel = start !== end
+        ? value.slice(start, end)
+        : (() => {
+            const ls = value.lastIndexOf("\n", start - 1) + 1;
+            const le = value.indexOf("\n", start);
+            return value.slice(ls, le === -1 ? value.length : le);
+        })();
 
-            if (!/\|/.test(sel)) return;
+    if (!/\|/.test(sel)) return; // no table detected
 
-            const rawLines = sel.trim().split(/\r?\n/);
-            const dividerPattern = /^\s*\|?\s*-+\s*(\|\s*-+\s*)*\|?\s*$/;
+    const rawLines = sel.trim().split(/\r?\n/);
 
-            // Detect whether any divider line exists
-            const hasDivider = rawLines.some(line => dividerPattern.test(line));
+    // Matches:
+    //   | ---- | ---- |   (old markdown style)
+    //   +------+------+
+    //   ----             (plain)
+    const dividerPattern = /^\s*(?:[\|+]\s*-+\s*(?:[\|+]\s*-+\s*)*[\|+]|-+)\s*$/;
 
-            // Build table rows ignoring dividers for now
-            const contentLines = rawLines.filter(line => !dividerPattern.test(line));
-            if (contentLines.length === 0) return;
+    const hasDivider = rawLines.some(line => dividerPattern.test(line));
 
-            // Parse cells
-            const table = contentLines.map(line =>
-                line.split("|")
-                    .map(c => c.trimEnd())
-                    .filter((c, i, arr) => !(i === 0 && c === "") && !(i === arr.length - 1 && c === ""))
-            );
+    // Filter out dividers for measuring widths
+    const contentLines = rawLines.filter(line => !dividerPattern.test(line));
+    if (contentLines.length === 0) return;
 
-            // Compute max width for each column
-            const widths = [];
-            table.forEach(row => {
-                row.forEach((cell, i) => {
-                    widths[i] = Math.max(widths[i] || 0, cell.trim().length);
-                });
-            });
+    // Parse rows into cells
+    const table = contentLines.map(line =>
+        line.split("|")
+            .map(c => c.trimEnd())
+            .filter((c, i, arr) => !(i === 0 && c === "") && !(i === arr.length - 1 && c === ""))
+    );
 
-            // Create a properly sized divider row
-            const makeSep = () =>
-                "|" + widths.map(w => " " + "-".repeat(w) + " ").join("|") + "|";
+    // Compute max width per column
+    const widths = [];
+    table.forEach(row => {
+        row.forEach((cell, i) => {
+            widths[i] = Math.max(widths[i] || 0, cell.trim().length);
+        });
+    });
 
-            // Format rows cleanly
-            const padded = table.map(row =>
-                "|" + row.map((cell, i) => {
-                    const trimmed = cell.trim();
-                    const pad = widths[i] - trimmed.length;
-                    return " " + trimmed + " ".repeat(pad) + " ";
-                }).join("|") + "|"
-            );
+    // Build ASCII-style separator
+    const makeSep = () => "+" + widths.map(w => "-".repeat(w + 2)).join("+") + "+";
 
-            // Rebuild the output respecting divider placement
-            const finalRows = [];
-            let nextRow = 0;
+    // Build padded table rows
+    const padded = table.map(row =>
+        "|" + row.map((cell, i) => {
+            const trimmed = cell.trim();
+            const pad = widths[i] - trimmed.length;
+            return " " + trimmed + " ".repeat(pad) + " ";
+        }).join("|") + "|"
+    );
 
-            for (let i = 0; i < rawLines.length; i++) {
-                const line = rawLines[i];
+    // Rebuild all lines: regenerate every separator, reformat all content
+    const finalRows = [];
+    let rowIndex = 0;
 
-                if (dividerPattern.test(line)) {
-                    // Proper divider → regenerate it at correct width
-                    finalRows.push(makeSep());
-                } else if (nextRow < padded.length) {
-                    // Proper content → add it in order
-                    finalRows.push(padded[nextRow++]);
-                }
-            }
-
-            // If there were no dividers at all, just use the padded content
-            if (!hasDivider) {
-                finalRows.length = 0;
-                finalRows.push(...padded);
-            }
-
-            ta.setRangeText(finalRows.join("\n"), start, end, "select");
+    for (const line of rawLines) {
+        if (dividerPattern.test(line)) {
+            // Always rebuild separator lines
+            finalRows.push(makeSep());
+        } else if (rowIndex < padded.length) {
+            // Replace content rows with padded versions
+            finalRows.push(padded[rowIndex++]);
         }
+    }
+
+    // If no dividers were present at all, just output the padded content
+    if (!hasDivider) {
+        finalRows.length = 0;
+        finalRows.push(...padded);
+    }
+
+    ta.setRangeText(finalRows.join("\n"), start, end, "select");
+}
         function setMark(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -1981,81 +2001,109 @@
             if (!info || !info.node.content) return;
 
             const content = safeRestoreText(info.node.content);
-            const urlRegex = /\b(http|file)s?:\/\/[^\s]+/gi;
-            const nodeLinkRegex = /(?:^|\s|\()_(.+?)_(?=\s|[.,!?;:)]|$)/g;
-
-            const urlMatches = content.match(urlRegex) || [];
-
-            // Collect node links
-            let nodeMatches = [];
-            let match;
-            while ((match = nodeLinkRegex.exec(content)) !== null) {
-                nodeMatches.push(match[1]);
-            }
-
             const listEl = document.getElementById('linksList');
             listEl.innerHTML = '';
 
-            if (urlMatches.length === 0 && nodeMatches.length === 0) {
+            // Markdown-style links:
+            // [Label] followed directly or by whitespace/newline with (https://...) or (_Note_)
+            const markdownLinkRegex = /\[([^\]]+)\](?:[ \t]*\r?\n[ \t]*|[ \t]*)(https?:\/\/\S+|file:\/\/\S+|_[^_]+_)/gi;
+
+            // Generic standalone links
+            const urlRegex = /\b(?:https?|file):\/\/[^\s]+/gi;
+            const nodeLinkRegex = /(?:^|\s|\()_(.+?)_(?=\s|[.,!?;:)]|$)/g;
+
+            const foundLinks = [];
+            let match;
+
+            // --- Collect properly formed markdown-style links ---
+            while ((match = markdownLinkRegex.exec(content)) !== null) {
+                const label = match[1].trim();
+                const target = match[2].trim();
+                foundLinks.push({ label, target, fromMarkdown: true });
+            }
+
+            // --- Collect plain URLs not already captured ---
+            const urlMatches = content.match(urlRegex) || [];
+            for (const url of urlMatches) {
+                if (!foundLinks.some(l => l.target === url)) {
+                    foundLinks.push({ label: url, target: url });
+                }
+            }
+
+            // --- Collect underscore note links not already captured ---
+            while ((match = nodeLinkRegex.exec(content)) !== null) {
+                const title = match[1].trim().replace(/^_+|_+$/g, "");
+                const wrapped = `_${title}_`;
+                if (!foundLinks.some(l => l.target === wrapped)) {
+                    foundLinks.push({ label: title, target: wrapped });
+                }
+            }
+
+            // --- Render the collected links ---
+            if (foundLinks.length === 0) {
                 listEl.innerHTML = '<p>No links found.</p>';
             } else {
-                // Render URL links
-                urlMatches.forEach(url => {
+                for (const { label, target, fromMarkdown } of foundLinks) {
                     const a = document.createElement('a');
-                    a.href = url;
-                    a.target = '_blank';
-                    a.textContent = url;
-                    listEl.appendChild(a);
-                    listEl.appendChild(document.createElement('br'));
-                });
-
-                // Render Node links
-                nodeMatches.forEach(title => {
-                    const lowerTitle = title.toLowerCase();
-                    let foundNode = null;
-
-                    // Search only node titles (like `:query`)
-                    (function walk(nodes) {
-                        for (const n of nodes) {
-                            if (n.title && n.title.toLowerCase() === lowerTitle) {
-                                foundNode = n;
-                                return;
-                            }
-                            if (n.children && n.children.length) walk(n.children);
-                            if (foundNode) return; // early exit if found
-                        }
-                    })(treeData);
-
-                    const link = document.createElement('a');
-                    link.href = '#';
-                    link.textContent = title;
-
-                    if (foundNode) {
-                        link.dataset.nodeId = foundNode.id;
+                    let displayLabel = fromMarkdown ? label : target;
+                    
+                    // If it's a wrapped note link (e.g. _Some Note_), show only the inner text
+                    if (/^_.+_$/.test(displayLabel)) {
+                        displayLabel = displayLabel.slice(1, -1);
                     }
                     
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault(); // stop jumping to top
-                        if (link.dataset.nodeId) {
-                            expandToNode(link.dataset.nodeId);
-                            selectedId = link.dataset.nodeId;
-                            closeLinksDialog();
-                            render();
-                        }
-                    });
+                    a.textContent = displayLabel;
 
-                    if (!foundNode) {
-                        link.style.color = '#888';
-                        link.title = 'Node not found';
+                    if (/^(https?|file):\/\//i.test(target)) {
+                        // External URL
+                        a.href = target;
+                        a.target = '_blank';
+                    } else if (target.startsWith('_') && target.endsWith('_')) {
+                        // Note link
+                        const title = target.slice(1, -1).toLowerCase();
+                        let foundNode = null;
+
+                        (function walk(nodes) {
+                            for (const n of nodes) {
+                                if (n.title && n.title.toLowerCase() === title) {
+                                    foundNode = n;
+                                    return;
+                                }
+                                if (n.children && n.children.length) walk(n.children);
+                                if (foundNode) return;
+                            }
+                        })(treeData);
+
+                        a.href = '#';
+                        if (foundNode) {
+                            a.dataset.nodeId = foundNode.id;
+                            a.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                expandToNode(foundNode.id);
+                                selectedId = foundNode.id;
+                                closeLinksDialog();
+                                render();
+                            });
+                        } else {
+                            a.style.color = '#888';
+                            a.title = 'Node not found';
+                        }
+                    } else {
+                        // Fallback
+                        a.href = '#';
+                        a.style.color = '#888';
+                        a.title = 'Unrecognized link format';
                     }
 
-                    listEl.appendChild(link);
+                    listEl.appendChild(a);
                     listEl.appendChild(document.createElement('br'));
-                });
+                }
 
                 const links = listEl.querySelectorAll('a');
                 linksIndex = 0;
-                links[linksIndex].classList.add('selected');
+                if (links.length > 0) {
+                    links[linksIndex].classList.add('selected');
+                }
             }
 
             linksDialog.style.display = 'block';
@@ -2071,6 +2119,42 @@
             historyIndex = 0;
             renderHistoryList();
             document.getElementById('historyDialog').style.display = 'block';
+        }
+
+        function openSaveAsDialog(defaultTitle = document.title, defaultFile = fileName) {
+            const titleInput = document.getElementById('saveAsTitle');
+            const fileInput = document.getElementById('saveAsFileName');
+
+            titleInput.value = defaultTitle || '';
+            fileInput.value = defaultFile || '';
+
+            saveAsDialog.style.display = 'block';
+            titleInput.focus();
+            titleInput.select();
+
+            function closeDialog() {
+                saveAsDialog.style.display = 'none';
+                document.removeEventListener('keydown', keyHandler);
+            }
+
+            function keyHandler(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const newTitle = titleInput.value.trim() || 'Untitled';
+                    const newFile = fileInput.value.trim() || 'untitled';
+                    fileName = newFile;
+                    document.title = newTitle;
+                    closeDialog();
+                    historyStack = [];
+                    bookmarks = [];
+                    saveAsHtml(newFile);
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeDialog();
+                }
+            }
+
+            document.addEventListener('keydown', keyHandler);
         }
         
         function closeHistoryDialog() {
@@ -2594,6 +2678,10 @@
                 /let\s+bookmarks\s*=\s*\[[\s\S]*?\];/,
                 "let bookmarks = " + JSON.stringify(bookmarks, null, 4) + ";"
             );
+            htmlContent = htmlContent.replace(
+                /let\s+historyStack\s*=\s*\[[\s\S]*?\];/,
+                "let historyStack = " + JSON.stringify(historyStack, null, 4) + ";"
+            );
 
             let blob = new Blob([htmlContent], { type: "text/html" });
             let a = document.createElement("a");
@@ -2752,7 +2840,7 @@
                 case 'K': reorderAmongSiblings('up'); break;
                 case 'D': deleteNode(); break;
                 case 's': saveAsHtml(fileName); break;
-                case 'S': saveAsHtml(""); break;
+                case 'S': openSaveAsDialog(); break;
                 case 'T': exportNoteAsTxt(); break;
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
@@ -3060,6 +3148,9 @@
             openDialog = true;
         }
         if (historyDialog.style.display === "block") {
+            openDialog = true;
+        }
+        if (saveAsDialog.style.display === "block") {
             openDialog = true;
         }
 
