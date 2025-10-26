@@ -2485,7 +2485,10 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             searchMatches.forEach((n, i) => {
                 const item = document.createElement('div');
                 item.textContent = n.title || '(untitled)';
-                if (i === searchIndex) item.classList.add('selected');
+                if (i === searchIndex) {
+                    item.classList.add('selected');
+                    requestAnimationFrame(() => item.scrollIntoView({ block: "nearest", behavior: "smooth" }));
+                }
                 item.addEventListener('click', () => {
                     if (searchMatches.length > 0) {
                         selectSearchResult(i);

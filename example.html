@@ -1,4 +1,4 @@
-<!DOCTYPE html><html style="--app-height: 1058px;"><head>
+<!DOCTYPE html><html style="--app-height: 1052px;"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport">
 <title>Httree Example</title>
@@ -1864,86 +1864,86 @@
             syncFile();
             showMessage("Wrapped to 80 characters");
         }
-function formatMarkdownTable() {
-    const ta = document.getElementById("editorArea");
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    const value = ta.value;
+        function formatMarkdownTable() {
+            const ta = document.getElementById("editorArea");
+            const start = ta.selectionStart;
+            const end = ta.selectionEnd;
+            const value = ta.value;
 
-    // Get selection or current line if none
-    const sel = start !== end
-        ? value.slice(start, end)
-        : (() => {
-            const ls = value.lastIndexOf("\n", start - 1) + 1;
-            const le = value.indexOf("\n", start);
-            return value.slice(ls, le === -1 ? value.length : le);
-        })();
+            // Get selection or current line if none
+            const sel = start !== end
+                ? value.slice(start, end)
+                : (() => {
+                    const ls = value.lastIndexOf("\n", start - 1) + 1;
+                    const le = value.indexOf("\n", start);
+                    return value.slice(ls, le === -1 ? value.length : le);
+                })();
 
-    if (!/\|/.test(sel)) return; // no table detected
+            if (!/\|/.test(sel)) return; // no table detected
 
-    const rawLines = sel.trim().split(/\r?\n/);
+            const rawLines = sel.trim().split(/\r?\n/);
 
-    // Matches:
-    //   | ---- | ---- |   (old markdown style)
-    //   +------+------+
-    //   ----             (plain)
-    const dividerPattern = /^\s*(?:[\|+]\s*-+\s*(?:[\|+]\s*-+\s*)*[\|+]|-+)\s*$/;
+            // Matches:
+            //   | ---- | ---- |   (old markdown style)
+            //   +------+------+
+            //   ----             (plain)
+            const dividerPattern = /^\s*(?:[\|+]\s*-+\s*(?:[\|+]\s*-+\s*)*[\|+]|-+)\s*$/;
 
-    const hasDivider = rawLines.some(line => dividerPattern.test(line));
+            const hasDivider = rawLines.some(line => dividerPattern.test(line));
 
-    // Filter out dividers for measuring widths
-    const contentLines = rawLines.filter(line => !dividerPattern.test(line));
-    if (contentLines.length === 0) return;
+            // Filter out dividers for measuring widths
+            const contentLines = rawLines.filter(line => !dividerPattern.test(line));
+            if (contentLines.length === 0) return;
 
-    // Parse rows into cells
-    const table = contentLines.map(line =>
-        line.split("|")
-            .map(c => c.trimEnd())
-            .filter((c, i, arr) => !(i === 0 && c === "") && !(i === arr.length - 1 && c === ""))
-    );
+            // Parse rows into cells
+            const table = contentLines.map(line =>
+                line.split("|")
+                    .map(c => c.trimEnd())
+                    .filter((c, i, arr) => !(i === 0 && c === "") && !(i === arr.length - 1 && c === ""))
+            );
 
-    // Compute max width per column
-    const widths = [];
-    table.forEach(row => {
-        row.forEach((cell, i) => {
-            widths[i] = Math.max(widths[i] || 0, cell.trim().length);
-        });
-    });
+            // Compute max width per column
+            const widths = [];
+            table.forEach(row => {
+                row.forEach((cell, i) => {
+                    widths[i] = Math.max(widths[i] || 0, cell.trim().length);
+                });
+            });
 
-    // Build ASCII-style separator
-    const makeSep = () => "+" + widths.map(w => "-".repeat(w + 2)).join("+") + "+";
+            // Build ASCII-style separator
+            const makeSep = () => "+" + widths.map(w => "-".repeat(w + 2)).join("+") + "+";
 
-    // Build padded table rows
-    const padded = table.map(row =>
-        "|" + row.map((cell, i) => {
-            const trimmed = cell.trim();
-            const pad = widths[i] - trimmed.length;
-            return " " + trimmed + " ".repeat(pad) + " ";
-        }).join("|") + "|"
-    );
+            // Build padded table rows
+            const padded = table.map(row =>
+                "|" + row.map((cell, i) => {
+                    const trimmed = cell.trim();
+                    const pad = widths[i] - trimmed.length;
+                    return " " + trimmed + " ".repeat(pad) + " ";
+                }).join("|") + "|"
+            );
 
-    // Rebuild all lines: regenerate every separator, reformat all content
-    const finalRows = [];
-    let rowIndex = 0;
+            // Rebuild all lines: regenerate every separator, reformat all content
+            const finalRows = [];
+            let rowIndex = 0;
 
-    for (const line of rawLines) {
-        if (dividerPattern.test(line)) {
-            // Always rebuild separator lines
-            finalRows.push(makeSep());
-        } else if (rowIndex < padded.length) {
-            // Replace content rows with padded versions
-            finalRows.push(padded[rowIndex++]);
+            for (const line of rawLines) {
+                if (dividerPattern.test(line)) {
+                    // Always rebuild separator lines
+                    finalRows.push(makeSep());
+                } else if (rowIndex < padded.length) {
+                    // Replace content rows with padded versions
+                    finalRows.push(padded[rowIndex++]);
+                }
+            }
+
+            // If no dividers were present at all, just output the padded content
+            if (!hasDivider) {
+                finalRows.length = 0;
+                finalRows.push(...padded);
+            }
+
+            ta.setRangeText(finalRows.join("\n"), start, end, "select");
         }
-    }
-
-    // If no dividers were present at all, just output the padded content
-    if (!hasDivider) {
-        finalRows.length = 0;
-        finalRows.push(...padded);
-    }
-
-    ta.setRangeText(finalRows.join("\n"), start, end, "select");
-}
         function setMark(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -2484,7 +2484,10 @@ function formatMarkdownTable() {
             searchMatches.forEach((n, i) => {
                 const item = document.createElement('div');
                 item.textContent = n.title || '(untitled)';
-                if (i === searchIndex) item.classList.add('selected');
+                if (i === searchIndex) {
+                    item.classList.add('selected');
+                    requestAnimationFrame(() => item.scrollIntoView({ block: "nearest", behavior: "smooth" }));
+                }
                 item.addEventListener('click', () => {
                     if (searchMatches.length > 0) {
                         selectSearchResult(i);
