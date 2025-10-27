@@ -12,32 +12,28 @@
   <defs
      id="defs2" />
   <path
-     style="fill:#80a5ba;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
-     d="m 0.79374997,0.63637699 c 1.76898013,-0.006197 0.91709523,0 2.64583343,0 V 3.5997107 H 0.79374997 Z"
+     style="fill:none;fill-opacity:1;stroke:#a5a5a5;stroke-width:0.258464;stroke-linecap:square;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+     d="m 0.79069024,0.63332294 c 1.68462256,-0.00621 0.87336156,0 2.51966116,0 V 3.6027704 H 0.79069024 Z"
      id="path65" />
-  <path
-     style="fill:#787878;fill-opacity:1;stroke-width:1.22694;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
-     d="m 1.0583332,0.93243487 c 1.4151843,-0.004957 0.7336763,0 2.116667,0 V 3.303102 h -2.116667 z"
-     id="path4404" />
   <rect
-     style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+     style="fill:#757575;fill-opacity:1;stroke-width:1.7147;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
      id="rect5117"
-     width="1.0583334"
+     width="1.3229166"
      height="0.24694447"
-     x="1.5875001"
-     y="1.3772104" />
+     x="1.3890625"
+     y="1.3934721" />
   <rect
-     style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+     style="fill:#757575;fill-opacity:1;stroke-width:1.7147;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
      id="rect5737"
-     width="1.0583334"
+     width="1.3229166"
      height="0.24694447"
-     x="1.5875001"
-     y="1.8710994" />
+     x="1.3890625"
+     y="1.887361" />
   <rect
-     style="fill:#364750;fill-opacity:1;stroke-width:1.53367;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+     style="fill:#757575;fill-opacity:1;stroke-width:1.7147;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
      id="rect5739"
-     width="1.0583334"
+     width="1.3229166"
      height="0.24694447"
-     x="1.5875001"
-     y="2.3649883" />
+     x="1.3890625"
+     y="2.3812501" />
 </svg>
