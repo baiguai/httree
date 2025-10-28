@@ -574,7 +574,8 @@
     <h3>Options</h3>
     <label><input type="checkbox" id="optShowInitHelp"> Show Init Help</label><br><br>
     <label>File Name: <input type="text" id="optFileName" style="background:#111;color:#fff;border:1px solid #555;"></label><br><br>
-    <label><input type="checkbox" id="optModeVim"> Enable Vim Mode</label>
+    <label><input type="checkbox" id="optModeVim"> Enable Vim Mode</label><br><br>
+    <label>Node IP: <input type="text" id="optIp" style="background:#111;color:#fff;border:1px solid #555;"></label>
     <p>Press Enter to save, Esc to cancel.</p>
 </div>
 
@@ -681,7 +682,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             "\\);": "^^^func^^^"
         };
 
-        const nodeIp = 3000;
+        let nodeIp = 3000;
 
         let currentEditorNodeId = null;
         let historyStack = [
@@ -739,6 +740,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         const optShowInitHelp = document.getElementById('optShowInitHelp');
         const optFileName = document.getElementById('optFileName');
         const optModeVim = document.getElementById('optModeVim');
+        const optIp = document.getElementById('optIp');
         let optionFields = [optShowInitHelp, optFileName, optModeVim];
         let optionIndex = 0;
 
@@ -2054,6 +2056,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             optShowInitHelp.checked = showInitHelp;
             optFileName.value = fileName;
             optModeVim.checked = mode_vim;
+            optIp.value = nodeIp;
             optionsDialog.style.display = 'block';
             optionIndex = 0;
             optionFields[optionIndex].focus();
@@ -2065,6 +2068,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             showInitHelp = optShowInitHelp.checked;
             fileName = optFileName.value || fileName;
             mode_vim = optModeVim.checked;
+            nodeIp = optIp.value;
             closeOptionsDialog();
         }
 
@@ -2741,6 +2745,12 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             htmlContent = htmlContent.replace(
               /let\s+mode_vim\s*=\s*(true|false);/,
               `let mode_vim = ${mode_vim};`
+            );
+
+            // nodeIp
+            htmlContent = htmlContent.replace(
+              /let\s+nodeIp\s*=\s*\d{4};/,
+              `let nodeIp = ${nodeIp};`
             );
 
             htmlContent = htmlContent.replace(/let\s+treeData\s*=\s*\[[\s\S]*?\];/, `let treeData = ${formattedDatabase};`);
