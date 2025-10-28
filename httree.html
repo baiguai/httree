@@ -1,7 +1,6 @@
-<!DOCTYPE html>
-<html><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<!DOCTYPE html><html style="--app-height: 1058px;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 <title>Httree</title>
 <style>
     .app {
@@ -526,7 +525,7 @@
 
 <div id="treeDialog" class="tree-dialog">
     <table class="hidden-tbl">
-        <tr>
+        <tbody><tr>
             <td class="col2">
                 <div class="tree-dialog-content">
                     <button id="collapseBtn">- Collapse</button>
@@ -542,7 +541,7 @@
                     Move Selected Node:
                 </div>
                 <table class="controls-tbl">
-                    <tr>
+                    <tbody><tr>
                         <td class="col3">&nbsp;</td>
                         <td class="col3"> 
                             <button id="mvUpBtn" onclick="reorderAmongSiblings('up'); render();">Up</button>
@@ -561,21 +560,22 @@
                     <tr>
                         <td class="col3">&nbsp;</td>
                         <td class="col3">
-                            <button id="mvDownBtn" onClick="reorderAmongSiblings('down'); render();">Down</button>
+                            <button id="mvDownBtn" onclick="reorderAmongSiblings('down'); render();">Down</button>
                         </td>
                         <td class="col3">&nbsp;</td>
                     </tr>
-                </table>
+                </tbody></table>
             </td>
         </tr>
-    </table>
+    </tbody></table>
 </div>
 
 <div id="optionsDialog" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%); width: 400px; background: rgb(34, 34, 34); color: rgb(255, 255, 255); border: 2px solid rgb(68, 68, 68); border-radius: 2px; padding: 20px; z-index: 9999; font-family: monospace; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
     <h3>Options</h3>
     <label><input type="checkbox" id="optShowInitHelp"> Show Init Help</label><br><br>
     <label>File Name: <input type="text" id="optFileName" style="background:#111;color:#fff;border:1px solid #555;"></label><br><br>
-    <label><input type="checkbox" id="optModeVim"> Enable Vim Mode</label>
+    <label><input type="checkbox" id="optModeVim"> Enable Vim Mode</label><br><br>
+    <label>Node IP: <input type="text" id="optIp" style="background:#111;color:#fff;border:1px solid #555;"></label>
     <p>Press Enter to save, Esc to cancel.</p>
 </div>
 
@@ -585,13 +585,13 @@
 </div>
 
 <div class="search-dialog" id="helpDialogUnified" style="display:none;">
-  <input id="helpFilter" type="text" placeholder="Filter help (Start with : to search keys only)..." />
+  <input id="helpFilter" type="text" placeholder="Filter help (Start with : to search keys only)...">
   <div id="helpResults" class="search-results"></div>
   <p><a href="https://hcjsuite.infinityfreeapp.com/httree_help.html" target="_blank">Full Help System</a></p>
   <p style="margin-top:6px;">Press ESC to close.</p>
 </div>
 
-<div id="linksDialog" onDblClick="closeLinksDialog();" style="display: none;">
+<div id="linksDialog" ondblclick="closeLinksDialog();" style="display: none;">
     <h3>Links in Note</h3>
     <div id="linksList"><a href="#" data-node-id="kqr4o4g3" class="selected">The Options Dialog</a></div>
 </div>
@@ -600,9 +600,9 @@
     <h3>Bookmarks</h3>
     <div id="marksList"></div>
     <p>
-        <br />
+        <br>
         Press Esc to close
-        <br />
+        <br>
         Press d to delete a bookmark
     </p>
 </div>
@@ -643,19 +643,19 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 </div>
 
 
-<aside class="tree" id="tree" onclick="closeDialogs(); activateTree();"></aside>
+<aside class="tree" id="tree" onclick="closeDialogs(); activateTree();"><ul></ul></aside>
 <section class="editor">
-    <div id="statusBar" class="status" onClick="closeDialogs();" onDblClick="toggleMobileMenu();" title="Double click to toggle Mobile Mode">
+    <div id="statusBar" class="status" onclick="closeDialogs();" ondblclick="toggleMobileMenu();" title="Double click to toggle Mobile Mode">
         <span class="pill" id="mode" style="display: block;">TREE</span>
-        <span class="pill" id="kind">FILE</span>
-        <span class="dim" id="path">/Introduction</span>
+        <span class="pill" id="kind">—</span>
+        <span class="dim" id="path">/</span>
         <span class="pill" id="msg"></span>
     </div>
     <textarea id="editorArea" spellcheck="false" readonly="readonly"></textarea>
 </section>
 </div>
 
-<input type="file" id="filePicker" accept=".html" style="display:none;" />
+<input type="file" id="filePicker" accept=".html" style="display:none;">
 
 <script>
         //---- Data Model ------------------------------------------------------
@@ -682,8 +682,15 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             "\\);": "^^^func^^^"
         };
 
+        let nodeIp = 3000;
+
         let currentEditorNodeId = null;
-        let historyStack = [];
+        let historyStack = [
+    {
+        "id": "qnri96g4",
+        "title": "dddd"
+    }
+];
         let showingHistory = false;
         let historyIndex = 0;
         const historyStackMax = 30;
@@ -733,6 +740,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         const optShowInitHelp = document.getElementById('optShowInitHelp');
         const optFileName = document.getElementById('optFileName');
         const optModeVim = document.getElementById('optModeVim');
+        const optIp = document.getElementById('optIp');
         let optionFields = [optShowInitHelp, optFileName, optModeVim];
         let optionIndex = 0;
 
@@ -795,6 +803,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             { key: "X", mode: "TREE", description: "Show broken note links" },
             { key: "s", mode: "TREE", description: "Save the current file" },
             { key: "S", mode: "TREE", description: "Save as" },
+            { key: "n", mode: "TREE", description: "Save via NodeJs saver server" },
             { key: "T", mode: "TREE", description: "Export current note as .txt" },
             { key: "U", mode: "TREE", description: "Upgrade (import existing data)" },
             { key: "m", mode: "TREE", description: "Bookmark current node" },
@@ -864,6 +873,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             { key: "X", mode: "TREE", description: "Show broken note links" },
             { key: "s", mode: "TREE", description: "Save the current file" },
             { key: "S", mode: "TREE", description: "Save as" },
+            { key: "n", mode: "TREE", description: "Save via NodeJs saver server" },
             { key: "T", mode: "TREE", description: "Export current note as .txt" },
             { key: "U", mode: "TREE", description: "Upgrade (import existing data)" },
             { key: "m", mode: "TREE", description: "Bookmark current node" },
@@ -2048,6 +2058,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             optShowInitHelp.checked = showInitHelp;
             optFileName.value = fileName;
             optModeVim.checked = mode_vim;
+            optIp.value = nodeIp;
             optionsDialog.style.display = 'block';
             optionIndex = 0;
             optionFields[optionIndex].focus();
@@ -2059,6 +2070,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             showInitHelp = optShowInitHelp.checked;
             fileName = optFileName.value || fileName;
             mode_vim = optModeVim.checked;
+            nodeIp = optIp.value;
             closeOptionsDialog();
         }
 
@@ -2699,15 +2711,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
 
         //---- Saving ----------------------------------------------------------
-        function saveAsHtml(currentFileName) {
-            let name = currentFileName;
-            let saveName = false;
-            if (name === "") {
-                name = prompt("Save as .html (enter name without extension):", "");
-                if (!name) return;
-                saveName = true;
-            }
-
+        function getContents(name, saveName) {
             const elemLimit = 20; // Number of elements per line
             const htmlDoc = document.documentElement.cloneNode(true);
 
@@ -2745,6 +2749,12 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
               `let mode_vim = ${mode_vim};`
             );
 
+            // nodeIp
+            htmlContent = htmlContent.replace(
+              /let\s+nodeIp\s*=\s*\d{4};/,
+              `let nodeIp = ${nodeIp};`
+            );
+
             htmlContent = htmlContent.replace(/let\s+treeData\s*=\s*\[[\s\S]*?\];/, `let treeData = ${formattedDatabase};`);
 
             htmlContent = htmlContent.replace(
@@ -2756,11 +2766,42 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                 "let historyStack = " + JSON.stringify(historyStack, null, 4) + ";"
             );
 
+            return htmlContent;
+        }
+
+
+        function saveAsHtml(currentFileName) {
+            let name = currentFileName;
+            let saveName = false;
+            if (name === "") {
+                name = prompt("Save as .html (enter name without extension):", "");
+                if (!name) return;
+                saveName = true;
+            }
+
+            let htmlContent = getContents(name, saveName);
+
             let blob = new Blob([htmlContent], { type: "text/html" });
             let a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
             a.download = `${name}.html`;
             a.click();
+        }
+
+        async function saveViaNode() {
+            const content = getContents(fileName, false);
+
+            const res = await fetch("http://localhost:"+nodeIp+"/save", {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: content
+            });
+
+            if (res.ok) {
+                showMessage("Saved successfully");
+            } else {
+                showMessage("Save failed: " + (await res.text()));
+            }
         }
 
         function exportNoteAsTxt() {
@@ -2914,6 +2955,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                 case 'D': deleteNode(); break;
                 case 's': saveAsHtml(fileName); break;
                 case 'S': openSaveAsDialog(); break;
+                case 'n': saveViaNode(); break;
                 case 'T': exportNoteAsTxt(); break;
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
@@ -3433,5 +3475,6 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         render();
     });
 </script>
+
 
 </body></html>
