@@ -575,7 +575,7 @@
     <label><input type="checkbox" id="optShowInitHelp"> Show Init Help</label><br><br>
     <label>File Name: <input type="text" id="optFileName" style="background:#111;color:#fff;border:1px solid #555;"></label><br><br>
     <label><input type="checkbox" id="optModeVim"> Enable Vim Mode</label><br><br>
-    <label>Node IP: <input type="text" id="optIp" style="background:#111;color:#fff;border:1px solid #555;"></label>
+    <label>Node Port: <input type="text" id="optPort" style="background:#111;color:#fff;border:1px solid #555;"></label>
     <p>Press Enter to save, Esc to cancel.</p>
 </div>
 
@@ -682,7 +682,7 @@
             "\\);": "^^^func^^^"
         };
 
-        let nodeIp = 0;
+        let nodePort = 0;
 
         let currentEditorNodeId = null;
         let historyStack = [];
@@ -735,7 +735,7 @@
         const optShowInitHelp = document.getElementById('optShowInitHelp');
         const optFileName = document.getElementById('optFileName');
         const optModeVim = document.getElementById('optModeVim');
-        const optIp = document.getElementById('optIp');
+        const optPort = document.getElementById('optPort');
         let optionFields = [optShowInitHelp, optFileName, optModeVim];
         let optionIndex = 0;
 
@@ -2054,7 +2054,7 @@
             optShowInitHelp.checked = showInitHelp;
             optFileName.value = fileName;
             optModeVim.checked = mode_vim;
-            optIp.value = nodeIp;
+            optPort.value = nodePort;
             optionsDialog.style.display = 'block';
             optionIndex = 0;
             optionFields[optionIndex].focus();
@@ -2066,7 +2066,7 @@
             showInitHelp = optShowInitHelp.checked;
             fileName = optFileName.value || fileName;
             mode_vim = optModeVim.checked;
-            nodeIp = optIp.value;
+            nodePort = optPort.value;
             closeOptionsDialog();
         }
 
@@ -2745,10 +2745,10 @@
               `let mode_vim = ${mode_vim};`
             );
 
-            // nodeIp
+            // nodePort
             htmlContent = htmlContent.replace(
-              /let\s+nodeIp\s*=\s*\d{4};/,
-              `let nodeIp = ${nodeIp};`
+              /let\s+nodePort\s*=\s*\d{4};/,
+              `let nodePort = ${nodePort};`
             );
 
             htmlContent = htmlContent.replace(/let\s+treeData\s*=\s*\[[\s\S]*?\];/, `let treeData = ${formattedDatabase};`);
@@ -2787,7 +2787,7 @@
         async function saveViaNode() {
             const content = getContents(fileName, false);
 
-            const res = await fetch("http://localhost:"+nodeIp+"/save", {
+            const res = await fetch("http://localhost:"+nodePort+"/save", {
                 method: "POST",
                 headers: { "Content-Type": "text/plain" },
                 body: content
@@ -3476,7 +3476,7 @@
     let autoSaveTimer = null;
 
     function scheduleAutoSave() {
-        if (nodeIp == 0) return;
+        if (nodePort == 0) return;
         if (!mode_insert) return;
 
         clearTimeout(autoSaveTimer);
