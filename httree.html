@@ -2752,8 +2752,8 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
             // nodePort
             htmlContent = htmlContent.replace(
-              /let\s+nodePort\s*=\s*\d{4};/,
-              `let nodePort = ${nodePort};`
+                /let\s+nodePort\s*=\s*\d+;/,
+                `let nodePort = ${nodePort};`
             );
 
             htmlContent = htmlContent.replace(/let\s+treeData\s*=\s*\[[\s\S]*?\];/, `let treeData = ${formattedDatabase};`);
