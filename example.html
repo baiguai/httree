@@ -574,7 +574,8 @@
     <h3>Options</h3>
     <label><input type="checkbox" id="optShowInitHelp"> Show Init Help</label><br><br>
     <label>File Name: <input type="text" id="optFileName" style="background:#111;color:#fff;border:1px solid #555;"></label><br><br>
-    <label><input type="checkbox" id="optModeVim"> Enable Vim Mode</label>
+    <label><input type="checkbox" id="optModeVim"> Enable Vim Mode</label><br><br>
+    <label>Node IP: <input type="text" id="optIp" style="background:#111;color:#fff;border:1px solid #555;"></label>
     <p>Press Enter to save, Esc to cancel.</p>
 </div>
 
@@ -681,6 +682,8 @@
             "\\);": "^^^func^^^"
         };
 
+        let nodeIp = 0;
+
         let currentEditorNodeId = null;
         let historyStack = [];
         let showingHistory = false;
@@ -732,6 +735,7 @@
         const optShowInitHelp = document.getElementById('optShowInitHelp');
         const optFileName = document.getElementById('optFileName');
         const optModeVim = document.getElementById('optModeVim');
+        const optIp = document.getElementById('optIp');
         let optionFields = [optShowInitHelp, optFileName, optModeVim];
         let optionIndex = 0;
 
@@ -794,6 +798,7 @@
             { key: "X", mode: "TREE", description: "Show broken note links" },
             { key: "s", mode: "TREE", description: "Save the current file" },
             { key: "S", mode: "TREE", description: "Save as" },
+            { key: "n", mode: "TREE", description: "Save via NodeJs saver server" },
             { key: "T", mode: "TREE", description: "Export current note as .txt" },
             { key: "U", mode: "TREE", description: "Upgrade (import existing data)" },
             { key: "m", mode: "TREE", description: "Bookmark current node" },
@@ -863,6 +868,7 @@
             { key: "X", mode: "TREE", description: "Show broken note links" },
             { key: "s", mode: "TREE", description: "Save the current file" },
             { key: "S", mode: "TREE", description: "Save as" },
+            { key: "n", mode: "TREE", description: "Save via NodeJs saver server" },
             { key: "T", mode: "TREE", description: "Export current note as .txt" },
             { key: "U", mode: "TREE", description: "Upgrade (import existing data)" },
             { key: "m", mode: "TREE", description: "Bookmark current node" },
@@ -1086,6 +1092,7 @@
         //---- Editor Sync -----------------------------------------------------
         editorArea.addEventListener('input', () => {
             syncFile();
+            scheduleAutoSave();
         });
 
         editorArea.addEventListener('click', () => {
@@ -2047,6 +2054,7 @@
             optShowInitHelp.checked = showInitHelp;
             optFileName.value = fileName;
             optModeVim.checked = mode_vim;
+            optIp.value = nodeIp;
             optionsDialog.style.display = 'block';
             optionIndex = 0;
             optionFields[optionIndex].focus();
@@ -2058,6 +2066,7 @@
             showInitHelp = optShowInitHelp.checked;
             fileName = optFileName.value || fileName;
             mode_vim = optModeVim.checked;
+            nodeIp = optIp.value;
             closeOptionsDialog();
         }
 
@@ -2698,15 +2707,7 @@
 
 
         //---- Saving ----------------------------------------------------------
-        function saveAsHtml(currentFileName) {
-            let name = currentFileName;
-            let saveName = false;
-            if (name === "") {
-                name = prompt("Save as .html (enter name without extension):", "");
-                if (!name) return;
-                saveName = true;
-            }
-
+        function getContents(name, saveName) {
             const elemLimit = 20; // Number of elements per line
             const htmlDoc = document.documentElement.cloneNode(true);
 
@@ -2744,6 +2745,12 @@
               `let mode_vim = ${mode_vim};`
             );
 
+            // nodeIp
+            htmlContent = htmlContent.replace(
+              /let\s+nodeIp\s*=\s*\d{4};/,
+              `let nodeIp = ${nodeIp};`
+            );
+
             htmlContent = htmlContent.replace(/let\s+treeData\s*=\s*\[[\s\S]*?\];/, `let treeData = ${formattedDatabase};`);
 
             htmlContent = htmlContent.replace(
@@ -2755,11 +2762,42 @@
                 "let historyStack = " + JSON.stringify(historyStack, null, 4) + ";"
             );
 
+            return htmlContent;
+        }
+
+
+        function saveAsHtml(currentFileName) {
+            let name = currentFileName;
+            let saveName = false;
+            if (name === "") {
+                name = prompt("Save as .html (enter name without extension):", "");
+                if (!name) return;
+                saveName = true;
+            }
+
+            let htmlContent = getContents(name, saveName);
+
             let blob = new Blob([htmlContent], { type: "text/html" });
             let a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
             a.download = `${name}.html`;
             a.click();
+        }
+
+        async function saveViaNode() {
+            const content = getContents(fileName, false);
+
+            const res = await fetch("http://localhost:"+nodeIp+"/save", {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: content
+            });
+
+            if (res.ok) {
+                showMessage("Saved successfully");
+            } else {
+                showMessage("Save failed: " + (await res.text()));
+            }
         }
 
         function exportNoteAsTxt() {
@@ -2913,6 +2951,7 @@
                 case 'D': deleteNode(); break;
                 case 's': saveAsHtml(fileName); break;
                 case 'S': openSaveAsDialog(); break;
+                case 'n': saveViaNode(); break;
                 case 'T': exportNoteAsTxt(); break;
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
@@ -3431,7 +3470,22 @@
         selectedId = treeData[0]?.id || null;
         render();
     });
+
+
+    //---- Node AutoSaver ------------------------------------------------------
+    let autoSaveTimer = null;
+
+    function scheduleAutoSave() {
+        if (nodeIp == 0) return;
+        if (!mode_insert) return;
+
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(() => {
+        saveViaNode();
+        }, 3000);                               // wait 3s after last change
+    }
 </script>
+
 
 
 </body></html>
