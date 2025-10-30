@@ -682,7 +682,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             "\\);": "^^^func^^^"
         };
 
-        let nodeIp = 3000;
+        let nodeIp = 0;
 
         let currentEditorNodeId = null;
         let historyStack = [
@@ -1097,6 +1097,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         //---- Editor Sync -----------------------------------------------------
         editorArea.addEventListener('input', () => {
             syncFile();
+            scheduleAutoSave();
         });
 
         editorArea.addEventListener('click', () => {
@@ -3474,6 +3475,20 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         selectedId = treeData[0]?.id || null;
         render();
     });
+
+
+    //---- Node AutoSaver ------------------------------------------------------
+    let autoSaveTimer = null;
+
+    function scheduleAutoSave() {
+        if (nodeIp == 0) return;
+        if (!mode_insert) return;
+
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(() => {
+        saveViaNode();
+        }, 3000);                               // wait 3s after last change
+    }
 </script>
 
 
