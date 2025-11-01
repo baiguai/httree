@@ -664,7 +664,9 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         /** @typedef {{ id:string, title:string, content:string, children:NodeT[], expanded:boolean }} NodeT */
 
         /** @type {NodeT[]} */
-        let treeData = [];
+        let treeData = [
+  
+];
 
 
         let bookmarks = [];
@@ -682,7 +684,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             "\\);": "^^^func^^^"
         };
 
-        let nodePort = 0;
+        let nodePort = 3000;
 
         let currentEditorNodeId = null;
         let historyStack = [
@@ -3490,6 +3492,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         }, 3000);                               // wait 3s after last change
     }
 </script>
+
 
 
 </body></html>

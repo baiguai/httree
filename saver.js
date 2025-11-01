@@ -1,8 +1,3 @@
-// =========================================================================== Httree Saver Server
-//  Simple local Node.js server that saves and auto-backs up your editor.html
-// ===========================================================================
-
-
 /*
 
 INSTALLATION:
@@ -36,7 +31,7 @@ Then simply open your notes .html file - to save use the key binding: n
 
 
 
-//  USER SETTINGS – easy to edit
+//  USER SETTINGS
 // ---------------------------------------------------------------------------
 
 
@@ -55,6 +50,7 @@ const MAX_DAYS = 0;               // delete backups older than N days (0 = keep 
 
 
 
+// !@!
 // ---------------------------------------------------------------------------
 //  (you generally don’t need to edit below this line)
 // ---------------------------------------------------------------------------
@@ -73,75 +69,101 @@ if (!fs.existsSync(resolvedBackupDir)) fs.mkdirSync(resolvedBackupDir, { recursi
 
 // --- Basic CORS for browser requests ---
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") return res.sendStatus(200);
-  next();
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+    if (req.method === "OPTIONS") return res.sendStatus(200);
+    next();
 });
 
 // --- Save Route ---
 app.post("/save", (req, res) => {
-  const content = req.body;
-  if (!content) return res.status(400).send("No content received");
+    const content = req.body;
+    if (!content) return res.status(400).send("No content received");
 
-  try {
-    // --- Create a backup first ---
-    if (MAX_BACKUPS > -1) {
-      if (fs.existsSync(resolvedFile)) {
-        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-        const backupPath = path.join(
-          resolvedBackupDir,
-          `${path.basename(resolvedFile, ".html")}_${timestamp}.html`
-        );
-        fs.copyFileSync(resolvedFile, backupPath);
-        console.log(`🗂️  Backup created: ${backupPath}`);
-      }
+    try {
+        // --- Create a backup first ---
+        if (MAX_BACKUPS > -1) {
+            if (fs.existsSync(resolvedFile)) {
+                const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+                const backupPath = path.join(
+                    resolvedBackupDir,
+                    `${path.basename(resolvedFile, ".html")}_${timestamp}.html`
+                );
+                fs.copyFileSync(resolvedFile, backupPath);
+            }
+        }
+
+        // --- Write the new file ---
+        fs.writeFileSync(resolvedFile, content, "utf8");
+
+        pruneBackups();
+        res.send("File saved successfully");
+    } catch (err) {
+        console.error(`${getTimeStamp()}Error saving:`, err);
+        res.status(500).send("Error saving file");
     }
-
-    // --- Write the new file ---
-    fs.writeFileSync(resolvedFile, content, "utf8");
-    console.log(`✅ File saved: ${resolvedFile}`);
-
-    pruneBackups();
-    res.send("File saved successfully");
-  } catch (err) {
-    console.error("❌ Error saving:", err);
-    res.status(500).send("Error saving file");
-  }
 });
+
+// --- Get Formatted Timestamp
+function getTimeStamp() {
+    const dateObj = new Date();
+
+    let year = dateObj.getFullYear();
+
+    let month = dateObj.getMonth();
+    month = ('0' + (month + 1)).slice(-2);
+    // To make sure the month always has 2-character-format. For example, 1 => 01, 2 => 02
+
+    let date = dateObj.getDate();
+    date = ('0' + date).slice(-2);
+    // To make sure the date always has 2-character-format
+
+    let hour = dateObj.getHours();
+    hour = ('0' + hour).slice(-2);
+    // To make sure the hour always has 2-character-format
+
+    let minute = dateObj.getMinutes();
+    minute = ('0' + minute).slice(-2);
+    // To make sure the minute always has 2-character-format
+
+    let second = dateObj.getSeconds();
+    second = ('0' + second).slice(-2);
+    // To make sure the second always has 2-character-format
+
+    return `${year}/${month}/${date} ${hour}:${minute}:${second}  :  `;
+}
 
 // --- Cleanup function ---
 function pruneBackups() {
-  try {
-    const files = fs
-      .readdirSync(resolvedBackupDir)
-      .filter(f => f.endsWith(".html"))
-      .map(f => ({
-        name: f,
-        time: fs.statSync(path.join(resolvedBackupDir, f)).mtime.getTime(),
-      }))
-      .sort((a, b) => b.time - a.time); // newest first
+    try {
+        const files = fs
+            .readdirSync(resolvedBackupDir)
+            .filter(f => f.endsWith(".html"))
+            .map(f => ({
+                name: f,
+                time: fs.statSync(path.join(resolvedBackupDir, f)).mtime.getTime(),
+            }))
+            .sort((a, b) => b.time - a.time); // newest first
 
-    if (MAX_BACKUPS > 0 && files.length > MAX_BACKUPS) {
-      const toDelete = files.slice(MAX_BACKUPS);
-      for (const f of toDelete)
-        fs.unlinkSync(path.join(resolvedBackupDir, f.name));
-      console.log(`🧹 Deleted ${toDelete.length} old backups`);
-    }
+        if (MAX_BACKUPS > 0 && files.length > MAX_BACKUPS) {
+            const toDelete = files.slice(MAX_BACKUPS);
+            for (const f of toDelete)
+                fs.unlinkSync(path.join(resolvedBackupDir, f.name));
+        }
 
-    if (MAX_DAYS > 0) {
-      const cutoff = Date.now() - MAX_DAYS * 24 * 60 * 60 * 1000;
-      for (const f of files)
-        if (f.time < cutoff)
-          fs.unlinkSync(path.join(resolvedBackupDir, f.name));
+        if (MAX_DAYS > 0) {
+            const cutoff = Date.now() - MAX_DAYS * 24 * 60 * 60 * 1000;
+            for (const f of files)
+                if (f.time < cutoff)
+                    fs.unlinkSync(path.join(resolvedBackupDir, f.name));
+        }
+    } catch (err) {
+        console.error(`${getTimeStamp()}Error pruning backups:`, err);
     }
-  } catch (err) {
-    console.error("⚠️  Error pruning backups:", err);
-  }
 }
 
 // --- Start server ---
 app.listen(PORT, NODE_IP, () => {
-  console.log(`💾 Saver running at http://${NODE_IP}:${PORT}`);
+    console.log(`Saver running at http://${NODE_IP}:${PORT}`);
 });
