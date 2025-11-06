@@ -250,6 +250,12 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
+    .find-highlight {
+        background: yellow;
+        color: black;
+        font-weight: bold;
+    }
         
     /* Highlighted selection */
     .search-results div.selected, 
@@ -620,6 +626,7 @@
         </div>
     </div>
     <div id="replaceResults">Replaced 1 occurrence(s).</div>
+    <div id="findResults" style="margin-top:10px; max-height:200px; overflow:auto; font-family:monospace; white-space:pre-wrap;"></div>
 </div>
 
 <div id="historyDialog" style="display: none;">
@@ -746,9 +753,6 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         let optionFields = [optShowInitHelp, optFileName, optModeVim];
         let optionIndex = 0;
 
-        let findMatches = [];
-        let findIndex = 0;
-
         const helpReadOnly = [
             { key: "j", mode: "TREE", description: "Select next tree node" },
             { key: "k", mode: "TREE", description: "Select the previous tree node" },
@@ -769,9 +773,6 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             { key: "m", mode: "TREE", description: "Bookmark current node" },
             { key: "`", mode: "TREE", description: "Show bookmarks" },
         ];
-
-//            { key: ",", mode: "TREE", description: "Select the next sibling level tree node" },
-//            { key: ".", mode: "TREE", description: "Select the previous sibling level tree node" },
         
         const helpVimEnabled = [
             { key: "r", mode: "TREE", description: "Add root level node" },
@@ -1209,6 +1210,8 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                     break;
         
                 case 'Enter':
+                    if (finding) break;
+
                     e.preventDefault();
                     e.stopPropagation();
         
@@ -2293,6 +2296,10 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         //---- Finding and Replacing -------------------------------------------
         function openReplaceDialog() {
             finding = true;
+            findMatches = [];
+            currentFindIndex = -1;
+            const resultsEl = document.getElementById('findResults');
+            resultsEl.innerHTML = '';
             document.getElementById('searchText').value = '';
             document.getElementById('replaceText').value = '';
             document.getElementById('replaceDialog').style.display = 'block';
@@ -2300,49 +2307,100 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         }
 
         function closeReplaceDialog() {
-            finding = false;
             document.getElementById('replaceDialog').style.display = 'none';
+            finding = false;
         }
 
         function doFind() {
             const info = findNodeAndParentById(selectedId);
             if (!info) return;
 
-            const searchVal = document.getElementById('searchText').value;
-            const resultsEl = document.getElementById('replaceResults');
+            const searchVal = document.getElementById('searchText').value.trim();
+            const resultsEl = document.getElementById('findResults');
             const area = document.getElementById('editorArea');
+            const content = safeRestoreText(info.node.content) || '';
+
+            resultsEl.innerHTML = '';
+            findMatches = [];
+            currentFindIndex = -1;
 
             if (!searchVal) {
                 resultsEl.textContent = 'Enter something to search for.';
                 return;
             }
 
-            const content = safeRestoreText(info.node.content) || '';
-            // Escape user input for regex
             const regex = new RegExp(searchVal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-
-            // Create a list of match start indexes
-            findMatches = [];
             let match;
+            const contextRadius = 20;
+            let resultHTML = '';
+
             while ((match = regex.exec(content)) !== null) {
-                findMatches.push({ start: match.index, end: match.index + match[0].length });
+                const start = Math.max(0, match.index - contextRadius);
+                const end = Math.min(content.length, match.index + match[0].length + contextRadius);
+                const context = content.substring(start, end)
+                    .replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                const highlighted = context.replace(new RegExp(searchVal, 'gi'), 
+                    m => `<span class="find-highlight">${m}</span>`);
+
+                findMatches.push({ index: match.index, length: match[0].length });
+                resultHTML += `<div class="find-item" data-idx="${findMatches.length - 1}" 
+                                style="cursor:pointer; padding:2px;">
+                                ${highlighted}
+                               </div>`;
             }
 
             if (findMatches.length === 0) {
                 resultsEl.textContent = 'No matches found.';
-                return;
+            } else {
+                resultsEl.innerHTML = resultHTML;
             }
 
-            // Cycle to the next match
-            if (findIndex >= findMatches.length) findIndex = 0;
-            const current = findMatches[findIndex];
+            if (findMatches.length > 0) {
+                currentFindIndex = 0;
+                const first = resultsEl.querySelectorAll('.find-item')[0];
+                if (first) {
+                    first.style.background = '#333';
+                    first.scrollIntoView({ block: 'nearest' });
+                }
+            }
 
-            // Move the caret/selection to the match
+            // Click handler
+            resultsEl.querySelectorAll('.find-item').forEach(div => {
+                div.addEventListener('click', e => {
+                    const idx = parseInt(div.dataset.idx);
+                    selectFindMatch(idx);
+                });
+            });
+        }
+        function selectFindMatch(idx) {
+            if (idx < 0 || idx >= findMatches.length) return;
+
+            const area = document.getElementById('editorArea');
+            const match = findMatches[idx];
+            currentFindIndex = idx;
+
+            // Scroll and select
             area.focus();
-            area.setSelectionRange(current.start, current.end);
+            area.setSelectionRange(match.index, match.index + match.length);
+            setVimMode(false);
+        }
+        function navigateFindResults(dir) {
+            if (findMatches.length === 0) return;
+            if (currentFindIndex === -1) currentFindIndex = 0;
+            else currentFindIndex = (currentFindIndex + dir + findMatches.length) % findMatches.length;
 
-            resultsEl.textContent = `Match ${findIndex + 1} of ${findMatches.length}`;
-            findIndex++;
+            const resultDivs = document.querySelectorAll('#findResults .find-item');
+            resultDivs.forEach(div => div.style.background = '');
+            const active = resultDivs[currentFindIndex];
+            if (active) {
+                active.style.background = '#333';
+                active.scrollIntoView({ block: 'nearest' });
+            }
+            // Keep selection synced with highlighted result
+            const area = document.getElementById('editorArea');
+            const match = findMatches[currentFindIndex];
+            area.focus();
+            area.setSelectionRange(match.index, match.index + match.length);
         }
 
         function doReplaceAll() {
@@ -2364,6 +2422,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
             if (matchCount > 0) {
                 content = content.replace(regex, replaceVal);
+                editorArea.value = content;
                 info.node.content = safeStoreText(content);
                 render();
                 resultsEl.textContent = `Replaced ${matchCount} occurrence(s).`;
@@ -2380,6 +2439,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         replaceInputEl.addEventListener('keydown', e => {
             if (e.key === 'Enter') {
                 e.preventDefault();
+                e.stopPropagation();
                 doReplaceAll(); // replaces all
                 closeReplaceDialog();
             }
@@ -2520,6 +2580,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                 editorArea.setRangeText("", lineStart, lineEnd, "start");
                 editorArea.selectionStart = editorArea.selectionEnd = lineStart;
             } else {
+                if (end === start) end += 1;
                 const deletedLength = end - start;
                 visual_end = visual_start;
                 editorArea.setRangeText("", start, end, "start");
@@ -2870,9 +2931,24 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                     case 'Escape':
                         closeReplaceDialog();
                         break;
-
+                    case 'ArrowDown':
+                        navigateFindResults(1);
+                        e.preventDefault();
+                        break;
+                    case 'ArrowUp':
+                        navigateFindResults(-1);
+                        e.preventDefault();
+                        break;
                     case "Enter":
-                        doFind();
+                        if (document.getElementById('replaceText').value !== "") break;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (currentFindIndex !== -1) {
+                            selectFindMatch(currentFindIndex);
+                            closeReplaceDialog();
+                        } else {
+                            doFind();
+                        }
                         break;
                 }
 
@@ -2940,8 +3016,6 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                 case 'R': if (!readOnly) renameFolder(); break;
                 case 'j': if (!dialogOpen()) selectNextSibling(true); break;
                 case 'k': if (!dialogOpen()) selectPrevSibling(false); break;
-                case ',': selectNextSibling(true); break;
-                case '.': selectPrevSibling(true); break;
                 case 'l': moveRight(); break;
                 case 'h': moveLeft(true); break;
                 case 'u': moveLeft(false); break;
@@ -3038,6 +3112,8 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
     let linksIndex = 0;
     let linksCount = 0;
+    let findMatches = [];
+    let currentFindIndex = -1;
 
     function openMissingLinksDialog() {
         if (readOnly) return;
