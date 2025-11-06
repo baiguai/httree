@@ -2369,6 +2369,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                 div.addEventListener('click', e => {
                     const idx = parseInt(div.dataset.idx);
                     selectFindMatch(idx);
+                    closeReplaceDialog();
                 });
             });
         }

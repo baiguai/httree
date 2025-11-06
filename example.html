@@ -2362,6 +2362,7 @@
                 div.addEventListener('click', e => {
                     const idx = parseInt(div.dataset.idx);
                     selectFindMatch(idx);
+                    closeReplaceDialog();
                 });
             });
         }
@@ -2373,9 +2374,10 @@
             currentFindIndex = idx;
 
             // Scroll and select
-            area.focus();
             area.setSelectionRange(match.index, match.index + match.length);
             setVimMode(false);
+            editing = true;
+            area.focus();
         }
         function navigateFindResults(dir) {
             if (findMatches.length === 0) return;
