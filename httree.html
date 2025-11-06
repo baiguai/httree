@@ -2380,9 +2380,10 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             currentFindIndex = idx;
 
             // Scroll and select
-            area.focus();
             area.setSelectionRange(match.index, match.index + match.length);
             setVimMode(false);
+            editing = true;
+            area.focus();
         }
         function navigateFindResults(dir) {
             if (findMatches.length === 0) return;
