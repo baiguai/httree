@@ -118,7 +118,7 @@
     :root {
         --bg: #000;
         --fg: #f5f5f5;
-        --muted: #9aa0a6;
+        --muted: #555;
         --accent: #00d1b2;
         --danger: #ff5577;
         --sel-bg: #111827;
@@ -2344,7 +2344,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
                 findMatches.push({ index: match.index, length: match[0].length });
                 resultHTML += `<div class="find-item" data-idx="${findMatches.length - 1}" 
-                                style="cursor:pointer; padding:2px;">
+                                style="cursor:pointer; padding:2px; overflow: auto; font-size: 60%;">
                                 ${highlighted}
                                </div>`;
             }
@@ -2712,21 +2712,16 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             function matches(h, term) {
                 let t = term.trim().replace(/\s+/g, '').toLowerCase();
                 let key = h.key.replace(/\s+/g, '').toLowerCase();
-                let mode = "";
-                if (mode != "ReadOnly") {
-                    mode = mode.toLowerCase();
-                } else {
-                    mode = "";
-                }
+                let mode = h.mode ? h.mode.toLowerCase() : "";
                 let desc = h.description.toLowerCase();
             
                 // If the search starts with ":", search keys only
                 if (t.startsWith(':')) {
                     t = t.slice(1); // remove ':'
-                    mode = '';
-                    desc = '';
+                    return key.includes(t);
                 }
             
+                // Otherwise search all fields
                 return key.includes(t) || mode.includes(t) || desc.includes(t);
             }
         
