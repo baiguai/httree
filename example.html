@@ -1,4 +1,4 @@
-<!DOCTYPE html><html style="--app-height: 988px;"><head>
+<!DOCTYPE html><html style="--app-height: 1058px;"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport">
 <title>Httree Example</title>
@@ -1220,8 +1220,11 @@
                     break;
             }
 
-            setAppHeight();
-            scrollToCursor();
+            if (!mode_insert) {
+                // Only adjust scrolling when *not* editing
+                setAppHeight();
+                scrollToCursor();
+            }
 
             if (e.key === 'Escape') {
                 e.preventDefault();
@@ -1316,7 +1319,8 @@
                 }
             }
 
-        
+
+            //---- These are the keys to be processed when in NORMAL mode ------
             switch (e.key) {
                 case "i": // Enter insert mode
                 case "a":
@@ -1453,6 +1457,7 @@
                     scrollToCursor();
                     break;
             }
+            //------------------------------------------------------------------
         
             if (performed) {
                 keyPerformed();
@@ -2487,7 +2492,6 @@
             editorArea.value = undoValue;
             syncFile();
         }
-
 
 
         //---- Visual Mode Helpers ---------------------------------------------

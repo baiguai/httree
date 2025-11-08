@@ -1227,8 +1227,11 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                     break;
             }
 
-            setAppHeight();
-            scrollToCursor();
+            if (!mode_insert) {
+                // Only adjust scrolling when *not* editing
+                setAppHeight();
+                scrollToCursor();
+            }
 
             if (e.key === 'Escape') {
                 e.preventDefault();
@@ -1323,7 +1326,8 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                 }
             }
 
-        
+
+            //---- These are the keys to be processed when in NORMAL mode ------
             switch (e.key) {
                 case "i": // Enter insert mode
                 case "a":
@@ -1460,6 +1464,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                     scrollToCursor();
                     break;
             }
+            //------------------------------------------------------------------
         
             if (performed) {
                 keyPerformed();
@@ -2494,7 +2499,6 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             editorArea.value = undoValue;
             syncFile();
         }
-
 
 
         //---- Visual Mode Helpers ---------------------------------------------
