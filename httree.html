@@ -820,8 +820,10 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             { key: "k", mode: "NORMAL", description: "Move up" },
             { key: "0", mode: "NORMAL", description: "Jump to the beginning of the line" },
             { key: "$", mode: "NORMAL", description: "Jump to the end of the line" },
+            { key: "b", mode: "NORMAL", description: "Move backward one word" },
+            { key: "B", mode: "NORMAL", description: "Move backward to the next space" },
             { key: "w", mode: "NORMAL", description: "Move forward one word" },
-            { key: "W", mode: "NORMAL", description: "Move back a word" },
+            { key: "W", mode: "NORMAL", description: "Move forward to the next space" },
             { key: "D", mode: "NORMAL", description: "Delete everything right of the cursor" },
             { key: "dd", mode: "NORMAL", description: "Delete current row" },
             { key: "gg", mode: "NORMAL", description: "Go to the start of the note" },
@@ -2819,7 +2821,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
         //---- Saving ----------------------------------------------------------
         function getContents(name, saveName) {
-            const elemLimit = 20; // Number of elements per line
+            const elemLimit = 50; // Number of elements per line
             const htmlDoc = document.documentElement.cloneNode(true);
 
             // Make sure the latest database is stored
