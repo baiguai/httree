@@ -2906,14 +2906,22 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
             const res = await fetch("http://localhost:"+nodePort+"/save", {
                 method: "POST",
-                headers: { "Content-Type": "text/plain" },
+                headers: { 
+                    "Content-Type": "text/plain",
+                    "X-Filename": fileName + ".html"
+                },
                 body: content
             });
 
             if (res.ok) {
                 showMessage("Saved successfully");
             } else {
-                showMessage("Save failed: " + (await res.text()));
+                const errorText = await res.text();
+                if (errorText.includes("SAFETY ERROR")) {
+                    showMessage("⚠️ " + errorText, 8000);
+                } else {
+                    showMessage("Save failed: " + errorText);
+                }
             }
         }
 

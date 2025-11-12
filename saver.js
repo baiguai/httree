@@ -71,7 +71,7 @@ if (!fs.existsSync(resolvedBackupDir)) fs.mkdirSync(resolvedBackupDir, { recursi
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header("Access-Control-Allow-Headers", "Content-Type, X-Filename");
     if (req.method === "OPTIONS") return res.sendStatus(200);
     next();
 });
@@ -79,7 +79,18 @@ app.use((req, res, next) => {
 // --- Save Route ---
 app.post("/save", (req, res) => {
     const content = req.body;
+    const clientFileName = req.headers['x-filename'];
+    
     if (!content) return res.status(400).send("No content received");
+
+    // --- Safety Check: Validate filename matches ---
+    if (clientFileName) {
+        const serverFileName = path.basename(FILE_PATH);
+        if (clientFileName !== serverFileName) {
+            console.error(`${getTimeStamp()}SAFETY ERROR: Client filename '${clientFileName}' does not match server filename '${serverFileName}'`);
+            return res.status(403).send(`SAFETY ERROR: Filename mismatch. Client: ${clientFileName}, Server: ${serverFileName}. Save aborted to prevent data overwriting.`);
+        }
+    }
 
     try {
         // --- Create a backup first ---
