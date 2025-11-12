@@ -676,6 +676,8 @@
 
         let bookmarks = [];
 
+
+
         // !@!
         const readOnly = false;
 
@@ -693,6 +695,8 @@
 
         let currentEditorNodeId = null;
         let historyStack = [];
+
+
         let showingHistory = false;
         let historyIndex = 0;
         const historyStackMax = 30;
@@ -813,8 +817,10 @@
             { key: "k", mode: "NORMAL", description: "Move up" },
             { key: "0", mode: "NORMAL", description: "Jump to the beginning of the line" },
             { key: "$", mode: "NORMAL", description: "Jump to the end of the line" },
+            { key: "b", mode: "NORMAL", description: "Move backward one word" },
+            { key: "B", mode: "NORMAL", description: "Move backward to the next space" },
             { key: "w", mode: "NORMAL", description: "Move forward one word" },
-            { key: "W", mode: "NORMAL", description: "Move back a word" },
+            { key: "W", mode: "NORMAL", description: "Move forward to the next space" },
             { key: "D", mode: "NORMAL", description: "Delete everything right of the cursor" },
             { key: "dd", mode: "NORMAL", description: "Delete current row" },
             { key: "gg", mode: "NORMAL", description: "Go to the start of the note" },
@@ -1393,10 +1399,52 @@
                     performed = true;
                     break;
 
-                case "W": // Backward word(s)
+                case "W":
+                    const area = document.getElementById('editorArea');
+                    if (!area) break;
+                
+                    const wtext = area.value;
+                    const pos = area.selectionStart;
+                
+                    // Find end of current line
+                    const newlineIdx = wtext.indexOf('\n', pos);
+                    const lineEnd = newlineIdx === -1 ? wtext.length : newlineIdx;
+                
+                    // Find next space within the same line
+                    let nextSpace = wtext.indexOf(' ', pos + 1);
+                    if (nextSpace === -1 || nextSpace > lineEnd) nextSpace = lineEnd;
+                
+                    // Skip consecutive spaces
+                    while (nextSpace < wtext.length && wtext[nextSpace] === ' ') nextSpace++;
+                
+                    area.setSelectionRange(nextSpace, nextSpace);
+                    e.preventDefault();
+                    break;
+
                 case "b": // Backward word(s)
                     for (let i = 0; i < mode_repeat; i++) moveWord(-1);
                     performed = true;
+                    break;
+
+                case "B":
+                    const barea = document.getElementById('editorArea');
+                    if (!barea) break;
+                
+                    const btext = barea.value;
+                    const bpos = barea.selectionStart;
+                
+                    // Find start of current line
+                    const lineStart = btext.lastIndexOf('\n', bpos - 1) + 1;
+                
+                    // Move backward until hitting space or start of line
+                    let prevSpace = btext.lastIndexOf(' ', bpos - 1);
+                    if (prevSpace < lineStart && lineStart > 0) prevSpace = lineStart;
+                
+                    // Skip consecutive spaces
+                    while (prevSpace > 0 && btext[prevSpace - 1] === ' ') prevSpace--;
+                
+                    barea.setSelectionRange(prevSpace, prevSpace);
+                    e.preventDefault();
                     break;
         
                 case "x": // Delete character(s) under cursor
@@ -2770,7 +2818,7 @@
 
         //---- Saving ----------------------------------------------------------
         function getContents(name, saveName) {
-            const elemLimit = 20; // Number of elements per line
+            const elemLimit = 50; // Number of elements per line
             const htmlDoc = document.documentElement.cloneNode(true);
 
             // Make sure the latest database is stored
@@ -3538,6 +3586,25 @@
 
     //---- Init ------------------------------------------------------------
     window.addEventListener('load', function() {
+        // Restore historyStack and bookmarks from saved HTML content
+        try {
+            const htmlContent = document.documentElement.outerHTML;
+            
+            // Extract and restore historyStack
+            const historyMatch = htmlContent.match(/let\s+historyStack\s*=\s*(\[[\s\S]*?\]);/);
+            if (historyMatch) {
+                historyStack = JSON.parse(historyMatch[1]);
+            }
+            
+            // Extract and restore bookmarks
+            const bookmarksMatch = htmlContent.match(/let\s+bookmarks\s*=\s*(\[[\s\S]*?\]);/);
+            if (bookmarksMatch) {
+                bookmarks = JSON.parse(bookmarksMatch[1]);
+            }
+        } catch (e) {
+            console.error('Failed to restore saved data:', e);
+        }
+
         if (showInitHelp) {
             if (readOnly) openHelpDialog('ReadOnly');
             else if (mode_vim) openHelpDialog('VimEnabled');
