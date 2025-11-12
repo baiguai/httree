@@ -678,6 +678,8 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
         let bookmarks = [];
 
+
+
         // !@!
         const readOnly = false;
 
@@ -700,6 +702,8 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         "title": "dddd"
     }
 ];
+
+
         let showingHistory = false;
         let historyIndex = 0;
         const historyStackMax = 30;
@@ -3589,6 +3593,25 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
     //---- Init ------------------------------------------------------------
     window.addEventListener('load', function() {
+        // Restore historyStack and bookmarks from saved HTML content
+        try {
+            const htmlContent = document.documentElement.outerHTML;
+            
+            // Extract and restore historyStack
+            const historyMatch = htmlContent.match(/let\s+historyStack\s*=\s*(\[[\s\S]*?\]);/);
+            if (historyMatch) {
+                historyStack = JSON.parse(historyMatch[1]);
+            }
+            
+            // Extract and restore bookmarks
+            const bookmarksMatch = htmlContent.match(/let\s+bookmarks\s*=\s*(\[[\s\S]*?\]);/);
+            if (bookmarksMatch) {
+                bookmarks = JSON.parse(bookmarksMatch[1]);
+            }
+        } catch (e) {
+            console.error('Failed to restore saved data:', e);
+        }
+
         if (showInitHelp) {
             if (readOnly) openHelpDialog('ReadOnly');
             else if (mode_vim) openHelpDialog('VimEnabled');
