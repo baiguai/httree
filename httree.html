@@ -118,7 +118,7 @@
     :root {
         --bg: #000;
         --fg: #f5f5f5;
-        --muted: #9aa0a6;
+        --muted: #555;
         --accent: #00d1b2;
         --danger: #ff5577;
         --sel-bg: #111827;
@@ -523,10 +523,10 @@
     <button id="hamburger" class="hamburger" style="display:none;">☰</button>
     <button id="mblSearch" onclick="closeDialogs(); activateTree(); openSearch();">Search</button>
     <button id="mblLinks" onclick="closeDialogs(); activateTree(); openLinksDialog();">Links</button>
-    &nbsp;
-    <button id="mblExport" onclick="closeDialogs(); exportNoteAsTxt();">Export Note</button>
+    <button id="mblExport" onclick="closeDialogs(); exportNoteAsTxt();">Export</button>
     <button id="mblSave" onclick="closeDialogs(); saveAsHtml('');">Save As</button>
     <button id="mblSave" onclick="closeDialogs(); saveAsHtml(fileName);">Save</button>
+    <button id="mblSave" onclick="closeDialogs(); openHelpDialog('VimDisabled');">?</button>
 </header>
 
 <div id="treeDialog" class="tree-dialog">
@@ -671,17 +671,12 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         /** @typedef {{ id:string, title:string, content:string, children:NodeT[], expanded:boolean }} NodeT */
 
         /** @type {NodeT[]} */
-        let treeData = [
-  
-];
-
-
-        let bookmarks = [];
+        let treeData = [ ];
+        let bookmarks = [ ];
+        let historyStack = [ ];
 
         // !@!
         const readOnly = false;
-
-
 
         const SAFE_MAP = {
             "</script": "^^^script^^^",
@@ -694,12 +689,8 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         let nodePort = 0;
 
         let currentEditorNodeId = null;
-        let historyStack = [
-    {
-        "id": "qnri96g4",
-        "title": "dddd"
-    }
-];
+
+
         let showingHistory = false;
         let historyIndex = 0;
         const historyStackMax = 30;
@@ -820,8 +811,10 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             { key: "k", mode: "NORMAL", description: "Move up" },
             { key: "0", mode: "NORMAL", description: "Jump to the beginning of the line" },
             { key: "$", mode: "NORMAL", description: "Jump to the end of the line" },
+            { key: "b", mode: "NORMAL", description: "Move backward one word" },
+            { key: "B", mode: "NORMAL", description: "Move backward to the next space" },
             { key: "w", mode: "NORMAL", description: "Move forward one word" },
-            { key: "W", mode: "NORMAL", description: "Move back a word" },
+            { key: "W", mode: "NORMAL", description: "Move forward to the next space" },
             { key: "D", mode: "NORMAL", description: "Delete everything right of the cursor" },
             { key: "dd", mode: "NORMAL", description: "Delete current row" },
             { key: "gg", mode: "NORMAL", description: "Go to the start of the note" },
@@ -1227,8 +1220,11 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                     break;
             }
 
-            setAppHeight();
-            scrollToCursor();
+            if (!mode_insert) {
+                // Only adjust scrolling when *not* editing
+                setAppHeight();
+                scrollToCursor();
+            }
 
             if (e.key === 'Escape') {
                 e.preventDefault();
@@ -1323,7 +1319,8 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                 }
             }
 
-        
+
+            //---- These are the keys to be processed when in NORMAL mode ------
             switch (e.key) {
                 case "i": // Enter insert mode
                 case "a":
@@ -1396,10 +1393,52 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                     performed = true;
                     break;
 
-                case "W": // Backward word(s)
+                case "W":
+                    const area = document.getElementById('editorArea');
+                    if (!area) break;
+                
+                    const wtext = area.value;
+                    const pos = area.selectionStart;
+                
+                    // Find end of current line
+                    const newlineIdx = wtext.indexOf('\n', pos);
+                    const lineEnd = newlineIdx === -1 ? wtext.length : newlineIdx;
+                
+                    // Find next space within the same line
+                    let nextSpace = wtext.indexOf(' ', pos + 1);
+                    if (nextSpace === -1 || nextSpace > lineEnd) nextSpace = lineEnd;
+                
+                    // Skip consecutive spaces
+                    while (nextSpace < wtext.length && wtext[nextSpace] === ' ') nextSpace++;
+                
+                    area.setSelectionRange(nextSpace, nextSpace);
+                    e.preventDefault();
+                    break;
+
                 case "b": // Backward word(s)
                     for (let i = 0; i < mode_repeat; i++) moveWord(-1);
                     performed = true;
+                    break;
+
+                case "B":
+                    const barea = document.getElementById('editorArea');
+                    if (!barea) break;
+                
+                    const btext = barea.value;
+                    const bpos = barea.selectionStart;
+                
+                    // Find start of current line
+                    const lineStart = btext.lastIndexOf('\n', bpos - 1) + 1;
+                
+                    // Move backward until hitting space or start of line
+                    let prevSpace = btext.lastIndexOf(' ', bpos - 1);
+                    if (prevSpace < lineStart && lineStart > 0) prevSpace = lineStart;
+                
+                    // Skip consecutive spaces
+                    while (prevSpace > 0 && btext[prevSpace - 1] === ' ') prevSpace--;
+                
+                    barea.setSelectionRange(prevSpace, prevSpace);
+                    e.preventDefault();
                     break;
         
                 case "x": // Delete character(s) under cursor
@@ -1460,6 +1499,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                     scrollToCursor();
                     break;
             }
+            //------------------------------------------------------------------
         
             if (performed) {
                 keyPerformed();
@@ -2232,8 +2272,6 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                     fileName = newFile;
                     document.title = newTitle;
                     closeDialog();
-                    historyStack = [];
-                    bookmarks = [];
                     saveAsHtml(newFile);
                 } else if (e.key === 'Escape') {
                     e.preventDefault();
@@ -2344,7 +2382,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
                 findMatches.push({ index: match.index, length: match[0].length });
                 resultHTML += `<div class="find-item" data-idx="${findMatches.length - 1}" 
-                                style="cursor:pointer; padding:2px;">
+                                style="cursor:pointer; padding:2px; overflow: auto; font-size: 60%;">
                                 ${highlighted}
                                </div>`;
             }
@@ -2494,7 +2532,6 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             editorArea.value = undoValue;
             syncFile();
         }
-
 
 
         //---- Visual Mode Helpers ---------------------------------------------
@@ -2712,21 +2749,16 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             function matches(h, term) {
                 let t = term.trim().replace(/\s+/g, '').toLowerCase();
                 let key = h.key.replace(/\s+/g, '').toLowerCase();
-                let mode = "";
-                if (mode != "ReadOnly") {
-                    mode = mode.toLowerCase();
-                } else {
-                    mode = "";
-                }
+                let mode = h.mode ? h.mode.toLowerCase() : "";
                 let desc = h.description.toLowerCase();
             
                 // If the search starts with ":", search keys only
                 if (t.startsWith(':')) {
                     t = t.slice(1); // remove ':'
-                    mode = '';
-                    desc = '';
+                    return key.includes(t);
                 }
             
+                // Otherwise search all fields
                 return key.includes(t) || mode.includes(t) || desc.includes(t);
             }
         
@@ -2778,7 +2810,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
         //---- Saving ----------------------------------------------------------
         function getContents(name, saveName) {
-            const elemLimit = 20; // Number of elements per line
+            const elemLimit = 50; // Number of elements per line
             const htmlDoc = document.documentElement.cloneNode(true);
 
             // Make sure the latest database is stored
@@ -2823,13 +2855,17 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
             htmlContent = htmlContent.replace(/let\s+treeData\s*=\s*\[[\s\S]*?\];/, `let treeData = ${formattedDatabase};`);
 
+            // Make sure the latest bookmarks and historyStack are stored
+            const latestBookmarks = JSON.parse(JSON.stringify(bookmarks));
+            const latestHistoryStack = JSON.parse(JSON.stringify(historyStack));
+
             htmlContent = htmlContent.replace(
                 /let\s+bookmarks\s*=\s*\[[\s\S]*?\];/,
-                "let bookmarks = " + JSON.stringify(bookmarks, null, 4) + ";"
+                "let bookmarks = " + JSON.stringify(latestBookmarks, null, 4) + ";"
             );
             htmlContent = htmlContent.replace(
                 /let\s+historyStack\s*=\s*\[[\s\S]*?\];/,
-                "let historyStack = " + JSON.stringify(historyStack, null, 4) + ";"
+                "let historyStack = " + JSON.stringify(latestHistoryStack, null, 4) + ";"
             );
 
             return htmlContent;
@@ -2859,14 +2895,22 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
             const res = await fetch("http://localhost:"+nodePort+"/save", {
                 method: "POST",
-                headers: { "Content-Type": "text/plain" },
+                headers: { 
+                    "Content-Type": "text/plain",
+                    "X-Filename": fileName + ".html"
+                },
                 body: content
             });
 
             if (res.ok) {
                 showMessage("Saved successfully");
             } else {
-                showMessage("Save failed: " + (await res.text()));
+                const errorText = await res.text();
+                if (errorText.includes("SAFETY ERROR")) {
+                    showMessage("!! " + errorText + " !!", 8000);
+                } else {
+                    showMessage("Save failed: " + errorText);
+                }
             }
         }
 
@@ -3381,6 +3425,28 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                     // Replace current in-memory treeData
                     treeData = importedTreeData;
 
+                    // Restore historyStack from imported file
+                    const historyMatch = content.match(/let\s+historyStack\s*=\s*(\[[\s\S]*?\]);/s);
+                    if (historyMatch) {
+                        try {
+                            historyStack = JSON.parse(historyMatch[1]);
+                        } catch (e) {
+                            console.warn('Failed to parse historyStack from import, using empty array');
+                            historyStack = [];
+                        }
+                    }
+                    
+                    // Restore bookmarks from imported file
+                    const bookmarksMatch = content.match(/let\s+bookmarks\s*=\s*(\[[\s\S]*?\]);/s);
+                    if (bookmarksMatch) {
+                        try {
+                            bookmarks = JSON.parse(bookmarksMatch[1]);
+                        } catch (e) {
+                            console.warn('Failed to parse bookmarks from import, using empty array');
+                            bookmarks = [];
+                        }
+                    }
+
                     selectedId = treeData[0]?.id || null;
 
                     // Re-render with new data
@@ -3546,6 +3612,46 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
     //---- Init ------------------------------------------------------------
     window.addEventListener('load', function() {
+        // Restore historyStack and bookmarks from saved HTML content
+        try {
+            const htmlContent = document.documentElement.outerHTML;
+            
+            // Extract and restore historyStack
+            const historyMatch = htmlContent.match(/let\s+historyStack\s*=\s*(\[[\s\S]*?\]);/s);
+            if (historyMatch) {
+                try {
+                    historyStack = JSON.parse(historyMatch[1]);
+                } catch (e) {
+                    console.warn('Failed to parse historyStack, using empty array');
+                    historyStack = [];
+                }
+            }
+            
+            // Extract and restore bookmarks
+            const bookmarksMatch = htmlContent.match(/let\s+bookmarks\s*=\s*(\[[\s\S]*?\]);/s);
+            if (bookmarksMatch) {
+                try {
+                    bookmarks = JSON.parse(bookmarksMatch[1]);
+                } catch (e) {
+                    console.warn('Failed to parse bookmarks, using empty array');
+                    bookmarks = [];
+                }
+            }
+            
+            // Extract and restore nodePort
+            const nodePortMatch = htmlContent.match(/let\s+nodePort\s*=\s*(\d+);/);
+            if (nodePortMatch) {
+                try {
+                    nodePort = parseInt(nodePortMatch[1]);
+                } catch (e) {
+                    console.warn('Failed to parse nodePort, using 0');
+                    nodePort = 0;
+                }
+            }
+        } catch (e) {
+            console.error('Failed to restore saved data:', e);
+        }
+
         if (showInitHelp) {
             if (readOnly) openHelpDialog('ReadOnly');
             else if (mode_vim) openHelpDialog('VimEnabled');
@@ -3573,4 +3679,5 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
 
 
+<!-- Version 20251112 -->
 </body></html>

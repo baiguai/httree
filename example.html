@@ -118,7 +118,7 @@
     :root {
         --bg: #000;
         --fg: #f5f5f5;
-        --muted: #9aa0a6;
+        --muted: #555;
         --accent: #00d1b2;
         --danger: #ff5577;
         --sel-bg: #111827;
@@ -523,10 +523,10 @@
     <button id="hamburger" class="hamburger" style="display:none;">☰</button>
     <button id="mblSearch" onclick="closeDialogs(); activateTree(); openSearch();">Search</button>
     <button id="mblLinks" onclick="closeDialogs(); activateTree(); openLinksDialog();">Links</button>
-    &nbsp;
-    <button id="mblExport" onclick="closeDialogs(); exportNoteAsTxt();">Export Note</button>
+    <button id="mblExport" onclick="closeDialogs(); exportNoteAsTxt();">Export</button>
     <button id="mblSave" onclick="closeDialogs(); saveAsHtml('');">Save As</button>
     <button id="mblSave" onclick="closeDialogs(); saveAsHtml(fileName);">Save</button>
+    <button id="mblSave" onclick="closeDialogs(); openHelpDialog('VimDisabled');">?</button>
 </header>
 
 <div id="treeDialog" class="tree-dialog">
@@ -1220,8 +1220,11 @@
                     break;
             }
 
-            setAppHeight();
-            scrollToCursor();
+            if (!mode_insert) {
+                // Only adjust scrolling when *not* editing
+                setAppHeight();
+                scrollToCursor();
+            }
 
             if (e.key === 'Escape') {
                 e.preventDefault();
@@ -1316,7 +1319,8 @@
                 }
             }
 
-        
+
+            //---- These are the keys to be processed when in NORMAL mode ------
             switch (e.key) {
                 case "i": // Enter insert mode
                 case "a":
@@ -1453,6 +1457,7 @@
                     scrollToCursor();
                     break;
             }
+            //------------------------------------------------------------------
         
             if (performed) {
                 keyPerformed();
@@ -2337,7 +2342,7 @@
 
                 findMatches.push({ index: match.index, length: match[0].length });
                 resultHTML += `<div class="find-item" data-idx="${findMatches.length - 1}" 
-                                style="cursor:pointer; padding:2px;">
+                                style="cursor:pointer; padding:2px; overflow: auto; font-size: 60%;">
                                 ${highlighted}
                                </div>`;
             }
@@ -2487,7 +2492,6 @@
             editorArea.value = undoValue;
             syncFile();
         }
-
 
 
         //---- Visual Mode Helpers ---------------------------------------------
@@ -2705,21 +2709,16 @@
             function matches(h, term) {
                 let t = term.trim().replace(/\s+/g, '').toLowerCase();
                 let key = h.key.replace(/\s+/g, '').toLowerCase();
-                let mode = "";
-                if (mode != "ReadOnly") {
-                    mode = mode.toLowerCase();
-                } else {
-                    mode = "";
-                }
+                let mode = h.mode ? h.mode.toLowerCase() : "";
                 let desc = h.description.toLowerCase();
             
                 // If the search starts with ":", search keys only
                 if (t.startsWith(':')) {
                     t = t.slice(1); // remove ':'
-                    mode = '';
-                    desc = '';
+                    return key.includes(t);
                 }
             
+                // Otherwise search all fields
                 return key.includes(t) || mode.includes(t) || desc.includes(t);
             }
         

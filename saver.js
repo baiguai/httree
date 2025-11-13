@@ -5,14 +5,12 @@ INSTALLATION:
 Copy this file to the directory where your notes will be.
 Run the following:
 
-sudo npm install -g express
-sudo npm install -g body-parser
-sudo npm install -g cors
+npm install express body-parser cors
 
 NOTE:
-You may STILL need to run:
-npm install express
-the first time you copy the saver (which you can rename of course) to a new directory.
+This installs dependencies locally in the current directory.
+You only need to run this once per directory.
+The node_modules folder and package-lock.json will be created automatically.
 
 Copy over your Httree notes file (rename it as desired).
 Below: Set the FILE_PATH, PORT, and if needed NODE_IP
@@ -71,7 +69,7 @@ if (!fs.existsSync(resolvedBackupDir)) fs.mkdirSync(resolvedBackupDir, { recursi
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header("Access-Control-Allow-Headers", "Content-Type, X-Filename");
     if (req.method === "OPTIONS") return res.sendStatus(200);
     next();
 });
@@ -79,7 +77,23 @@ app.use((req, res, next) => {
 // --- Save Route ---
 app.post("/save", (req, res) => {
     const content = req.body;
+    const clientFileName = req.headers['x-filename'];
+    
     if (!content) return res.status(400).send("No content received");
+
+    // --- Safety Check: Validate filename matches ---
+    if (clientFileName) {
+        const serverFileName = path.basename(FILE_PATH);
+        // Remove .html extension from client filename for comparison with fileName variable
+        const clientBaseName = clientFileName.replace('.html', '');
+        const serverBaseName = path.basename(FILE_PATH, '.html');
+        
+        // Check if the base names match (help vs test, etc.)
+        if (clientBaseName !== serverBaseName) {
+            console.error(`${getTimeStamp()}SAFETY ERROR: Client filename '${clientFileName}' (base: ${clientBaseName}) does not match server filename '${serverFileName}' (base: ${serverBaseName})`);
+            return res.status(403).send(`SAFETY ERROR: Filename mismatch. Client: ${clientFileName}, Server: ${serverFileName}. Save aborted to prevent data overwriting.`);
+        }
+    }
 
     try {
         // --- Create a backup first ---
