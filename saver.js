@@ -179,5 +179,5 @@ function pruneBackups() {
 
 // --- Start server ---
 app.listen(PORT, NODE_IP, () => {
-    console.log(`Saver running at http://${NODE_IP}:${PORT}`);
+    console.log(`Saver ${FILE_PATH} running at http://${NODE_IP}:${PORT}`);
 });
