@@ -671,19 +671,12 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         /** @typedef {{ id:string, title:string, content:string, children:NodeT[], expanded:boolean }} NodeT */
 
         /** @type {NodeT[]} */
-        let treeData = [
-  
-];
-
-
-        let bookmarks = [];
-
-
+        let treeData = [ ];
+        let bookmarks = [ ];
+        let historyStack = [ ];
 
         // !@!
         const readOnly = false;
-
-
 
         const SAFE_MAP = {
             "</script": "^^^script^^^",
@@ -696,12 +689,6 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         let nodePort = 0;
 
         let currentEditorNodeId = null;
-        let historyStack = [
-    {
-        "id": "qnri96g4",
-        "title": "dddd"
-    }
-];
 
 
         let showingHistory = false;
@@ -2285,8 +2272,6 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                     fileName = newFile;
                     document.title = newTitle;
                     closeDialog();
-                    historyStack = [];
-                    bookmarks = [];
                     saveAsHtml(newFile);
                 } else if (e.key === 'Escape') {
                     e.preventDefault();
@@ -2870,13 +2855,17 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
             htmlContent = htmlContent.replace(/let\s+treeData\s*=\s*\[[\s\S]*?\];/, `let treeData = ${formattedDatabase};`);
 
+            // Make sure the latest bookmarks and historyStack are stored
+            const latestBookmarks = JSON.parse(JSON.stringify(bookmarks));
+            const latestHistoryStack = JSON.parse(JSON.stringify(historyStack));
+
             htmlContent = htmlContent.replace(
                 /let\s+bookmarks\s*=\s*\[[\s\S]*?\];/,
-                "let bookmarks = " + JSON.stringify(bookmarks, null, 4) + ";"
+                "let bookmarks = " + JSON.stringify(latestBookmarks, null, 4) + ";"
             );
             htmlContent = htmlContent.replace(
                 /let\s+historyStack\s*=\s*\[[\s\S]*?\];/,
-                "let historyStack = " + JSON.stringify(historyStack, null, 4) + ";"
+                "let historyStack = " + JSON.stringify(latestHistoryStack, null, 4) + ";"
             );
 
             return htmlContent;
@@ -2918,7 +2907,7 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             } else {
                 const errorText = await res.text();
                 if (errorText.includes("SAFETY ERROR")) {
-                    showMessage("⚠️ " + errorText, 8000);
+                    showMessage("!! " + errorText + " !!", 8000);
                 } else {
                     showMessage("Save failed: " + errorText);
                 }
@@ -3436,6 +3425,28 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
                     // Replace current in-memory treeData
                     treeData = importedTreeData;
 
+                    // Restore historyStack from imported file
+                    const historyMatch = content.match(/let\s+historyStack\s*=\s*(\[[\s\S]*?\]);/s);
+                    if (historyMatch) {
+                        try {
+                            historyStack = JSON.parse(historyMatch[1]);
+                        } catch (e) {
+                            console.warn('Failed to parse historyStack from import, using empty array');
+                            historyStack = [];
+                        }
+                    }
+                    
+                    // Restore bookmarks from imported file
+                    const bookmarksMatch = content.match(/let\s+bookmarks\s*=\s*(\[[\s\S]*?\]);/s);
+                    if (bookmarksMatch) {
+                        try {
+                            bookmarks = JSON.parse(bookmarksMatch[1]);
+                        } catch (e) {
+                            console.warn('Failed to parse bookmarks from import, using empty array');
+                            bookmarks = [];
+                        }
+                    }
+
                     selectedId = treeData[0]?.id || null;
 
                     // Re-render with new data
@@ -3606,15 +3617,36 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
             const htmlContent = document.documentElement.outerHTML;
             
             // Extract and restore historyStack
-            const historyMatch = htmlContent.match(/let\s+historyStack\s*=\s*(\[[\s\S]*?\]);/);
+            const historyMatch = htmlContent.match(/let\s+historyStack\s*=\s*(\[[\s\S]*?\]);/s);
             if (historyMatch) {
-                historyStack = JSON.parse(historyMatch[1]);
+                try {
+                    historyStack = JSON.parse(historyMatch[1]);
+                } catch (e) {
+                    console.warn('Failed to parse historyStack, using empty array');
+                    historyStack = [];
+                }
             }
             
             // Extract and restore bookmarks
-            const bookmarksMatch = htmlContent.match(/let\s+bookmarks\s*=\s*(\[[\s\S]*?\]);/);
+            const bookmarksMatch = htmlContent.match(/let\s+bookmarks\s*=\s*(\[[\s\S]*?\]);/s);
             if (bookmarksMatch) {
-                bookmarks = JSON.parse(bookmarksMatch[1]);
+                try {
+                    bookmarks = JSON.parse(bookmarksMatch[1]);
+                } catch (e) {
+                    console.warn('Failed to parse bookmarks, using empty array');
+                    bookmarks = [];
+                }
+            }
+            
+            // Extract and restore nodePort
+            const nodePortMatch = htmlContent.match(/let\s+nodePort\s*=\s*(\d+);/);
+            if (nodePortMatch) {
+                try {
+                    nodePort = parseInt(nodePortMatch[1]);
+                } catch (e) {
+                    console.warn('Failed to parse nodePort, using 0');
+                    nodePort = 0;
+                }
             }
         } catch (e) {
             console.error('Failed to restore saved data:', e);
@@ -3647,4 +3679,5 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 
 
 
+<!-- Version 20251112 -->
 </body></html>
