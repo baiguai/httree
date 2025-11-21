@@ -1,0 +1,15 @@
+{
+  "bg": "#3c3836",
+  "fg": "#ebdbb2",
+  "muted": "#928374",
+  "accent": "#8ec07c",
+  "danger": "#fb4934",
+  "sel-bg": "#504945",
+  "btn-border": "#928374",
+  "border": "#665c54",
+  "input-bg": "#504945",
+  "input-fg": "#ebdbb2",
+  "btn-bg": "#504945",
+  "btn-fg": "#ebdbb2",
+  "dim": "#928374"
+}
