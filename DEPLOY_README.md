@@ -4,12 +4,12 @@ A cross-platform Node.js tool for deploying httree.html notes editor with a Node
 
 ## Features
 
-- ✅ Cross-platform support (Windows, macOS, Linux)
-- ✅ Automatic dependency installation
-- ✅ Configurable file names and ports
-- ✅ Creates complete, ready-to-use notes environment
-- ✅ Built-in backup system
-- ✅ Safety checks and validation
+- Cross-platform support (Windows, macOS, Linux)
+- Automatic dependency installation
+- Configurable file names and ports
+- Creates complete, ready-to-use notes environment
+- Built-in backup system
+- Safety checks and validation
 
 ## Prerequisites
 
@@ -75,18 +75,6 @@ Once deployment is complete:
 3. **Multiple instances**:
    - You can run multiple instances on different ports
    - Each instance has its own file and saver script
-
-## File Structure After Deployment
-
-```
-<target-path>/
-├── <file-name>.html          # Configured httree notes editor
-├── svr_<file-name>.js        # Configured saver service
-├── package.json              # Node.js dependencies
-├── package-lock.json         # Dependency lock file
-├── node_modules/             # Installed dependencies
-└── backups/                 # Automatic backups directory
-```
 
 ## Safety Features
 
