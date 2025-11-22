@@ -11,5 +11,7 @@
   "input-fg": "#c9d1d9",
   "btn-bg": "#161b22",
   "btn-fg": "#c9d1d9",
-  "dim": "#7d8590"
+  "dim": "#7d8590",
+  "border-radius": "6px",
+  "pill-radius": "999px"
 }

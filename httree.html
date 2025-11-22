@@ -93,7 +93,7 @@
         /* Default width (desktop-friendly) */
         min-width: 300px;
         max-width: 90vw;
-        border-radius: 8px;
+        border-radius: var(--border-radius);
     }
     
     /* Ensure content doesn’t feel cramped */
@@ -110,7 +110,7 @@
         background: var(--bg);
         color: var(--fg);
         border: 1px solid var(--btn-border);
-        border-radius: 4px;
+        border-radius: var(--border-radius);
         cursor: pointer;
         white-space: nowrap; /* Prevent text from wrapping */
     }
@@ -124,6 +124,8 @@
         --sel-bg: #111827;
         --btn-border: #555;
         --border: #222;
+        --border-radius: 8px;
+        --pill-radius: 999px;
     }
 
     * { box-sizing: border-box; }
@@ -181,7 +183,7 @@
         padding: 6px 10px; border-bottom: 1px solid var(--border);
         display: flex; align-items: center; gap: 12px;
     }
-    .status .pill { padding: 2px 8px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); }
+    .status .pill { padding: 2px 8px; border: 1px solid var(--border); border-radius: var(--pill-radius); color: var(--muted); }
 
     textarea#editorArea {
         width: 100%;
@@ -216,7 +218,7 @@
         background: var(--bg);
         color: var(--fg);
         border: 2px solid var(--border);
-        border-radius: 4px;
+        border-radius: var(--border-radius);
         z-index: 9999;
         font-family: monospace;
         padding: 10px;
@@ -267,7 +269,7 @@
         .search-dialog {
             top: 5%;
             width: 95%;       /* wider on very small screens */
-            border-radius: 3px;
+            border-radius: var(--border-radius);
             padding: 8px;
         }
         .search-dialog input {
@@ -293,7 +295,7 @@
         background: var(--bg);
         color: var(--fg);
         border: 2px solid var(--border);
-        border-radius: 2px;
+        border-radius: var(--border-radius);
         padding: 20px;
         z-index: 9999;
         font-family: monospace;
@@ -311,7 +313,7 @@
         background: var(--bg);
         color: var(--fg);
         border: 2px solid var(--border);
-        border-radius: 2px;
+        border-radius: var(--border-radius);
         padding: 20px;
         z-index: 9999;
         font-family: monospace;
@@ -352,7 +354,7 @@
         background: var(--bg);
         color: var(--fg);
         border: 2px solid var(--border);
-        border-radius: 6px;
+        border-radius: var(--border-radius);
 
         /* move padding to children to avoid parent padding affecting height calculations */
         padding: 0;
@@ -397,7 +399,7 @@
             width: 90vw;
             top: 5%;
             padding: 15px;
-            border-radius: 4px;
+            border-radius: var(--border-radius);
         }
 
         #historyDialog h3 {
@@ -417,7 +419,7 @@
         background: var(--bg);
         color: var(--fg);
         border: 2px solid var(--border);
-        border-radius: 2px; /* per your request */
+        border-radius: var(--border-radius); /* per your request */
         padding: 16px;
         z-index: 9999;
         font-family: monospace;
@@ -576,7 +578,7 @@
     </tbody></table>
 </div>
 
-<div id="optionsDialog" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%); width: 400px; background: var(--bg); color: var(--fg); border: 2px solid var(--border); border-radius: 2px; padding: 20px; z-index: 9999; font-family: monospace; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
+<div id="optionsDialog" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%); width: 400px; background: var(--bg); color: var(--fg); border: 2px solid var(--border); border-radius: var(--border-radius); padding: 20px; z-index: 9999; font-family: monospace; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
     <h3>Options</h3>
     <label><input type="checkbox" id="optShowInitHelp"> Show Init Help</label><br><br>
     <label>File Name: <input type="text" id="optFileName" style="background:var(--sel-bg);color:var(--fg);border:1px solid var(--btn-border);"></label><br><br>
@@ -637,7 +639,7 @@
 </div>
 
 <div id="saveAsDialog" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
-background:var(--bg); color:var(--fg); border:2px solid var(--border); border-radius:6px; padding:20px; width:320px;
+background:var(--bg); color:var(--fg); border:2px solid var(--border); border-radius:var(--border-radius); padding:20px; width:320px;
 z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
     <h3>Save As</h3>
     <label>Title<br>
@@ -3615,6 +3617,8 @@ z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
         if (colors['sel-bg']) root.style.setProperty('--sel-bg', colors['sel-bg']);
         if (colors['btn-border']) root.style.setProperty('--btn-border', colors['btn-border']);
         if (colors.border) root.style.setProperty('--border', colors.border);
+        if (colors['border-radius']) root.style.setProperty('--border-radius', colors['border-radius']);
+        if (colors['pill-radius']) root.style.setProperty('--pill-radius', colors['pill-radius']);
     }
 
 
