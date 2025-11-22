@@ -5,9 +5,9 @@ A collection of themes for the HTTree standalone HTML text editor.
 ## How to Use
 
 1. Press `%` while in TREE mode (not editing)
-2. Select any `.json` theme file from this collection
-3. Theme applies immediately
-4. Save your HTML file - theme persists
+1. Select any `.json` theme file from this collection
+1. Theme applies immediately
+1. Save your HTML file - theme persists
 
 ## Available Themes
 
