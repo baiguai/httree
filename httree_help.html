@@ -1,7 +1,19 @@
-<!DOCTYPE html><html style="--app-height: 1058px; --bg: #1e1e1e; --fg: #d4d4d4; --muted: #6a6a6a; --accent: #007acc; --danger: #f44747; --sel-bg: #2d2d30; --btn-border: #6a6a6a; --border: #3e3e42; --border-radius: 4px; --pill-radius: 999px;"><head>
+<!DOCTYPE html><html style="--app-height: 1058px;"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport">
 <title>Httree Help</title>
+<style id="theme_styles">
+    :root {
+        --bg: #000;
+        --fg: #f5f5f5;
+        --muted: #555;
+        --accent: #00d1b2;
+        --danger: #ff5577;
+        --sel-bg: #111827;
+        --btn-border: #555;
+        --border: #222;
+    }
+</style>
 <style>
     .app {
         display: grid;
@@ -115,17 +127,6 @@
         white-space: nowrap; /* Prevent text from wrapping */
     }
 
-    :root {
-        --bg: #1e1e1e;
-        --fg: #d4d4d4;
-        --muted: #6a6a6a;
-        --accent: #007acc;
-        --danger: #f44747;
-        --sel-bg: #2d2d30;
-        --btn-border: #6a6a6a;
-        --border: #3e3e42;
-    }
-
     * { box-sizing: border-box; }
     /* html, body { height: 100%; } */
     body {
@@ -236,7 +237,7 @@
         box-sizing: border-box;
     }
 
-.search-results {
+    .search-results {
         flex: 1;
         border-top: 1px solid var(--border);
         border-bottom: 1px solid var(--border);
@@ -339,6 +340,23 @@
         display: block;
     }
 
+    /* Options Dialog */
+    #optionsDialog {
+        position: fixed;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 400px;
+        background: var(--bg);
+        color: var(--fg);
+        border: 2px solid var(--border);
+        border-radius: var(--border-radius);
+        padding: 20px;
+        z-index: 9999;
+        font-family: monospace;
+        box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;
+    }
+
     /* History Dialog */
     #historyDialog {
         display: none;
@@ -383,7 +401,7 @@
     }
 
     /* the actual scrollable area */
-#historyList {
+    #historyList {
         flex: 1 1 auto;         /* fill remaining space under header */
         overflow-y: auto;       /* scroll only here */
         padding: 10px 20px 20px 20px;
@@ -404,6 +422,23 @@
             font-size: 1em;
             padding-bottom: 6px;
         }
+    }
+
+    /* Save As Dialog */
+    #saveAsDialog {
+        position:fixed;
+        top:50%;
+        left:50%;
+        transform:translate(-50%, -50%);
+        background:var(--bg);
+        color:var(--fg);
+        border:2px solid var(--border);
+        border-radius:var(--border-radius);
+        padding:20px;
+        width:320px;
+        z-index:9999;
+        font-family:monospace;
+        box-shadow:0 0 20px rgba(0,0,0,0.8);
     }
 
     /* Search/Replace Dialog */
@@ -514,7 +549,7 @@
     ::-webkit-scrollbar { width: 10px; height: 10px; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
-    </style>
+</style>
 </head>
 <body>
 <div class="app">
@@ -576,7 +611,7 @@
     </tbody></table>
 </div>
 
-<div id="optionsDialog" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%); width: 400px; background: var(--bg); color: var(--fg); border: 2px solid var(--border); border-radius: var(--border-radius); padding: 20px; z-index: 9999; font-family: monospace; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
+<div id="optionsDialog" style="display: none;">
     <h3>Options</h3>
     <label><input type="checkbox" id="optShowInitHelp"> Show Init Help</label><br><br>
     <label>File Name: <input type="text" id="optFileName" style="background:var(--sel-bg);color:var(--fg);border:1px solid var(--btn-border);"></label><br><br>
@@ -590,9 +625,9 @@
     <div class="search-results" id="searchList"><div class="selected">Other Options</div></div>
 </div>
 
-<div class="search-dialog" id="helpDialogUnified" style="display: none;">
+<div class="search-dialog" id="helpDialogUnified" style="display:none;">
   <input id="helpFilter" type="text" placeholder="Filter help (Start with : to search keys only)...">
-  <div id="helpResults" class="search-results"><div><b>i</b> <span class="dim">(TREE) - </span>Enter INSERT mode (start editing)</div><div><b>I</b> <span class="dim">(TREE) - </span>Enter INSERT mode at start</div><div><b>r</b> <span class="dim">(TREE) - </span>Add root level node</div><div><b>R</b> <span class="dim">(TREE) - </span>Rename current Folder</div><div><b>j</b> <span class="dim">(TREE) - </span>Select next tree node</div><div><b>k</b> <span class="dim">(TREE) - </span>Select previous tree node</div><div><b>l</b> <span class="dim">(TREE) - </span>Expand current tree node</div><div><b>h</b> <span class="dim">(TREE) - </span>Collapse current tree node</div><div><b>u</b> <span class="dim">(TREE) - </span>go up a tree node level</div><div><b>C</b> <span class="dim">(TREE) - </span>Collapse all tree nodes</div><div><b>E</b> <span class="dim">(TREE) - </span>Expand all tree nodes</div><div><b>A</b> <span class="dim">(TREE) - </span>Add child tree node</div><div><b>a</b> <span class="dim">(TREE) - </span>Add next sibling tree node</div><div><b>]</b> <span class="dim">(TREE) - </span>Expand treeview panel</div><div><b>[</b> <span class="dim">(TREE) - </span>Shrink treeview panel</div><div><b>gg</b> <span class="dim">(TREE) - </span>Select first root tree node</div><div><b>G</b> <span class="dim">(TREE) - </span>Select last root tree node</div><div><b>H</b> <span class="dim">(TREE) - </span>Move node out to parent level</div><div><b>L</b> <span class="dim">(TREE) - </span>Move node into child level</div><div><b>J</b> <span class="dim">(TREE) - </span>Move node down among siblings</div><div><b>K</b> <span class="dim">(TREE) - </span>Move node up among siblings</div><div><b>D</b> <span class="dim">(TREE) - </span>Delete current node</div><div><b>s</b> <span class="dim">(TREE) - </span>Save as HTML</div><div><b>S</b> <span class="dim">(TREE) - </span>Save as HTML with new name</div><div><b>n</b> <span class="dim">(TREE) - </span>Save via Node server</div><div><b>T</b> <span class="dim">(TREE) - </span>Export current note as .txt</div><div><b>f</b> <span class="dim">(TREE) - </span>Find/Replace in current note</div><div><b>/</b> <span class="dim">(TREE) - </span>Search tree</div><div><b>#</b> <span class="dim">(TREE) - </span>Show links in current note</div><div><b>m</b> <span class="dim">(TREE) - </span>Bookmark current node</div><div><b>`</b> <span class="dim">(TREE) - </span>Show bookmarks</div><div><b>%</b> <span class="dim">(TREE) - </span>Import theme file</div><div><b>!</b> <span class="dim">(TREE) - </span>Display options dialog</div><div><b>?</b> <span class="dim">(TREE) - </span>Show this help</div><div><b>Escape</b> <span class="dim">(TREE) - </span>Return to TREE mode</div><div><b>Control+[</b> <span class="dim">(INSERT) - </span>Exit to TREE mode</div><div><b>Escape</b> <span class="dim">(INSERT) - </span>Exit to TREE mode</div><div><b>Control+S</b> <span class="dim">(INSERT) - </span>Save file</div><div><b>Control+O</b> <span class="dim">(INSERT) - </span>Open file</div><div><b>Control+Z</b> <span class="dim">(INSERT) - </span>Undo</div><div><b>Control+Y</b> <span class="dim">(INSERT) - </span>Redo</div><div><b>Control+F</b> <span class="dim">(INSERT) - </span>Find</div><div><b>Control+H</b> <span class="dim">(INSERT) - </span>Replace</div><div><b>Control+-</b> <span class="dim">(INSERT) - </span>Insert horizontal rule</div><div><b>Control+;</b> <span class="dim">(INSERT) - </span>Format markdown table</div><div><b>Control+\</b> <span class="dim">(INSERT) - </span>Wrap selected text</div><div><b>h</b> <span class="dim">(NORMAL) - </span>Move cursor left</div><div><b>j</b> <span class="dim">(NORMAL) - </span>Move cursor down</div><div><b>k</b> <span class="dim">(NORMAL) - </span>Move cursor up</div><div><b>l</b> <span class="dim">(NORMAL) - </span>Move cursor right</div><div><b>w</b> <span class="dim">(NORMAL) - </span>Move to next word</div><div><b>b</b> <span class="dim">(NORMAL) - </span>Move to previous word</div><div><b>0</b> <span class="dim">(NORMAL) - </span>Move to start of line</div><div><b>$</b> <span class="dim">(NORMAL) - </span>Move to end of line</div><div><b>gg</b> <span class="dim">(NORMAL) - </span>Move to top of file</div><div><b>G</b> <span class="dim">(NORMAL) - </span>Move to bottom of file</div><div><b>i</b> <span class="dim">(NORMAL) - </span>Enter INSERT mode</div><div><b>a</b> <span class="dim">(NORMAL) - </span>Enter INSERT mode after cursor</div><div><b>I</b> <span class="dim">(NORMAL) - </span>Enter INSERT mode at line start</div><div><b>A</b> <span class="dim">(NORMAL) - </span>Enter INSERT mode at line end</div><div><b>o</b> <span class="dim">(NORMAL) - </span>Open new line below</div><div><b>O</b> <span class="dim">(NORMAL) - </span>Open new line above</div><div><b>dd</b> <span class="dim">(NORMAL) - </span>Delete current line</div><div><b>dw</b> <span class="dim">(NORMAL) - </span>Delete word</div><div><b>x</b> <span class="dim">(NORMAL) - </span>Delete character</div><div><b>p</b> <span class="dim">(NORMAL) - </span>Paste after cursor</div><div><b>P</b> <span class="dim">(NORMAL) - </span>Paste before cursor</div><div><b>yy</b> <span class="dim">(NORMAL) - </span>Copy current line</div><div><b>v</b> <span class="dim">(NORMAL) - </span>Enter VISUAL mode</div><div><b>V</b> <span class="dim">(NORMAL) - </span>Enter VISUAL LINE mode</div><div><b>Escape</b> <span class="dim">(NORMAL) - </span>Return to NORMAL mode</div><div><b>Control+[</b> <span class="dim">(VISUAL) - </span>Exit to NORMAL mode</div><div><b>Escape</b> <span class="dim">(VISUAL) - </span>Exit to NORMAL mode</div><div><b>h</b> <span class="dim">(VISUAL) - </span>Extend selection left</div><div><b>j</b> <span class="dim">(VISUAL) - </span>Extend selection down</div><div><b>k</b> <span class="dim">(VISUAL) - </span>Extend selection up</div><div><b>l</b> <span class="dim">(VISUAL) - </span>Extend selection right</div><div><b>w</b> <span class="dim">(VISUAL) - </span>Extend to next word</div><div><b>b</b> <span class="dim">(VISUAL) - </span>Extend to previous word</div><div><b>d</b> <span class="dim">(VISUAL) - </span>Delete selection</div><div><b>y</b> <span class="dim">(VISUAL) - </span>Copy selection</div><div><b>Control+*</b> <span class="dim">(INSERT) - </span>Convert selection to list</div><div><b>&lt;number&gt;</b> <span class="dim">(NORMAL) - </span>If you enter a number first, some commands will repeat that many times.</div></div>
+  <div id="helpResults" class="search-results"></div>
   <p><a href="https://hcjsuite.infinityfreeapp.com/httree_help.html" target="_blank">Full Help System</a></p>
   <p style="margin-top:6px;">Press ESC to close.</p>
 </div>
@@ -636,7 +671,7 @@
     </div>
 </div>
 
-<div id="saveAsDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg); color: var(--fg); border: 2px solid var(--border); border-radius: var(--border-radius); padding: 20px; width: 320px; z-index: 9999; font-family: monospace; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
+<div id="saveAsDialog" style="display: none;">
     <h3>Save As</h3>
     <label>Title<br>
         <input id="saveAsTitle" type="text" style="width:100%; background:var(--input-bg); color:var(--input-fg); border:1px solid var(--border); margin-bottom:10px;">
@@ -710,23 +745,7 @@
         let showingLinks = false;
         let showingMarks = false;
         let showingHelp = false;
-        let currentTheme = {
-    "bg": "#1e1e1e",
-    "fg": "#d4d4d4",
-    "muted": "#6a6a6a",
-    "accent": "#007acc",
-    "danger": "#f44747",
-    "sel-bg": "#2d2d30",
-    "btn-border": "#6a6a6a",
-    "border": "#3e3e42",
-    "input-bg": "#2d2d30",
-    "input-fg": "#d4d4d4",
-    "btn-bg": "#2d2d30",
-    "btn-fg": "#d4d4d4",
-    "dim": "#6a6a6a",
-    "border-radius": "4px",
-    "pill-radius": "999px"
-};
+        let currentTheme = null;
         let marksIndex = 0;
         let finding = false;
         let mode_vim = true;
