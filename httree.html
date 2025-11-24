@@ -3597,6 +3597,15 @@
                         }
                     }
 
+                    // Replace theme_styles content from imported file
+                    const themeStylesMatch = content.match(/<style id="theme_styles">([\s\S]*?)<\/style>/);
+                    if (themeStylesMatch) {
+                        const themeStylesElement = document.getElementById("theme_styles");
+                        if (themeStylesElement) {
+                            themeStylesElement.textContent = themeStylesMatch[1];
+                        }
+                    }
+
                     selectedId = treeData[0]?.id || null;
 
                     // Re-render with new data
