@@ -125,7 +125,7 @@
         --btn-border: #555;
         --border: #222;
         --border-radius: 8px;
-        --pill-radius: 999px;
+        --pill-radius: 1px;
     }
 
     * { box-sizing: border-box; }
@@ -341,6 +341,23 @@
         display: block;
     }
 
+    /* Options Dialog */
+    #optionsDialog {
+        position: fixed;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 400px;
+        background: var(--bg);
+        color: var(--fg);
+        border: 2px solid var(--border);
+        border-radius: var(--border-radius);
+        padding: 20px;
+        z-index: 9999;
+        font-family: monospace;
+        box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;
+    }
+
     /* History Dialog */
     #historyDialog {
         display: none;
@@ -385,7 +402,7 @@
     }
 
     /* the actual scrollable area */
-#historyList {
+    #historyList {
         flex: 1 1 auto;         /* fill remaining space under header */
         overflow-y: auto;       /* scroll only here */
         padding: 10px 20px 20px 20px;
@@ -406,6 +423,23 @@
             font-size: 1em;
             padding-bottom: 6px;
         }
+    }
+
+    /* Save As Dialog */
+    #saveAsDialog {
+        position:fixed;
+        top:50%;
+        left:50%;
+        transform:translate(-50%, -50%);
+        background:var(--bg);
+        color:var(--fg);
+        border:2px solid var(--border);
+        border-radius:var(--border-radius);
+        padding:20px;
+        width:320px;
+        z-index:9999;
+        font-family:monospace;
+        box-shadow:0 0 20px rgba(0,0,0,0.8);
     }
 
     /* Search/Replace Dialog */
@@ -578,7 +612,7 @@
     </tbody></table>
 </div>
 
-<div id="optionsDialog" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%); width: 400px; background: var(--bg); color: var(--fg); border: 2px solid var(--border); border-radius: var(--border-radius); padding: 20px; z-index: 9999; font-family: monospace; box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 20px;">
+<div id="optionsDialog" style="display: none;">
     <h3>Options</h3>
     <label><input type="checkbox" id="optShowInitHelp"> Show Init Help</label><br><br>
     <label>File Name: <input type="text" id="optFileName" style="background:var(--sel-bg);color:var(--fg);border:1px solid var(--btn-border);"></label><br><br>
@@ -638,9 +672,7 @@
     </div>
 </div>
 
-<div id="saveAsDialog" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
-background:var(--bg); color:var(--fg); border:2px solid var(--border); border-radius:var(--border-radius); padding:20px; width:320px;
-z-index:9999; font-family:monospace; box-shadow:0 0 20px rgba(0,0,0,0.8);">
+<div id="saveAsDialog" style="display:none;">
     <h3>Save As</h3>
     <label>Title<br>
         <input id="saveAsTitle" type="text" style="width:100%; background:var(--input-bg); color:var(--input-fg); border:1px solid var(--border); margin-bottom:10px;">
