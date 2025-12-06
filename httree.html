@@ -2465,11 +2465,11 @@
             let resultHTML = '';
 
             while ((match = regex.exec(content)) !== null) {
-                const start = Math.max(0, match.index - contextRadius);
-                const end = Math.min(content.length, match.index + match[0].length + contextRadius);
-                const context = content.substring(start, end)
+                const lineStart = content.lastIndexOf('\n', match.index) + 1;
+                const lineEnd = content.indexOf('\n', match.index);
+                const line = content.substring(lineStart, lineEnd === -1 ? content.length : lineEnd)
                     .replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                const highlighted = context.replace(new RegExp(searchVal, 'gi'), 
+                const highlighted = line.replace(new RegExp(searchVal, 'gi'), 
                     m => `<span class="find-highlight">${m}</span>`);
 
                 findMatches.push({ index: match.index, length: match[0].length });
@@ -2491,6 +2491,11 @@
                 if (first) {
                     first.style.background = 'var(--sel-bg)';
                     first.scrollIntoView({ block: 'nearest' });
+                    // Also select and highlight the first match in the editor
+                    navigateFindResults(1);
+                    navigateFindResults(-1);
+                    // Keep focus on the search input
+                    searchInput.focus();
                 }
             }
 
@@ -2514,7 +2519,7 @@
             area.setSelectionRange(match.index, match.index + match.length);
             setVimMode(false);
             editing = true;
-            area.focus();
+            // Don't focus the editor - keep focus on the search input
         }
         function navigateFindResults(dir) {
             if (findMatches.length === 0) return;
