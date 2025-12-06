@@ -2465,11 +2465,11 @@
             let resultHTML = '';
 
             while ((match = regex.exec(content)) !== null) {
-                const start = Math.max(0, match.index - contextRadius);
-                const end = Math.min(content.length, match.index + match[0].length + contextRadius);
-                const context = content.substring(start, end)
+                const lineStart = content.lastIndexOf('\n', match.index) + 1;
+                const lineEnd = content.indexOf('\n', match.index);
+                const line = content.substring(lineStart, lineEnd === -1 ? content.length : lineEnd)
                     .replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                const highlighted = context.replace(new RegExp(searchVal, 'gi'), 
+                const highlighted = line.replace(new RegExp(searchVal, 'gi'), 
                     m => `<span class="find-highlight">${m}</span>`);
 
                 findMatches.push({ index: match.index, length: match[0].length });
