@@ -1824,12 +1824,22 @@
         }
 
         function scrollToCursor() {
+            if (mode_insert) return;
+
             const pos = editorArea.selectionStart;
             const textBefore = editorArea.value.slice(0, pos);
             const lineIndex = textBefore.split("\n").length - 1;
             const lineHeight = 16; // adjust if your textarea font-size/line-height differs
         
-            editorArea.scrollTop = lineIndex * lineHeight;
+            const editorHeightInLines = Math.floor(editorArea.clientHeight / lineHeight);
+            const cursorLine = lineIndex;
+        
+            const topBoundary = editorArea.scrollTop / lineHeight;
+            const bottomBoundary = topBoundary + editorHeightInLines;
+        
+            if (cursorLine < topBoundary || cursorLine >= bottomBoundary) {
+                editorArea.scrollTop = lineIndex * lineHeight;
+            }
         }
 
         function addRoot(){
