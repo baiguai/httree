@@ -1,4 +1,4 @@
-<!DOCTYPE html><html style="--app-height: 988px;"><head>
+<!DOCTYPE html><html style="--app-height: 1058px;"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport">
 <title>Httree Help</title>
@@ -2688,7 +2688,7 @@
             if (!mode_visual) return '';
             
             let start = Math.min(visual_start, visual_end);
-            let end = Math.max(visual_start, visual_end);
+            let end = Math.max(visual_start, visual_end)-1;
             
             if (mode_visual_line) {
                 const text = editorArea.value;

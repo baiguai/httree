@@ -2683,7 +2683,7 @@
             if (!mode_visual) return '';
             
             let start = Math.min(visual_start, visual_end);
-            let end = Math.max(visual_start, visual_end);
+            let end = Math.max(visual_start, visual_end)-1;
             
             if (mode_visual_line) {
                 const text = editorArea.value;
