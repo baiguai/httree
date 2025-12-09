@@ -3857,11 +3857,9 @@
     window.addEventListener('resize', setAppHeight);
 
     editorArea.addEventListener('focus', () => {
-        if (isMobile()) {
-            document.querySelector('.app').style.height = `60dvh`;
-            // document.querySelector('.app').style.height = `${window.innerHeight-400}px`;
-            // setTimeout(() => window.scrollTo(0, 0), 50);
-        }
+//        if (isMobile()) {
+//            document.querySelector('.app').style.height = `60dvh`;
+//        }
     });
     
     editorArea.addEventListener('blur', () => {
