@@ -1,4 +1,4 @@
-<!DOCTYPE html><html style="--app-height: 988px;"><head>
+<!DOCTYPE html><html style="--app-height: 1058px;"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport">
 <title>Httree Help</title>
@@ -1312,9 +1312,11 @@
             }
 
             if (!mode_insert) {
-                // Only adjust scrolling when *not* editing
+                // Only adjust scrolling when *not* editing and cursor is out of view
                 setAppHeight();
-                scrollToCursor();
+                if (isCursorOutOfView()) {
+                    scrollToCursor();
+                }
             }
 
             if (e.key === 'Escape') {
@@ -1828,13 +1830,65 @@
             }
         }
 
+        function isCursorOutOfView() {
+            const pos = editorArea.selectionStart;
+            const textBefore = editorArea.value.slice(0, pos);
+            const lineIndex = textBefore.split("\n").length - 1;
+            
+            // Get actual computed line height from CSS
+            const computedStyle = window.getComputedStyle(editorArea);
+            const fontSize = parseFloat(computedStyle.fontSize);
+            const lineHeight = computedStyle.lineHeight === 'normal' 
+                ? fontSize * 1.2 
+                : parseFloat(computedStyle.lineHeight);
+            
+            // Calculate cursor position
+            const cursorTop = lineIndex * lineHeight;
+            const cursorBottom = cursorTop + lineHeight;
+            
+            // Get visible area
+            const visibleTop = editorArea.scrollTop;
+            const visibleBottom = visibleTop + editorArea.clientHeight;
+            
+            // Add some padding (one line) to ensure cursor doesn't touch the edge
+            const padding = lineHeight;
+            
+            // Return true if cursor is outside visible area (with padding)
+            return cursorTop < visibleTop + padding || cursorBottom > visibleBottom - padding;
+        }
+
         function scrollToCursor() {
             const pos = editorArea.selectionStart;
             const textBefore = editorArea.value.slice(0, pos);
             const lineIndex = textBefore.split("\n").length - 1;
-            const lineHeight = 16; // adjust if your textarea font-size/line-height differs
-        
-            editorArea.scrollTop = lineIndex * lineHeight;
+            
+            // Get actual computed line height from CSS
+            const computedStyle = window.getComputedStyle(editorArea);
+            const fontSize = parseFloat(computedStyle.fontSize);
+            const lineHeight = computedStyle.lineHeight === 'normal' 
+                ? fontSize * 1.2 
+                : parseFloat(computedStyle.lineHeight);
+            
+            // Calculate cursor position
+            const cursorTop = lineIndex * lineHeight;
+            const cursorBottom = cursorTop + lineHeight;
+            
+            // Get visible area
+            const visibleTop = editorArea.scrollTop;
+            const visibleBottom = visibleTop + editorArea.clientHeight;
+            
+            // Add some padding (one line) to ensure cursor doesn't touch the edge
+            const padding = lineHeight;
+            
+            // Only scroll if cursor is outside visible area (with padding)
+            if (cursorTop < visibleTop + padding) {
+                // Cursor is above visible area - scroll up to show it with padding
+                editorArea.scrollTop = Math.max(0, cursorTop - padding);
+            } else if (cursorBottom > visibleBottom - padding) {
+                // Cursor is below visible area - scroll down to show it with padding
+                editorArea.scrollTop = cursorBottom - editorArea.clientHeight + padding;
+            }
+            // If cursor is already visible (with padding), don't scroll at all
         }
 
         function addRoot(){
@@ -3802,7 +3856,7 @@
         return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     }
     function setAppHeight() {
-        document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+        // document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
     }
     setAppHeight();
     window.addEventListener('resize', setAppHeight);
