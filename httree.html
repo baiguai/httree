@@ -3464,19 +3464,9 @@
 
         marksIndex = 0;
     
-        function render() {
-            let html = "<br><table>";
-            bookmarks.forEach((bm, i) => {
-                let sel = (i === marksIndex) ? "style='background:var(--sel-bg);'" : "";
-                html += `<tr ${sel}><td>${bm.caption}</td><td>${bm.path}</td></tr>`;
-            });
-            html += "</table>";
-            marksList.innerHTML = html;
-        }
-    
         showingMarks = true;
         marksDialog.style.display = "block";
-        render();
+        renderMarksList(); // Call the global renderMarksList
     }
 
     function activateSelectedLink() {
