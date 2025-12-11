@@ -1413,6 +1413,9 @@
 
             //---- These are the keys to be processed when in NORMAL mode ------
             switch (e.key) {
+                case "s": saveAsHtml(fileName); break;
+                case "S": openSaveAsDialog(); break;
+
                 case "i": // Enter insert mode
                 case "a":
                     setVimMode(true);
@@ -3099,6 +3102,8 @@
             a.href = URL.createObjectURL(blob);
             a.download = `${name}.html`;
             a.click();
+
+            showMessage("Saved successfully");
         }
 
         async function saveViaNode() {
