@@ -1587,6 +1587,10 @@
                     performed = true;
                     scrollToCursor();
                     break;
+                case "M": // Bookmark current note and line
+                    setMark(e, getCurrentLineNumber());
+                    performed = true;
+                    break;
             }
             //------------------------------------------------------------------
         
@@ -2211,7 +2215,14 @@
 
             ta.setRangeText(finalRows.join("\n"), start, end, "select");
         }
-        function setMark(e) {
+        function getCurrentLineNumber() {
+            const editorArea = document.getElementById("editorArea");
+            const text = editorArea.value;
+            const cursorPosition = editorArea.selectionStart;
+            return text.substring(0, cursorPosition).split('\n').length;
+        }
+
+        function setMark(e, line = null) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -2220,12 +2231,16 @@
             let path = computePath(currentNode.id);
 
             if (currentNode) {
-                bookmarks.push({
+                let bookmark = {
                     id: currentNode.id,
                     caption: currentNode.title,
                     path: path
-                });
-                showMessage(`Bookmarked: ${currentNode.title}`);
+                };
+                if (line !== null) {
+                    bookmark.line = line;
+                }
+                bookmarks.push(bookmark);
+                showMessage(`Bookmarked: ${currentNode.title}${line !== null ? ' (line ' + line + ')' : ''}`);
             }
         }
 
@@ -2454,7 +2469,11 @@
             let html = "<br><table>";
             bookmarks.forEach((bm, i) => {
                 let sel = (i === marksIndex) ? "style='background:var(--sel-bg);'" : "";
-                html += `<tr ${sel}><td>${bm.caption}</td><td>${bm.path}</td></tr>`;
+                let caption = bm.caption;
+                if (bm.line !== undefined && bm.line !== null) {
+                    caption += ` (Line ${bm.line})`;
+                }
+                html += `<tr ${sel}><td>${caption}</td><td>${bm.path}</td></tr>`;
             });
             html += "</table>";
             marksList.innerHTML = html;
@@ -3525,12 +3544,25 @@
             e.preventDefault();
         } else if (e.key === "Enter") {
             let bm = bookmarks[marksIndex];
-            // let node = findNode(bm.id);
             if (bm) {
                 expandToNode(bm.id);
                 selectedId = bm.id;
                 closeMarksDialog();
                 render();
+                if (bm.line !== undefined && bm.line !== null) {
+                    const editorArea = document.getElementById("editorArea");
+                    const text = editorArea.value;
+                    const lines = text.split('\n');
+                    let position = 0;
+                    for (let i = 0; i < Math.min(bm.line - 1, lines.length); i++) {
+                        position += lines[i].length + 1; // +1 for the newline character
+                    }
+                    editorArea.focus();
+                    editorArea.setSelectionRange(position, position);
+                    scrollToCursor();
+                    editing = true;
+                    setVimMode(false); // Set mode to NORMAL
+                }
             }
         } else if (e.key === "Escape") {
             closeMarksDialog();
