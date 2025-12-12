@@ -782,6 +782,8 @@
         let optionFields = [optShowInitHelp, optFileName, optModeVim];
         let optionIndex = 0;
 
+        // !@!
+        // Help Data
         const helpReadOnly = [
             { key: "j", mode: "TREE", description: "Select next tree node" },
             { key: "k", mode: "TREE", description: "Select the previous tree node" },
@@ -830,10 +832,6 @@
             { key: "y", mode: "VISUAL", description: "Virtual copy the selected text" },
             { key: "x", mode: "VISUAL", description: "Virtual cut the selected text" },
             { key: "d", mode: "VISUAL", description: "Delete selected text" },
-
-            { key: "Control+-", mode: "INSERT/NORMAL", description: "Insert horizontal line" },
-            { key: "Control+\\", mode: "INSERT/NORMAL", description: "Wrap selected text" },
-            { key: "Control+;", mode: "INSERT/NORMAL", description: "Converts the selected text to a table" },
 
             { key: "<number>", mode: "NORMAL", description: "If you enter a number first, some commands will repeat that many times." },
         ];
@@ -918,18 +916,8 @@
             { key: "%", mode: "TREE", description: "Import theme file" },
             { key: "!", mode: "TREE", description: "Display options dialog" },
             { key: "?", mode: "TREE", description: "Show this help" },
-            { key: "Escape", mode: "TREE", description: "Return to TREE mode" },
-            { key: "Control+[", mode: "INSERT", description: "Exit to TREE mode" },
-            { key: "Escape", mode: "INSERT", description: "Exit to TREE mode" },
-            { key: "Control+S", mode: "INSERT", description: "Save file" },
-            { key: "Control+O", mode: "INSERT", description: "Open file" },
-            { key: "Control+Z", mode: "INSERT", description: "Undo" },
-            { key: "Control+Y", mode: "INSERT", description: "Redo" },
-            { key: "Control+F", mode: "INSERT", description: "Find" },
-            { key: "Control+H", mode: "INSERT", description: "Replace" },
-            { key: "Control+-", mode: "INSERT", description: "Insert horizontal rule" },
-            { key: "Control+;", mode: "INSERT", description: "Format markdown table" },
-            { key: "Control+\\", mode: "INSERT", description: "Wrap selected text" },
+
+            { key: "Escape", mode: "NORMAL", description: "Return to TREE mode" },
             { key: "h", mode: "NORMAL", description: "Move cursor left" },
             { key: "j", mode: "NORMAL", description: "Move cursor down" },
             { key: "k", mode: "NORMAL", description: "Move cursor up" },
@@ -952,11 +940,12 @@
             { key: "x", mode: "NORMAL", description: "Delete character" },
             { key: "p", mode: "NORMAL", description: "Paste after cursor" },
             { key: "P", mode: "NORMAL", description: "Paste before cursor" },
+            { key: "s", mode: "NORMAL", description: "Save as HTML" },
+            { key: "S", mode: "NORMAL", description: "Save as HTML with new name" },
             { key: "yy", mode: "NORMAL", description: "Copy current line" },
             { key: "v", mode: "NORMAL", description: "Enter VISUAL mode" },
             { key: "V", mode: "NORMAL", description: "Enter VISUAL LINE mode" },
-            { key: "Escape", mode: "NORMAL", description: "Return to NORMAL mode" },
-            { key: "Control+[", mode: "VISUAL", description: "Exit to NORMAL mode" },
+
             { key: "Escape", mode: "VISUAL", description: "Exit to NORMAL mode" },
             { key: "h", mode: "VISUAL", description: "Extend selection left" },
             { key: "j", mode: "VISUAL", description: "Extend selection down" },
@@ -966,6 +955,10 @@
             { key: "b", mode: "VISUAL", description: "Extend to previous word" },
             { key: "d", mode: "VISUAL", description: "Delete selection" },
             { key: "y", mode: "VISUAL", description: "Copy selection" },
+            { key: "Escape", mode: "INSERT", description: "Exit to NORMAL mode" },
+            { key: "Control+-", mode: "INSERT", description: "Insert horizontal rule" },
+            { key: "Control+;", mode: "INSERT", description: "Format markdown table" },
+            { key: "Control+\\", mode: "INSERT", description: "Wrap selected text" },
             { key: "Control+*", mode: "INSERT", description: "Convert selection to list" },
             { key: "<number>", mode: "NORMAL", description: "If you enter a number first, some commands will repeat that many times." },
         ];
