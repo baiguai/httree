@@ -1131,7 +1131,7 @@
             const selInfo = findNodeAndParentById(selectedId);
             if (selInfo){
                 pathEl.textContent = computePath(selInfo.node.id);
-                kindEl.textContent = isFolder(selInfo.node) ? 'FOLDER' : 'FILE';
+                kindEl.textContent = isFolder(selInfo.node) ? 'FOLDER' : 'NOTE';
                 if (!editing) {
                     if (currentEditorNodeId !== selInfo.node.id) {
                         editorArea.value = safeRestoreText(selInfo.node.content) || '';
