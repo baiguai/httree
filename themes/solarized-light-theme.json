@@ -9,9 +9,9 @@
   "input-fg": "#657b83",
   "btn-bg": "#eee8d5",
   "btn-fg": "#657b83",
-  "btn-border": "#93a1a1",
-  "border": "#eee8d5",
+  "btn-border": "#fdf6e3",
+  "border": "#fdf6e3",
   "dim": "#93a1a1",
-  "border-radius": "8px",
+  "border-radius": "999px",
   "pill-radius": "999px"
 }

@@ -12,6 +12,6 @@
   "btn-bg": "#ffffff",
   "btn-fg": "#333333",
   "dim": "#999999",
-  "border-radius": "1px",
-  "pill-radius": "4px"
+  "border-radius": "999px",
+  "pill-radius": "999px"
 }
