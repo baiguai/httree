@@ -2786,7 +2786,14 @@
                 const lineEndPos = text.indexOf("\n", end);
                 const lineEnd = lineEndPos === -1 ? text.length : lineEndPos + 1;
                 editorArea.setRangeText("", lineStart, lineEnd, "start");
-                editorArea.selectionStart = editorArea.selectionEnd = lineStart;
+
+                if (lineEndPos === -1 && lineStart > 0) {
+                    // We deleted the last line, move to the start of the previous line.
+                    const prevLineStart = text.lastIndexOf("\n", lineStart - 2) + 1;
+                    editorArea.selectionStart = editorArea.selectionEnd = prevLineStart;
+                } else {
+                    editorArea.selectionStart = editorArea.selectionEnd = lineStart;
+                }
             } else {
                 if (end === start) end += 1;
                 const deletedLength = end - start;
