@@ -12,6 +12,6 @@
   "btn-border": "#cccccc",
   "border": "#dddddd",
   "dim": "#999999",
-  "border-radius": "6px",
-  "pill-radius": "999px"
+  "border-radius": "4px",
+  "pill-radius": "4px"
 }
