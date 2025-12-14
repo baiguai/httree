@@ -1682,40 +1682,64 @@
 
             function doDelete() {
                 if (mode_deleting) {
-                    const text = editorArea.value;
-                    const pos = editorArea.selectionStart;
+                    const text = editorArea.value; // Text BEFORE deletion
+                    const originalCursorPos = editorArea.selectionStart; // Cursor pos BEFORE deletion
                 
-                    // Find start of current line
-                    const lineStart = text.lastIndexOf("\n", pos - 1) + 1;
-                
-                    // Find end of current line INCLUDING newline
-                    let lineEnd = text.indexOf("\n", pos);
-                    if (lineEnd === -1) {
-                        lineEnd = text.length;
+                    // Calculate column
+                    const currentLineStart = text.lastIndexOf("\n", originalCursorPos - 1) + 1;
+                    const column = originalCursorPos - currentLineStart;
+
+                    // Find start/end of line(s) to delete
+                    const lineStartToDelete = text.lastIndexOf("\n", originalCursorPos - 1) + 1;
+                    let lineEndToDelete = text.indexOf("\n", originalCursorPos);
+                    if (lineEndToDelete === -1) {
+                        lineEndToDelete = text.length;
                     } else {
-                        lineEnd += 1;
+                        lineEndToDelete += 1;
                     }
                 
                     // Repeat delete for mode_repeat > 1
                     for (let i = 1; i < mode_repeat; i++) {
-                        const nextEnd = text.indexOf("\n", lineEnd);
+                        const nextEnd = text.indexOf("\n", lineEndToDelete);
                         if (nextEnd === -1) {
-                            lineEnd = text.length;
+                            lineEndToDelete = text.length;
                             break;
                         } else {
-                            lineEnd = nextEnd + 1;
+                            lineEndToDelete += 1;
                         }
                     }
                 
+                    // Check if we are deleting the last line(s) of the file
+                    const deletingLastLine = (lineEndToDelete === text.length);
+
                     // Delete the range
-                    editorArea.setRangeText("", lineStart, lineEnd, "start");
+                    editorArea.setRangeText("", lineStartToDelete, lineEndToDelete, "start");
                 
-                    // Re-fetch updated text after deletion
-                    const newText = editorArea.value;
-                
-                    // Place cursor at start of deleted line (or end of buffer if needed)
-                    const newPos = Math.min(lineStart, newText.length);
-                    editorArea.selectionStart = editorArea.selectionEnd = newPos;
+                    const newText = editorArea.value; // Text AFTER deletion
+                    let newCursorPos;
+
+                    if (deletingLastLine && newText.length > 0) {
+                        // Deleted the last line(s) and there's still text left
+                        // Move cursor up to the previous line, maintaining column
+                        const originalPrevLineStart = text.lastIndexOf("\n", lineStartToDelete - 2) + 1;
+                        
+                        // Ensure prevLineStart is not negative (if first line was deleted)
+                        const finalPrevLineStart = Math.max(0, originalPrevLineStart);
+
+                        // Find the end of this previous line in the new text
+                        const finalPrevLineEnd = newText.indexOf("\n", finalPrevLineStart);
+                        const actualPrevLineEnd = (finalPrevLineEnd === -1) ? newText.length : finalPrevLineEnd;
+
+                        newCursorPos = Math.min(finalPrevLineStart + column, actualPrevLineEnd);
+                    } else if (newText.length === 0) {
+                        // All text deleted
+                        newCursorPos = 0;
+                    } else {
+                        // Default behavior: cursor at the start of the deleted block's position
+                        newCursorPos = Math.min(lineStartToDelete, newText.length);
+                    }
+                    
+                    editorArea.selectionStart = editorArea.selectionEnd = newCursorPos;
                 
                     syncFile();
                     performed = true;
