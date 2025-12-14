@@ -2713,17 +2713,21 @@
             updateVisualSelection();
         }
         
-        function exitVisualMode() {
+        function exitVisualMode(positionCursor = true) {
             mode_visual = false;
             mode_visual_line = false;
-            // Position cursor at the end of the selection
-            let cursorPos = Math.max(visual_start, visual_end);
 
-            if (visual_end < visual_start) {
-                cursorPos = Math.min(visual_start, visual_end);
+            if (positionCursor) {
+                // Position cursor at the end of the selection
+                let cursorPos = Math.max(visual_start, visual_end);
+
+                if (visual_end < visual_start) {
+                    cursorPos = Math.min(visual_start, visual_end);
+                }
+
+                editorArea.selectionStart = editorArea.selectionEnd = cursorPos;
             }
 
-            editorArea.selectionStart = editorArea.selectionEnd = cursorPos;
             visual_start = 0;
             visual_end = 0;
             modeEl.textContent = 'NORMAL';
@@ -2803,7 +2807,7 @@
             }
         
             syncFile();
-            exitVisualMode();
+            exitVisualMode(false);
         }
 
 
