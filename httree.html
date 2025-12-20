@@ -1368,7 +1368,7 @@
             if (e.key !== 'g') {
                 mode_going = false;
             }
-            if (e.key !== 'd' && e.key !== 'w') {
+            if (e.key !== 'd' && e.key !== 'w' && e.key !== 'W' && e.key !== 'b' && e.key !== 'B') {
                 mode_deleting = false;
             }
             if (mode_counting && isNaN(parseInt(e.key, 10))) {
@@ -1416,43 +1416,36 @@
                     performed = true;
                     modeEl.textContent = 'INSERT';
                     break;
-        
                 case "h": // Move left
                     let newPosBack = Math.max(0, editorArea.selectionStart - mode_repeat);
                     moveChar(newPosBack, true);
                     performed = true;
                     break;
-        
                 case "l": // Move right
                     let newPosFwd = Math.min(editorArea.value.length, editorArea.selectionStart + mode_repeat);
                     moveChar(newPosFwd, false);
                     performed = true;
                     break;
-        
                 case "j": // Move down lines
                     for (let i = 0; i < mode_repeat; i++) moveCursorVertical(1);
                     performed = true;
                     break;
-        
                 case "k": // Move up lines
                     for (let i = 0; i < mode_repeat; i++) moveCursorVertical(-1);
                     performed = true;
                     break;
-        
                 case "0": // Jump to beginning of line
                     const before0 = editorArea.value.lastIndexOf("\n", editorArea.selectionStart - 1);
                     let moveStart = editorArea.selectionEnd = (before0 === -1 ? 0 : before0 + 1);
                     moveChar(moveStart, false);
                     performed = true;
                     break;
-        
                 case "$": // Jump to end of line
                     const after$ = editorArea.value.indexOf("\n", editorArea.selectionStart);
                     let moveEnd = editorArea.selectionEnd = (after$ === -1 ? editorArea.value.length : after$);
                     moveChar(moveEnd, false);
                     performed = true;
                     break;
-
                 case "u":
                     if (!mode_insert) {
                         doUndo();
@@ -1465,7 +1458,6 @@
                         performed = true;
                     }
                     break;
-
                 case "v": // Enter visual mode
                     enterVisualMode(false);
                     performed = true;
@@ -1474,38 +1466,74 @@
                     enterVisualMode(true);
                     performed = true;
                     break;
-
                 case "w": // Forward word(s)
-                    performed = keyMoveWords();
-                    break;
+                    if (mode_deleting) {
+                        const getNextWordPos = (currentPos) => {
+                            const text = editorArea.value;
+                            let pos = currentPos;
+                            if (pos >= text.length) return text.length;
 
-                case "W": // Backward word(s)
-                case "b":
-                    for (let i = 0; i < mode_repeat; i++) moveWord(-1);
-                    performed = true;
-                    break;
+                            const charClass = (char) => {
+                                if (!char || /\s/.test(char)) return 'space';
+                                if (/\w/.test(char)) return 'word';
+                                return 'other';
+                            };
+                            
+                            let initialCharClass = charClass(text[pos]);
 
-                case "B":
-                    const barea = document.getElementById('editorArea');
-                    if (!barea) break;
-                
-                    const btext = barea.value;
-                    const bpos = barea.selectionStart;
-                
-                    // Find start of current line
-                    const lineStart = btext.lastIndexOf('\n', bpos - 1) + 1;
-                
-                    // Move backward until hitting space or start of line
-                    let prevSpace = btext.lastIndexOf(' ', bpos - 1);
-                    if (prevSpace < lineStart && lineStart > 0) prevSpace = lineStart;
-                
-                    // Skip consecutive spaces
-                    while (prevSpace > 0 && btext[prevSpace - 1] === ' ') prevSpace--;
-                
-                    barea.setSelectionRange(prevSpace, prevSpace);
-                    e.preventDefault();
+                            if (initialCharClass === 'space') {
+                                while (pos < text.length && charClass(text[pos]) === 'space') pos++;
+                            } else {
+                                let currentRunClass = charClass(text[pos]);
+                                while (pos < text.length && charClass(text[pos]) === currentRunClass) pos++;
+                                while (pos < text.length && charClass(text[pos]) === 'space') pos++;
+                            }
+                            return pos;
+                        };
+
+                        const startPos = editorArea.selectionStart;
+                        let endPos = startPos;
+                        for (let i = 0; i < mode_repeat; i++) {
+                            endPos = getNextWordPos(endPos);
+                        }
+                        
+                        const lineEnd = editorArea.value.indexOf('\n', startPos);
+                        if (lineEnd !== -1 && endPos > lineEnd) {
+                            const between = editorArea.value.substring(startPos, lineEnd);
+                            if (!/^\s*$/.test(between)) {
+                                const nextWord = editorArea.value.substring(lineEnd).trim();
+                                if (nextWord.length > 0) {
+                                    endPos = lineEnd;
+                                }
+                            }
+                        }
+
+                        editorArea.setRangeText("", startPos, endPos, "start");
+                        syncFile();
+                        performed = true;
+                    } else {
+                        for (let i = 0; i < mode_repeat; i++) moveWord(1);
+                        performed = true;
+                    }
                     break;
-        
+                case "b": // Backward word(s)
+                    if (mode_deleting) {
+                        const startPos = editorArea.selectionStart;
+                        let endPos = startPos;
+                        
+                        for (let i = 0; i < mode_repeat; i++) {
+                            endPos = getPrevWordPos(endPos);
+                        }
+
+                        editorArea.setRangeText("", endPos, startPos, "start");
+                        editorArea.selectionStart = editorArea.selectionEnd = endPos;
+                        syncFile();
+                        performed = true;
+                    } else {
+                        for (let i = 0; i < mode_repeat; i++) moveWord(-1);
+                        performed = true;
+                    }
+                    break;
                 case "x": // Delete character(s) under cursor
                     const start = editorArea.selectionStart;
                     if (start < editorArea.value.length) {
@@ -1513,7 +1541,6 @@
                     }
                     performed = true;
                     break;
-
                 case "g": // Possible gg
                     if (mode_going) {
                         if (mode_repeat > 1) {
@@ -1537,7 +1564,6 @@
                         mode_going = true;
                     }
                     break;
-
                 case "D": // Delete to end of line(s)
                     const text = editorArea.value;
                     let startDelEnd = editorArea.selectionStart;
@@ -1552,11 +1578,9 @@
                     syncFile();
                     performed = true;
                     break;
-
                 case "d": // Possible dd
                     doDelete();
                     break;
-
                 case "G": // End of buffer, or Nth line
                     const bufEnd = editorArea.selectionEnd = editorArea.value.length;
                     moveChar(bufEnd, false);
@@ -1580,58 +1604,22 @@
 
             // --- Key Helpers -------------------------------------------------
 
-            function keyMoveWords() {
-                if (mode_deleting) {
-                    const getNextWordPos = (currentPos) => {
-                        const text = editorArea.value;
-                        let pos = currentPos;
-                        if (pos >= text.length) return text.length;
-
-                        const charClass = (char) => {
-                            if (!char || /\s/.test(char)) return 'space';
-                            if (/\w/.test(char)) return 'word';
-                            return 'other';
-                        };
-                        
-                        let initialCharClass = charClass(text[pos]);
-
-                        if (initialCharClass === 'space') {
-                            while (pos < text.length && charClass(text[pos]) === 'space') pos++;
-                        } else {
-                            let currentRunClass = charClass(text[pos]);
-                            while (pos < text.length && charClass(text[pos]) === currentRunClass) pos++;
-                            while (pos < text.length && charClass(text[pos]) === 'space') pos++;
-                        }
-                        return pos;
+            function getPrevWordPos(currentPos) {
+                const text = editorArea.value;
+                let pos = currentPos;
+                if (pos > 0) {
+                    pos--;
+                    while (pos > 0 && /\s/.test(text[pos])) pos--;
+                    const charClass = (char) => {
+                        if (!char || /\s/.test(char)) return 'space';
+                        if (/\w/.test(char)) return 'word';
+                        return 'other';
                     };
-
-                    const startPos = editorArea.selectionStart;
-                    let endPos = startPos;
-                    for (let i = 0; i < mode_repeat; i++) {
-                        endPos = getNextWordPos(endPos);
-                    }
-                    
-                    const lineEnd = editorArea.value.indexOf('\n', startPos);
-                    if (lineEnd !== -1 && endPos > lineEnd) {
-                        const between = editorArea.value.substring(startPos, lineEnd);
-                        if (!/^\s*$/.test(between)) {
-                            const nextWord = editorArea.value.substring(lineEnd).trim();
-                            if (nextWord.length > 0) {
-                                endPos = lineEnd;
-                            }
-                        }
-                    }
-
-                    editorArea.setRangeText("", startPos, endPos, "start");
-                    syncFile();
-                    return true;
-                } else {
-                    for (let i = 0; i < mode_repeat; i++) moveWord(1);
-                    return true;
+                    let currentRunClass = charClass(text[pos]);
+                    while (pos > 0 && charClass(text[pos - 1]) === currentRunClass) pos--;
                 }
-
-                return false;
-            }
+                return pos;
+            };
 
 
             // --- Helper for j/k ---
@@ -1676,7 +1664,7 @@
 
             function moveWord(direction) {
                 const text = editorArea.value;
-                let pos = 0;
+                let pos;
 
                 if (mode_visual) {
                     pos = visual_end;
@@ -1684,16 +1672,36 @@
                     pos = editorArea.selectionStart;
                 }
 
-                if (direction > 0) {
-                    // Skip current non-word chars
-                    while (pos < text.length && /\W/.test(text[pos])) pos++;
-                    // Skip word chars
-                    while (pos < text.length && /\w/.test(text[pos])) pos++;
-                } else {
-                    // Move left past non-word chars
-                    while (pos > 0 && /\W/.test(text[pos - 1])) pos--;
-                    // Move left past word chars
-                    while (pos > 0 && /\w/.test(text[pos - 1])) pos--;
+                if (direction > 0) { // 'w'
+                    if (pos < text.length) {
+                        const charClass = (char) => {
+                            if (!char || /\s/.test(char)) return 'space';
+                            if (/\w/.test(char)) return 'word';
+                            return 'other';
+                        };
+                        let initialCharClass = charClass(text[pos]);
+                        if (initialCharClass === 'space') {
+                            while (pos < text.length && charClass(text[pos]) === 'space') pos++;
+                        } else {
+                            let currentRunClass = charClass(text[pos]);
+                            while (pos < text.length && charClass(text[pos]) === currentRunClass) pos++;
+                            while (pos < text.length && charClass(text[pos]) === 'space') pos++;
+                        }
+                    }
+                } else { // 'b'
+                    if (pos > 0) {
+                        pos--;
+                        while (pos > 0 && /\s/.test(text[pos])) pos--;
+                        
+                        const charClass = (char) => {
+                            if (!char || /\s/.test(char)) return 'space';
+                            if (/\w/.test(char)) return 'word';
+                            return 'other';
+                        };
+
+                        let currentRunClass = charClass(text[pos]);
+                        while (pos > 0 && charClass(text[pos-1]) === currentRunClass) pos--;
+                    }
                 }
 
                 if (mode_visual) {
@@ -1807,6 +1815,7 @@
         }
         // ---------------------------------------------------------------------
 
+        // ---- Visual Keys ----------------------------------------------------
         function visualKeys(e) {
             e.preventDefault();
             
@@ -1854,6 +1863,7 @@
 
             return false;
         }
+        // ---------------------------------------------------------------------
 
 
 
