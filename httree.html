@@ -2280,6 +2280,7 @@
                 finalRows.length = 0;
                 finalRows.push(...padded);
             }
+            finalRows.push("");
 
             ta.setRangeText(finalRows.join("\n"), start, end, "select");
         }
