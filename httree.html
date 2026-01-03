@@ -733,6 +733,7 @@
         const historyStackMax = 30;
 
         let copiedNoteId = null;
+        let importedFileName = null;
 
         let fileName = "help";
         let showInitHelp = false;
@@ -2478,7 +2479,7 @@
             const fileInput = document.getElementById('saveAsFileName');
 
             titleInput.value = defaultTitle || '';
-            fileInput.value = defaultFile || '';
+            fileInput.value = importedFileName || defaultFile || '';
 
             saveAsDialog.style.display = 'block';
             titleInput.focus();
@@ -2498,6 +2499,7 @@
                     document.title = newTitle;
                     closeDialog();
                     saveAsHtml(newFile);
+                    importedFileName = null; // Reset after saving
                 } else if (e.key === 'Escape') {
                     e.preventDefault();
                     closeDialog();
@@ -3714,6 +3716,7 @@
     document.getElementById("filePicker").addEventListener("change", (e) => {
         const file = e.target.files[0];
         if (file) {
+            importedFileName = file.name.replace(/\.html$/, '');
             file.text().then(content => {
                 const match = content.match(/let\s+treeData\s*=\s*(\[[\s\S]*?\]);/);
                 if (!match) {
