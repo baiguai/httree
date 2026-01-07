@@ -1910,6 +1910,46 @@
         }
         // ---------------------------------------------------------------------
 
+        function getVisualSelection() {
+            let start = Math.min(visual_start, visual_end);
+            let end = Math.max(visual_start, visual_end);
+            
+            if (mode_visual_line) {
+                const text = editorArea.value;
+                start = text.lastIndexOf('\n', start - 1) + 1;
+                const endLineEnd = text.indexOf('\n', end);
+                if (endLineEnd !== -1) {
+                    end = endLineEnd + 1;
+                } else {
+                    end = text.length;
+                }
+            }
+            return editorArea.value.substring(start, end);
+        }
+
+        function deleteVisualSelection() {
+            recordUndoState();
+
+            let start = Math.min(visual_start, visual_end);
+            let end = Math.max(visual_start, visual_end);
+
+            if (mode_visual_line) {
+                const text = editorArea.value;
+                start = text.lastIndexOf('\n', start - 1) + 1;
+                const endLineEnd = text.indexOf('\n', end);
+                if (endLineEnd !== -1) {
+                    end = endLineEnd + 1;
+                } else {
+                    end = text.length;
+                }
+            }
+            
+            editorArea.setRangeText("", start, end, "start");
+            syncFile();
+            exitVisualMode();
+            keyPerformed();
+        }
+
         // ---- Visual Keys ----------------------------------------------------
         function visualKeys(e) {
             e.preventDefault();
@@ -1921,14 +1961,34 @@
                 case "h": // Move left and extend selection
                     visual_end = Math.max(0, visual_end - mode_repeat);
                     updateVisualSelection();
+                    keyPerformed();
                     return true;
                 case "l": // Move right and extend selection  
                     visual_end = Math.min(editorArea.value.length, visual_end + mode_repeat);
                     updateVisualSelection();
                     keyPerformed();
                     return true;
-                case "d": // Delete selection (no copy)
-                    doVisualDelete(e);
+                case "j": // Move down
+                    for (let i = 0; i < mode_repeat; i++) moveCursorVertical(1);
+                    keyPerformed();
+                    return true;
+                case "k": // Move up
+                    for (let i = 0; i < mode_repeat; i++) moveCursorVertical(-1);
+                    keyPerformed();
+                    return true;
+                case "w":
+                    for (let i = 0; i < mode_repeat; i++) moveWord(1);
+                    keyPerformed();
+                    return true;
+                case "b":
+                    for (let i = 0; i < mode_repeat; i++) moveWord(-1);
+                    keyPerformed();
+                    return true;
+                case "d": // Delete selection
+                case "x": // Cut selection
+                    vim_clipboard = getVisualSelection();
+                    deleteVisualSelection();
+                    showMessage("Selection deleted");
                     return true;
                 case "y": // Yank (copy)
                     vim_clipboard = getVisualSelection();
@@ -1936,24 +1996,11 @@
                         navigator.clipboard.writeText(vim_clipboard).catch(err => {
                             console.error("Clipboard write failed:", err);
                         });
+                        showMessage("Selection copied to clipboard");
                     }
                     exitVisualMode();
+                    keyPerformed();
                     return true;
-                case "x": // Cut (copy + delete selection)
-                    vim_clipboard = getVisualSelection();
-                    if (vim_clipboard) {
-                        navigator.clipboard.writeText(vim_clipboard).catch(err => {
-                            console.error("Clipboard write failed:", err);
-                        });
-                    }
-                
-                    doVisualDelete(e);
-                    return true;
-                case "d": // Delete
-                    vim_clipboard = getVisualSelection();
-                    deleteVisualSelection();
-                    return true;
-                // Add more movement commands as needed
             }
 
             return false;
