@@ -1982,8 +1982,13 @@
                 case "d": // Delete selection
                 case "x": // Cut selection
                     vim_clipboard = getVisualSelection();
+                    if (vim_clipboard) {
+                        navigator.clipboard.writeText(vim_clipboard).catch(err => {
+                            console.error("Clipboard write failed:", err);
+                        });
+                        showMessage("Selection cut to clipboard");
+                    }
                     deleteVisualSelection();
-                    showMessage("Selection deleted");
                     return true;
                 case "y": // Yank (copy)
                     vim_clipboard = getVisualSelection();
