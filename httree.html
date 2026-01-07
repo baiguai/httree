@@ -1928,24 +1928,38 @@
             let start = Math.min(visual_start, visual_end);
             let end = Math.max(visual_start, visual_end);
 
+            console.log("deleteVisualSelection: Initial visual_start:", visual_start, "visual_end:", visual_end);
+
             if (mode_visual_line) {
+                console.log("deleteVisualSelection: VISUAL LINE mode active.");
                 const text = editorArea.value;
-                start = text.lastIndexOf('\n', start - 1) + 1;
-                const endLineEnd = text.indexOf('\n', end);
+                console.log("deleteVisualSelection: Original text length:", text.length);
+                console.log("deleteVisualSelection: Initial calculated start:", start, "end:", end);
+
+                start = text.lastIndexOf('\n', start - 1) + 1; // Start of the first selected line
+                const endLineEnd = text.indexOf('\n', end); // Index of the newline *after* the last selected character
                 if (endLineEnd !== -1) {
-                    end = endLineEnd + 1;
+                    end = endLineEnd + 1; // Include the newline character itself
                 } else {
-                    end = text.length;
+                    end = text.length; // If no newline, select to end of file
                 }
+                console.log("deleteVisualSelection: Adjusted start:", start, "end:", end);
             }
             
+            // This part was just changed to use substring
             const currentContent = editorArea.value;
-            editorArea.value = currentContent.substring(0, start) + currentContent.substring(end);
-            editorArea.selectionStart = start; // Place cursor at the start of the deleted block
-            editorArea.selectionEnd = start;
-            syncFile();
-            exitVisualMode();
-            keyPerformed();
+            console.log("deleteVisualSelection: currentContent length:", currentContent.length);
+            console.log("deleteVisualSelection: substring parts:", currentContent.substring(0, start).length, currentContent.substring(end).length);
+
+            if (start >= end) {
+                console.error("deleteVisualSelection: Calculated start is greater than or equal to end:", start, end);
+                // Even if start >= end, we still want to exit visual mode etc.
+            } else {
+                editorArea.value = currentContent.substring(0, start) + currentContent.substring(end);
+                editorArea.selectionStart = start; // Place cursor at the start of the deleted block
+                editorArea.selectionEnd = start;
+                console.log("deleteVisualSelection: editorArea.value after deletion length:", editorArea.value.length);
+            }
         }
 
         // ---- Visual Keys ----------------------------------------------------
