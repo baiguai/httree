@@ -2911,6 +2911,38 @@
 
 
         //---- Visual Mode Helpers ---------------------------------------------
+        function updateVisualSelection() {
+            if (!mode_visual) return;
+
+            if (mode_visual_line) {
+                const text = editorArea.value;
+                let start = Math.min(visual_start, visual_end);
+                let end = Math.max(visual_start, visual_end);
+
+                const startLineBegin = text.lastIndexOf('\n', start - 1) + 1;
+                
+                let endLineEnd = text.indexOf('\n', end);
+                if (endLineEnd === -1) {
+                    endLineEnd = text.length;
+                } else {
+                    endLineEnd += 1; // Include the newline for linewise selection
+                }
+
+                editorArea.selectionStart = startLineBegin;
+                editorArea.selectionEnd = endLineEnd;
+
+            } else { // character-wise
+                const forward = visual_end >= visual_start;
+                if (forward) {
+                    editorArea.selectionStart = visual_start;
+                    editorArea.selectionEnd = visual_end + 1;
+                } else {
+                    editorArea.selectionStart = visual_end;
+                    editorArea.selectionEnd = visual_start + 1;
+                }
+            }
+        }
+
         function enterVisualMode(lineMode = false) {
             mode_visual = true;
             mode_visual_line = lineMode;
