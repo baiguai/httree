@@ -1556,6 +1556,7 @@
                     break;
                 case "w": // Forward word(s)
                     if (mode_deleting) {
+                        recordUndoState();
                         const getNextWordPos = (currentPos) => {
                             const text = editorArea.value;
                             let pos = currentPos;
@@ -1606,6 +1607,7 @@
                     break;
                 case "b": // Backward word(s)
                     if (mode_deleting) {
+                        recordUndoState();
                         const startPos = editorArea.selectionStart;
                         let endPos = startPos;
                         
@@ -1623,9 +1625,11 @@
                     }
                     break;
                 case "x": // Delete character(s) under cursor
+                    recordUndoState();
                     const start = editorArea.selectionStart;
                     if (start < editorArea.value.length) {
                         editorArea.setRangeText("", start, start + mode_repeat, "end");
+                        syncFile();
                     }
                     performed = true;
                     break;
@@ -1653,6 +1657,7 @@
                     }
                     break;
                 case "D": // Delete to end of line(s)
+                    recordUndoState();
                     const text = editorArea.value;
                     let startDelEnd = editorArea.selectionStart;
                     let end = text.indexOf("\n", startDelEnd);
@@ -1816,6 +1821,7 @@
 
             function doDelete() {
                 if (mode_deleting) {
+                    recordUndoState();
                     const text = editorArea.value; 
                     const originalCursorPos = editorArea.selectionStart; 
                 
@@ -1881,6 +1887,7 @@
 
                     // Only delete if there's actually something selected
                     if (start !== end) {
+                        recordUndoState();
                         const deletedLength = end - start;
                     
                         // Delete the text
