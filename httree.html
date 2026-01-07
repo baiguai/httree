@@ -757,8 +757,11 @@
         let visual_start = 0;
         let visual_end = 0;
         let vim_clipboard = '';
+        let mode_replacing = false;
 
-        let undoValue = "";
+        let undoStack = [];
+        let redoStack = [];
+        const UNDO_LIMIT = 50;
 
         let searchActive = false;
         let searchMatches = [];
@@ -827,8 +830,9 @@
             { key: "V", mode: "NORMAL", description: "Enter line select mode" },
             { key: "v", mode: "NORMAL", description: "Enter standard select mode" },
             { key: "x", mode: "NORMAL", description: "Delete the character under the cursor" },
-            { key: "r", mode: "NORMAL", description: "Updates the undo cache with the current note text" },
-            { key: "u", mode: "NORMAL", description: "Restores the note text to the undo cache value" },
+            { key: "r", mode: "NORMAL", description: "Replace the character under the cursor" },
+            { key: "u", mode: "NORMAL", description: "Undo last change" },
+            { key: "Ctrl+r", mode: "NORMAL", description: "Redo last undone change" },
 
             { key: "y", mode: "VISUAL", description: "Virtual copy the selected text" },
             { key: "x", mode: "VISUAL", description: "Virtual cut the selected text" },
@@ -941,6 +945,9 @@
             { key: "x", mode: "NORMAL", description: "Delete character" },
             { key: "p", mode: "NORMAL", description: "Paste after cursor" },
             { key: "P", mode: "NORMAL", description: "Paste before cursor" },
+            { key: "u", mode: "NORMAL", description: "Undo last change" },
+            { key: "r", mode: "NORMAL", description: "Replace character under cursor" },
+            { key: "Ctrl+r", mode: "NORMAL", description: "Redo last undone change" },
             { key: "s", mode: "NORMAL", description: "Save as HTML" },
             { key: "S", mode: "NORMAL", description: "Save as HTML with new name" },
             { key: "yy", mode: "NORMAL", description: "Copy current line" },
@@ -1136,7 +1143,9 @@
                 if (!editing) {
                     if (currentEditorNodeId !== selInfo.node.id) {
                         editorArea.value = safeRestoreText(selInfo.node.content) || '';
-                        addUndo();
+                        undoStack = [];
+                        redoStack = [];
+                        recordUndoState(true);
                         currentEditorNodeId = selInfo.node.id;
                     }
                     editorArea.setAttribute('readonly', 'readonly');
@@ -1204,8 +1213,69 @@
             render();
         }
 
+        function recordUndoState(force = false) {
+            const currentState = {
+                content: editorArea.value,
+                selectionStart: editorArea.selectionStart,
+                selectionEnd: editorArea.selectionEnd,
+            };
+
+            // Avoid saving identical consecutive states
+            const lastState = undoStack[undoStack.length - 1];
+            if (!force && lastState && lastState.content === currentState.content) {
+                return;
+            }
+
+            undoStack.push(currentState);
+            redoStack = []; // Clear redo stack on new action
+
+            if (undoStack.length > UNDO_LIMIT) {
+                undoStack.shift(); // Remove the oldest state
+            }
+        }
+
         function addUndo() {
-            undoValue = editorArea.value;
+            recordUndoState();
+        }
+
+        function doUndo() {
+            if (undoStack.length === 0) {
+                showMessage("Already at oldest change");
+                return;
+            }
+
+            const currentState = {
+                content: editorArea.value,
+                selectionStart: editorArea.selectionStart,
+                selectionEnd: editorArea.selectionEnd,
+            };
+            redoStack.push(currentState);
+
+            const prevState = undoStack.pop();
+            editorArea.value = prevState.content;
+            editorArea.selectionStart = prevState.selectionStart;
+            editorArea.selectionEnd = prevState.selectionEnd;
+            syncFile();
+        }
+
+        function doRedo() {
+            if (redoStack.length === 0) {
+                showMessage("Already at newest change");
+                return;
+            }
+
+            const currentState = {
+                content: editorArea.value,
+                selectionStart: editorArea.selectionStart,
+                selectionEnd: editorArea.selectionEnd,
+            };
+            undoStack.push(currentState);
+
+            const nextState = redoStack.pop();
+            editorArea.value = nextState.content;
+            editorArea.selectionStart = nextState.selectionStart;
+            editorArea.selectionEnd = nextState.selectionEnd;
+            syncFile();
         }
 
         function safeStoreText(text) {
@@ -1317,6 +1387,7 @@
                 syncFile();
 
                 if (mode_insert && mode_vim) {
+                    recordUndoState();
                     setVimMode(false);
                     editorArea.setSelectionRange(editorArea.selectionStart,editorArea.selectionStart);
                 } else if (mode_visual && mode_vim) {
@@ -1340,6 +1411,26 @@
 
         // ---- VIM Keys -------------------------------------------------------
         function vimKeys(e) {
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                doRedo();
+                return;
+            }
+
+            if (mode_replacing) {
+                const charToReplace = e.key;
+                if (charToReplace.length === 1) {
+                    const start = editorArea.selectionStart;
+                    editorArea.setRangeText(charToReplace, start, start + 1, "end");
+                    editorArea.selectionStart = editorArea.selectionEnd = start; // Move cursor back
+                    syncFile();
+                    recordUndoState();
+                }
+                mode_replacing = false;
+                e.preventDefault();
+                return;
+            }
+
             if (mode_visual) {
                 let visProcessed = visualKeys(e);
                 if (visProcessed) {
@@ -1448,16 +1539,12 @@
                     performed = true;
                     break;
                 case "u":
-                    if (!mode_insert) {
-                        doUndo();
-                        performed = true;
-                    }
+                    doUndo();
+                    performed = true;
                     break;
                 case "r":
-                    if (!mode_insert) {
-                        addUndo();
-                        performed = true;
-                    }
+                    mode_replacing = true;
+                    // Does not set performed to true, waits for next key
                     break;
                 case "v": // Enter visual mode
                     enterVisualMode(false);
@@ -2767,13 +2854,6 @@
             }
         }
 
-
-
-        //---- Undo / Redo -----------------------------------------------------
-        function doUndo() {
-            editorArea.value = undoValue;
-            syncFile();
-        }
 
 
         //---- Visual Mode Helpers ---------------------------------------------
