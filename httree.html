@@ -1939,7 +1939,10 @@
                 }
             }
             
-            editorArea.setRangeText("", start, end, "start");
+            const currentContent = editorArea.value;
+            editorArea.value = currentContent.substring(0, start) + currentContent.substring(end);
+            editorArea.selectionStart = start; // Place cursor at the start of the deleted block
+            editorArea.selectionEnd = start;
             syncFile();
             exitVisualMode();
             keyPerformed();
