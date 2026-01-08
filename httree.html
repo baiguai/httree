@@ -834,8 +834,8 @@
             { key: "u", mode: "NORMAL", description: "Undo last change" },
             { key: "Ctrl+r", mode: "NORMAL", description: "Redo last undone change" },
 
-            { key: "y", mode: "VISUAL", description: "Virtual copy the selected text" },
-            { key: "x", mode: "VISUAL", description: "Virtual cut the selected text" },
+            { key: "y", mode: "VISUAL", description: "Copy the selected text" },
+            { key: "x", mode: "VISUAL", description: "Cut the selected text" },
             { key: "d", mode: "VISUAL", description: "Delete selected text" },
 
             { key: "<number>", mode: "NORMAL", description: "If you enter a number first, some commands will repeat that many times." },
@@ -884,9 +884,10 @@
             { key: "Control+-", mode: "INSERT", description: "Insert horizontal line" },
             { key: "Control+*", mode: "INSERT", description: "Convert selection to list" },
             { key: "Control+\\", mode: "INSERT", description: "Wrap selected text" },
+            { key: "Control+;", mode: "INSERT", description: "Create/Update table" },
         ];
         
-        const helpVimEnabled = [
+        let helpVimEnabled = [
             { key: "i", mode: "TREE", description: "Enter INSERT mode (start editing)" },
             { key: "I", mode: "TREE", description: "Enter INSERT mode at start" },
             { key: "r", mode: "TREE", description: "Add root level node" },
@@ -909,6 +910,7 @@
             { key: "J", mode: "TREE", description: "Move node down among siblings" },
             { key: "K", mode: "TREE", description: "Move node up among siblings" },
             { key: "D", mode: "TREE", description: "Delete current node" },
+            { key: "X", mode: "TREE", description: "Show broken note links" },
             { key: "s", mode: "TREE", description: "Save as HTML" },
             { key: "S", mode: "TREE", description: "Save as HTML with new name" },
             { key: "n", mode: "TREE", description: "Save via Node server" },
@@ -917,6 +919,7 @@
             { key: "/", mode: "TREE", description: "Search tree" },
             { key: "#", mode: "TREE", description: "Show links in current note" },
             { key: "m", mode: "TREE", description: "Bookmark current node" },
+            { key: "<", mode: "TREE", description: "Show the history dialog" },
             { key: "`", mode: "TREE", description: "Show bookmarks" },
             { key: "%", mode: "TREE", description: "Import theme file" },
             { key: "!", mode: "TREE", description: "Display options dialog" },
@@ -962,7 +965,9 @@
             { key: "w", mode: "VISUAL", description: "Extend to next word" },
             { key: "b", mode: "VISUAL", description: "Extend to previous word" },
             { key: "d", mode: "VISUAL", description: "Delete selection" },
+            { key: "x", mode: "VISUAL", description: "Cut selection" },
             { key: "y", mode: "VISUAL", description: "Copy selection" },
+            { key: "Control+;", mode: "VISUAL", description: "Create/Update table" },
             { key: "Escape", mode: "INSERT", description: "Exit to NORMAL mode" },
             { key: "Control+-", mode: "INSERT", description: "Insert horizontal rule" },
             { key: "Control+;", mode: "INSERT", description: "Format markdown table" },
@@ -1960,6 +1965,7 @@
                 editorArea.selectionEnd = start;
                 console.log("deleteVisualSelection: editorArea.value after deletion length:", editorArea.value.length);
             }
+            exitVisualMode(); // Exit visual mode after deletion
         }
 
         // ---- Visual Keys ----------------------------------------------------
@@ -1997,15 +2003,16 @@
                     keyPerformed();
                     return true;
                 case "d": // Delete selection
+                    doVisualDelete(e);
+                    return true;
                 case "x": // Cut selection
                     vim_clipboard = getVisualSelection();
                     if (vim_clipboard) {
                         navigator.clipboard.writeText(vim_clipboard).catch(err => {
                             console.error("Clipboard write failed:", err);
                         });
-                        showMessage("Selection cut to clipboard");
                     }
-                    deleteVisualSelection();
+                    doVisualDelete(e);
                     return true;
                 case "y": // Yank (copy)
                     vim_clipboard = getVisualSelection();
@@ -3029,11 +3036,6 @@
             }
         }
         
-        function deleteVisualSelection() {
-            // Similar logic to getVisualSelection but deletes the text
-            // and exits visual mode
-        }
-
         function doVisualDelete(e) {
             e.stopPropagation();
             let start = Math.min(visual_start, visual_end);
@@ -4115,26 +4117,12 @@
     closeDialogBtn.addEventListener('click', closeTreeDialog);
     
     // --- Triggering logic ---
-    let longPressTimer = null;
-    
     // Double-click anywhere on tree panel
     treeEl.addEventListener('dblclick', (e) => {
         e.preventDefault();
         openTreeDialog();
     });
     
-    // Long press (for mobile)
-    // treeEl.addEventListener('touchstart', () => {
-    //     longPressTimer = setTimeout(() => {
-    //         openTreeDialog();
-    //     }, 600); // 600ms = long press
-    // });
-    // treeEl.addEventListener('touchend', () => {
-    //     clearTimeout(longPressTimer);
-    // });
-
-
-
 
     window.addEventListener('keydown', handleHistoryKey, { capture: true });
     window.addEventListener('keydown', handleLinksKey, { capture: true });
@@ -4153,12 +4141,6 @@
     setAppHeight();
     window.addEventListener('resize', setAppHeight);
 
-    editorArea.addEventListener('focus', () => {
-//        if (isMobile()) {
-//            document.querySelector('.app').style.height = `60dvh`;
-//        }
-    });
-    
     editorArea.addEventListener('blur', () => {
         if (isMobile()) {
             document.querySelector('.app').style.height = '100dvh';
