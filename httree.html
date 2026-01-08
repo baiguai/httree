@@ -890,7 +890,6 @@
         let helpVimEnabled = [
             { key: "i", mode: "TREE", description: "Enter INSERT mode (start editing)" },
             { key: "I", mode: "TREE", description: "Enter INSERT mode at start" },
-            { key: "r", mode: "TREE", description: "Add root level node" },
             { key: "R", mode: "TREE", description: "Rename current Folder" },
             { key: "j", mode: "TREE", description: "Select next tree node" },
             { key: "k", mode: "TREE", description: "Select previous tree node" },
@@ -4131,28 +4130,13 @@
 
 
 
-    //---- Mobile Sizing -------------------------------------------------------
-    function isMobile() {
-        return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    }
-    function setAppHeight() {
-        // document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
-    }
-    setAppHeight();
-    window.addEventListener('resize', setAppHeight);
-
-    editorArea.addEventListener('blur', () => {
-        if (isMobile()) {
-            document.querySelector('.app').style.height = '100dvh';
-            setTimeout(setAppHeight, 100);
-        }
-    });
-
-
-
 
     //---- Init ------------------------------------------------------------
     window.addEventListener('load', function() {
+
+        // Fix Help Data
+        helpVimEnabled.push(...helpVimDisabled);
+
         // Restore historyStack and bookmarks from saved HTML content
         try {
             const htmlContent = document.documentElement.outerHTML;
