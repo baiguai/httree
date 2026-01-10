@@ -727,7 +727,6 @@
 
         let currentEditorNodeId = null;
 
-
         let showingHistory = false;
         let historyIndex = 0;
         const historyStackMax = 30;
@@ -960,7 +959,9 @@
             const index = siblings.findIndex(n => n.id === id);
             return { siblings, index, parent: info.parent };
         }
-        function isFolder(n){ return (n.content || "").trim().length === 0; }
+        function isFolder(n){
+            return (n.content || "").trim().length === 0;
+        }
         function updateTitleFromContent(n){
             if (n.content === "") return;
             const firstLine = (n.content||"").split(/\r?\n/)[0].trim();
