@@ -9,6 +9,15 @@ set "FILENAME=%~1"
 set "TARGET_DIR=%~2"
 set "HTNODES_BAT=%USERPROFILE%\htnodes.bat"
 
+REM Check if the entry already exists
+if exist "%HTNODES_BAT%" (
+    findstr /c:"cd /d "%TARGET_DIR%" ^& start "Node Server for %FILENAME%" /b node "svr_%FILENAME%.js"" "%HTNODES_BAT%" >nul
+    if %errorlevel% equ 0 (
+        echo Entry for %FILENAME% in %TARGET_DIR% already exists in %HTNODES_BAT%. No changes were made.
+        exit /b 0
+    )
+)
+
 REM Determine the next available port
 set "PORT=3000"
 if exist "%HTNODES_BAT%" (
@@ -61,6 +70,7 @@ copy "httree.html" "%TARGET_DIR%\%FILENAME%.html" >nul
 
 REM Update the node port in the new html file
 powershell -Command "(Get-Content -path '%TARGET_DIR%\%FILENAME%.html') -replace 'let nodePort = 0;', 'let nodePort = %PORT%;' | Set-Content -path '%TARGET_DIR%\%FILENAME%.html'"
+powershell -Command "(Get-Content -path '%TARGET_DIR%\%FILENAME%.html') -replace 'let fileName = \"help\";', 'let fileName = \"%FILENAME%\";' | Set-Content -path '%TARGET_DIR%\%FILENAME%.html'"
 
 REM Copy saver.js to the target directory
 copy "saver.js" "%TARGET_DIR%\svr_%FILENAME%.js" >nul

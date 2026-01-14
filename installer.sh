@@ -10,6 +10,12 @@ FILENAME=$1
 TARGET_DIR=$2
 HTNODES_SH="$HOME/htnodes.sh"
 
+# Check if the entry already exists
+if [ -f "$HTNODES_SH" ] && grep -q "cd '$TARGET_DIR' && node 'svr_$FILENAME.js' &" "$HTNODES_SH"; then
+    echo "Entry for $FILENAME in $TARGET_DIR already exists in $HTNODES_SH. No changes were made."
+    exit 0
+fi
+
 # Determine the next available port
 PORT=3000
 if [ -f "$HTNODES_SH" ]; then
@@ -26,11 +32,11 @@ if [ -f "$HTNODES_SH" ]; then
     fi
 fi
 
-# Create the htnodes.sh script if it doesn't exist
+# Create or update the htnodes.sh script
 if [ ! -f "$HTNODES_SH" ]; then
     echo "#! /bin/bash" > "$HTNODES_SH"
     echo "" >> "$HTNODES_SH"
-    echo "# 3000" >> "$HTNODES_SH"
+    echo "# $PORT" >> "$HTNODES_SH"
     echo "" >> "$HTNODES_SH"
     echo "cd '$TARGET_DIR' && node 'svr_$FILENAME.js' &" >> "$HTNODES_SH"
     echo "" >> "$HTNODES_SH"
@@ -48,12 +54,10 @@ if [ ! -f "$HTNODES_SH" ]; then
     chmod +x "$HTNODES_SH"
 else
     # Add the new port comment
-    # Find the last port comment and insert after it
     LAST_PORT_LINE=$(grep -nE '^# [0-9]+$' "$HTNODES_SH" | tail -n 1 | cut -d: -f1)
     if [ -n "$LAST_PORT_LINE" ]; then
-        sed -i "$((LAST_PORT_LINE))a# $PORT" "$HTNODES_SH"
+        sed -i "${LAST_PORT_LINE}a# $PORT" "$HTNODES_SH"
     else
-        # If no port comments, add one after the shebang
         sed -i '/^#! \/bin\/bash/a # '$PORT'' "$HTNODES_SH"
     fi
 
@@ -61,12 +65,10 @@ else
     sed -i "/^sleep 3/i cd '$TARGET_DIR' && node 'svr_$FILENAME.js' &" "$HTNODES_SH"
 
     # Add the new echo statement
-    # Find the last echo with a port and insert after it.
     LAST_ECHO_LINE=$(grep -nE 'echo ".*: [0-9]+"' "$HTNODES_SH" | tail -n 1 | cut -d: -f1)
     if [ -n "$LAST_ECHO_LINE" ]; then
-        sed -i "$((LAST_ECHO_LINE))a echo \"$FILENAME: $PORT\"" "$HTNODES_SH"
+        sed -i "${LAST_ECHO_LINE}a echo \"$FILENAME: $PORT\"" "$HTNODES_SH"
     else
-        # If no port echos, add one before wait
         sed -i "/^wait/i echo \"$FILENAME: $PORT\"" "$HTNODES_SH"
     fi
 fi
@@ -74,8 +76,9 @@ fi
 # Copy httree.html to the target directory
 cp httree.html "$TARGET_DIR/$FILENAME.html"
 
-# Update the node port in the new html file
+# Update the node port and file name in the new html file
 sed -i "s/let nodePort = 0;/let nodePort = $PORT;/" "$TARGET_DIR/$FILENAME.html"
+sed -i "s/let fileName = \"help\";/let fileName = \"$FILENAME\";/" "$TARGET_DIR/$FILENAME.html"
 
 # Copy saver.js to the target directory
 cp saver.js "$TARGET_DIR/svr_$FILENAME.js"
