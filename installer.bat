@@ -82,8 +82,12 @@ powershell -Command "(Get-Content -path '%TARGET_DIR%\svr_%FILENAME%.js') -repla
 
 echo New httree instance '%FILENAME%' created in '%TARGET_DIR%' on port %PORT%.
 echo To start the node services, run: %HTNODES_BAT%
+
+cd "%TARGET_DIR%"
+npm install express
 goto:eof
 
 :usage
 echo Usage: %0 ^<filename_minus_extension^> ^<target_directory^>
+
 exit /b 1
