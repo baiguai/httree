@@ -89,3 +89,6 @@ sed -i "s/const PORT = 3000;/const PORT = $PORT;/" "$TARGET_DIR/svr_$FILENAME.js
 
 echo "New httree instance '$FILENAME' created in '$TARGET_DIR' on port $PORT."
 echo "To start the node service, run: $HTNODES_SH"
+
+cd "$TARGET_DIR"
+npm install express
