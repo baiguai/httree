@@ -772,7 +772,6 @@
 
         let currentEditorNodeId = null;
 
-
         let showingHistory = false;
         let historyIndex = 0;
         const historyStackMax = 30;
@@ -1005,7 +1004,9 @@
             const index = siblings.findIndex(n => n.id === id);
             return { siblings, index, parent: info.parent };
         }
-        function isFolder(n){ return (n.content || "").trim().length === 0; }
+        function isFolder(n){
+            return (n.content || "").trim().length === 0;
+        }
         function updateTitleFromContent(n){
             if (n.content === "") return;
             const firstLine = (n.content||"").split(/\r?\n/)[0].trim();
@@ -2532,7 +2533,7 @@
 
             // Generic standalone links
             const urlRegex = /\b(?:https?|file):\/\/[^\s]+/gi;
-            const nodeLinkRegex = /(?:^|\s|\()_(.+?)_(?=\s|[.,!?;:)]|$)/g;
+            const nodeLinkRegex = /(?:^|\s|\()_([^_]|[^_].*?[^_])_(?=\s|[.,!?;:)]|$)/g;
 
             const foundLinks = [];
             let match;
@@ -3402,7 +3403,7 @@
             let content = editorArea.value;
 
             // Regex that preserves whitespace and line breaks around inter-note links
-            const nodeLinkRegex = /(^|\s)_(.+?)_(?=\s|[.,!?;:)]|$)/g;
+            const nodeLinkRegex = /(^|\s)_([^_]|[^_].*?[^_])_(?=\s|[.,!?;:)]|$)/g;
             content = content.replace(nodeLinkRegex, (match, leading, inner) => {
                 return (leading || "") + inner; // keep whitespace/line breaks, drop underscores
             });
@@ -3652,7 +3653,7 @@
     function openMissingLinksDialog() {
         if (readOnly) return;
         showingLinks = true;
-        const nodeLinkRegex = /(?:^|\s)_(.+?)_(?=\s|[.,!?;:)]|$)/g;
+        const nodeLinkRegex = /(?:^|\s)_([^_]|[^_].*?[^_])_(?=\s|[.,!?;:)]|$)/g;
 
         // Gather all node titles (case-insensitive)
         const allTitles = new Set();
