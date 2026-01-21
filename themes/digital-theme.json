@@ -1,7 +1,7 @@
 {
-  "bg": "#000000",
-  "fg": "#ffffff",
-  "muted": "#888888",
+  "bg": "#000",
+  "fg": "#fff",
+  "muted": "#888",
   "accent": "#00ffff",
   "danger": "#ff0080",
   "sel-bg": "#222",
