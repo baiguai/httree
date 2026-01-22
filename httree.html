@@ -3047,10 +3047,51 @@
         function searchTree(query) {
             searchMatches = [];
             const matchContent = !query.startsWith(':');
-            const q = query.startsWith(':') ? query.slice(1).toLowerCase() : query.toLowerCase();
+            let q = query.startsWith(':') ? query.slice(1).toLowerCase() : query.toLowerCase();
+
+            let parts = [];
+            let isWildcardSearch = false;
+
+            if (q.includes('*')) {
+                isWildcardSearch = true;
+                parts = q.split('*').filter(p => p.length > 0);
+            }
+
             (function walk(nodes) {
                 for (const n of nodes) {
-                    if ((n.title && n.title.toLowerCase().includes(q)) || (matchContent && n.content && n.content.toLowerCase().includes(q))) {
+                    const nodeTitle = n.title ? n.title.toLowerCase() : '';
+                    const nodeContent = (matchContent && n.content) ? n.content.toLowerCase() : '';
+
+                    let matches = false;
+
+                    if (isWildcardSearch) {
+                        if (parts.length === 1) {
+                            // Wildcard at beginning or end (e.g., "*foo" or "foo*")
+                            if (nodeTitle.includes(parts[0]) || nodeContent.includes(parts[0])) {
+                                matches = true;
+                            }
+                        } else if (parts.length === 2) {
+                            // Wildcard in middle (e.g., "foo*bar")
+                            const part1 = parts[0];
+                            const part2 = parts[1];
+
+                            const inTitle1 = nodeTitle.includes(part1);
+                            const inTitle2 = nodeTitle.includes(part2);
+                            const inContent1 = nodeContent.includes(part1);
+                            const inContent2 = nodeContent.includes(part2);
+
+                            if ((inTitle1 && inTitle2) || (inContent1 && inContent2) || (inTitle1 && inContent2) || (inContent1 && inTitle2)) {
+                                matches = true;
+                            }
+                        }
+                    } else {
+                        // Standard search
+                        if (nodeTitle.includes(q) || nodeContent.includes(q)) {
+                            matches = true;
+                        }
+                    }
+
+                    if (matches) {
                         searchMatches.push(n);
                     }
                     if (n.children && n.children.length) walk(n.children);
