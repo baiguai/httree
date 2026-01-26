@@ -928,6 +928,8 @@
             { key: "d", mode: "VISUAL", description: "Delete selection" },
             { key: "x", mode: "VISUAL", description: "Cut selection" },
             { key: "y", mode: "VISUAL", description: "Copy selection" },
+            { key: "U", mode: "VISUAL", description: "Convert to uppercase" },
+            { key: "u", mode: "VISUAL", description: "Convert to lowercase" },
             { key: "Control+;", mode: "VISUAL", description: "Create/Update table" },
             { key: "Escape", mode: "INSERT", description: "Exit to NORMAL mode" },
             { key: "<number>", mode: "NORMAL", description: "If you enter a number first, some commands will repeat that many times." }
@@ -1962,6 +1964,12 @@
                     return true;
                 case "d": // Delete selection
                     doVisualDelete(e);
+                    return true;
+                case "U":
+                    doVisualUpperCase(e, true);
+                    return true;
+                case "u":
+                    doVisualUpperCase(e, false);
                     return true;
                 case "x": // Cut selection
                     vim_clipboard = getVisualSelection();
@@ -3024,6 +3032,10 @@
         
             syncFile();
             exitVisualMode(false);
+        }
+
+        function doVisualUpperCase(e, toUpperCase) {
+            // Handle upper/lower case convert
         }
 
 
