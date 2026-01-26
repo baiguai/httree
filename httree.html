@@ -3035,7 +3035,18 @@
         }
 
         function doVisualUpperCase(e, toUpperCase) {
-            // Handle upper/lower case convert
+            recordUndoState();
+            let start = Math.min(visual_start, visual_end);
+            let end = Math.max(visual_start, visual_end);
+            let selectedText = editorArea.value.substring(start, end);
+            
+            let convertedText = toUpperCase ? selectedText.toUpperCase() : selectedText.toLowerCase();
+
+            editorArea.setRangeText(convertedText, start, end, "end");
+            editorArea.selectionStart = start;
+            editorArea.selectionEnd = start + convertedText.length;
+            syncFile();
+            exitVisualMode();
         }
 
 

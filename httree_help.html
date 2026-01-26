@@ -926,7 +926,6 @@
             { key: "!", mode: "TREE", description: "Display options dialog" },
 
             { key: "Control+-", mode: "INSERT", description: "Insert horizontal line" },
-            { key: "Control+*", mode: "INSERT", description: "Convert selection to list" },
             { key: "Control+\\", mode: "INSERT", description: "Wrap selected text" },
             { key: "Control+;", mode: "INSERT", description: "Create/Update table" },
         ];
@@ -974,6 +973,8 @@
             { key: "d", mode: "VISUAL", description: "Delete selection" },
             { key: "x", mode: "VISUAL", description: "Cut selection" },
             { key: "y", mode: "VISUAL", description: "Copy selection" },
+            { key: "U", mode: "VISUAL", description: "Convert to uppercase" },
+            { key: "u", mode: "VISUAL", description: "Convert to lowercase" },
             { key: "Control+;", mode: "VISUAL", description: "Create/Update table" },
             { key: "Escape", mode: "INSERT", description: "Exit to NORMAL mode" },
             { key: "<number>", mode: "NORMAL", description: "If you enter a number first, some commands will repeat that many times." }
@@ -2008,6 +2009,12 @@
                     return true;
                 case "d": // Delete selection
                     doVisualDelete(e);
+                    return true;
+                case "U":
+                    doVisualUpperCase(e, true);
+                    return true;
+                case "u":
+                    doVisualUpperCase(e, false);
                     return true;
                 case "x": // Cut selection
                     vim_clipboard = getVisualSelection();
@@ -3072,6 +3079,21 @@
             exitVisualMode(false);
         }
 
+        function doVisualUpperCase(e, toUpperCase) {
+            recordUndoState();
+            let start = Math.min(visual_start, visual_end);
+            let end = Math.max(visual_start, visual_end);
+            let selectedText = editorArea.value.substring(start, end);
+            
+            let convertedText = toUpperCase ? selectedText.toUpperCase() : selectedText.toLowerCase();
+
+            editorArea.setRangeText(convertedText, start, end, "end");
+            editorArea.selectionStart = start;
+            editorArea.selectionEnd = start + convertedText.length;
+            syncFile();
+            exitVisualMode();
+        }
+
 
 
         //---- Search ----------------------------------------------------------
@@ -3092,11 +3114,47 @@
 
         function searchTree(query) {
             searchMatches = [];
-            const matchContent = !query.startsWith(':');
-            const q = query.startsWith(':') ? query.slice(1).toLowerCase() : query.toLowerCase();
+            const searchTitleOnly = query.startsWith(':');
+            let q = query.startsWith(':') ? query.slice(1).toLowerCase() : query.toLowerCase();
+
+            let parts = [];
+            let isWildcardSearch = false;
+
+            if (q.includes('*')) {
+                isWildcardSearch = true;
+                parts = q.split('*').filter(p => p.length > 0);
+            } else {
+                // If no wildcard, treat the whole query as a single part
+                parts.push(q);
+            }
+
             (function walk(nodes) {
                 for (const n of nodes) {
-                    if ((n.title && n.title.toLowerCase().includes(q)) || (matchContent && n.content && n.content.toLowerCase().includes(q))) {
+                    const nodeTitle = n.title ? n.title.toLowerCase() : '';
+                    const nodeContent = n.content ? n.content.toLowerCase() : ''; 
+
+                    let matches = false;
+
+                    let allPartsMatch = true;
+                    for (const part of parts) {
+                        let partFound = false;
+                        if (nodeTitle.includes(part)) {
+                            partFound = true;
+                        }
+                        if (!searchTitleOnly && nodeContent.includes(part)) { // Only search content if not title-only
+                            partFound = true;
+                        }
+                        if (!partFound) {
+                            allPartsMatch = false;
+                            break;
+                        }
+                    }
+                    if (allPartsMatch) {
+                        matches = true;
+                    }
+                    
+
+                    if (matches) {
                         searchMatches.push(n);
                     }
                     if (n.children && n.children.length) walk(n.children);
