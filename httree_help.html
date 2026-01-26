@@ -12,6 +12,8 @@
         --sel-bg: #111827;
         --btn-border: #555;
         --border: #222;
+        --vim-cursor: #00d1b2;
+        --insert-cursor: #00ff88;
     }
 </style>
 <style>
@@ -198,6 +200,19 @@
         line-height: 1.5;
         tab-size: 4;
         overflow: auto;
+    }
+    
+    /* Cursor styles for different modes */
+    textarea#editorArea.insert-mode {
+        caret-color: var(--insert-cursor);
+    }
+    
+    textarea#editorArea.normal-mode {
+        caret-color: var(--vim-cursor);
+    }
+    
+    textarea#editorArea.visual-mode {
+        caret-color: var(--vim-cursor);
     }
     .footer { border-top: 1px solid var(--border); padding: 6px 10px; color: var(--muted); }
 
@@ -692,7 +707,7 @@
         <span class="dim" id="path">/</span>
         <span class="pill" id="msg"></span>
     </div>
-    <textarea id="editorArea" spellcheck="false" readonly="readonly"></textarea>
+    <textarea id="editorArea" spellcheck="false" class="" readonly="readonly"></textarea>
 </section>
 </div>
 
@@ -1082,6 +1097,9 @@
         const pathEl = document.getElementById('path');
         const msgEl = document.getElementById('msg');
         let msgTimeout;
+        
+        // Initialize cursor style - start in normal mode
+        editorArea.classList.add('normal-mode');
 
         function render(){
             // Render tree
@@ -1172,15 +1190,23 @@
             }
 
             if (editing) {
+                // Remove all cursor mode classes first
+                editorArea.classList.remove('insert-mode', 'normal-mode', 'visual-mode');
+                
                 if (mode_insert) {
                     modeEl.textContent = 'INSERT';
+                    editorArea.classList.add('insert-mode');
                 } else if (mode_visual) {
                     modeEl.textContent = mode_visual_line ? 'VISUAL LINE' : 'VISUAL';
+                    editorArea.classList.add('visual-mode');
                 } else {
                     modeEl.textContent = 'NORMAL';
+                    editorArea.classList.add('normal-mode');
                 }
             } else {
                 modeEl.textContent = 'TREE';
+                // In TREE mode, remove all cursor mode classes
+                editorArea.classList.remove('insert-mode', 'normal-mode', 'visual-mode');
             }
 
             if (selectedId) recordHistory(selectedId);
@@ -1201,7 +1227,7 @@
 
         editorArea.addEventListener('click', () => {
             if (!readOnly) {
-                mode_insert = true;
+                setVimMode(true); // This will set the correct cursor style
                 editing = true;
                 render();
             }
@@ -2063,15 +2089,20 @@
         }
 
         function setVimMode(insertMode) {
+            // Remove all cursor mode classes first
+            editorArea.classList.remove('insert-mode', 'normal-mode', 'visual-mode');
+            
             if (insertMode) {
                 mode_insert = true;
                 modeEl.textContent = 'INSERT';
+                editorArea.classList.add('insert-mode');
             } else {
                 mode_insert = false;
                 if (mode_visual) {
                     exitVisualMode();
                 }
                 modeEl.textContent = 'NORMAL';
+                editorArea.classList.add('normal-mode');
             }
         }
 
@@ -2979,15 +3010,22 @@
         }
 
         function enterVisualMode(lineMode = false) {
+            // Remove all cursor mode classes first
+            editorArea.classList.remove('insert-mode', 'normal-mode', 'visual-mode');
+            
             mode_visual = true;
             mode_visual_line = lineMode;
             visual_start = editorArea.selectionStart;
             visual_end = editorArea.selectionStart;
-            modeEl.textContent = 'VISUAL';
+            modeEl.textContent = mode_visual_line ? 'VISUAL LINE' : 'VISUAL';
+            editorArea.classList.add('visual-mode');
             updateVisualSelection();
         }
         
         function exitVisualMode(positionCursor = true) {
+            // Remove all cursor mode classes first
+            editorArea.classList.remove('insert-mode', 'normal-mode', 'visual-mode');
+            
             mode_visual = false;
             mode_visual_line = false;
 
@@ -2998,13 +3036,14 @@
                 if (visual_end < visual_start) {
                     cursorPos = Math.min(visual_start, visual_end);
                 }
-
+                
                 editorArea.selectionStart = editorArea.selectionEnd = cursorPos;
             }
 
             visual_start = 0;
             visual_end = 0;
             modeEl.textContent = 'NORMAL';
+            editorArea.classList.add('normal-mode');
         }
         
         function updateVisualSelection() {
@@ -3402,6 +3441,8 @@
         --sel-bg: ${currentColors['sel-bg'] || '#111827'};
         --btn-border: ${currentColors['btn-border'] || '#555'};
         --border: ${currentColors.border || '#222'};
+        --vim-cursor: ${currentColors['vim-cursor'] || '#00d1b2'};
+        --insert-cursor: ${currentColors['insert-cursor'] || '#00ff88'};
     }`;
             
             htmlContent = htmlContent.replace(rootCssRegex, newRootCss);
@@ -4082,6 +4123,8 @@
         if (colors.border) root.style.setProperty('--border', colors.border);
         if (colors['border-radius']) root.style.setProperty('--border-radius', colors['border-radius']);
         if (colors['pill-radius']) root.style.setProperty('--pill-radius', colors['pill-radius']);
+        if (colors['vim-cursor']) root.style.setProperty('--vim-cursor', colors['vim-cursor']);
+        if (colors['insert-cursor']) root.style.setProperty('--insert-cursor', colors['insert-cursor']);
     }
 
 
