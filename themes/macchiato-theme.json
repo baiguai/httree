@@ -13,5 +13,7 @@
   "btn-fg": "#cad3f5",
   "dim": "#6e738d",
   "border-radius": "0px",
-  "pill-radius": "0px"
+  "pill-radius": "0px",
+  "vim-cursor": "#9ca0c0",
+  "insert-cursor": "#8aadf4"
 }
