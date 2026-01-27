@@ -53,10 +53,10 @@ const MAX_DAYS = 0;               // delete backups older than N days (0 = keep 
 //  (you generally don’t need to edit below this line)
 // ---------------------------------------------------------------------------
 
-import express from "express";
-import fs from "fs";
-import path from "path";
-import bodyParser from "body-parser";
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const bodyParser = require('body-parser');
 
 const app = express();
 app.use(bodyParser.text({ limit: "50mb" }));
