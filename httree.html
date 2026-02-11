@@ -2021,6 +2021,7 @@
 
             return false;
         }
+
         // ---------------------------------------------------------------------
 
 
@@ -3077,6 +3078,14 @@
             recordUndoState();
             let start = Math.min(visual_start, visual_end);
             let end = Math.max(visual_start, visual_end);
+
+            if (mode_visual_line) {
+                const text = editorArea.value;
+                start = text.lastIndexOf('\n', start - 1) + 1;
+                end = text.indexOf('\n', end);
+                end = end === -1 ? text.length : end + 1;
+            }
+
             let selectedText = editorArea.value.substring(start, end);
             
             let convertedText = toUpperCase ? selectedText.toUpperCase() : selectedText.toLowerCase();
