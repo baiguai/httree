@@ -9,12 +9,8 @@ fi
 FILENAME=$1
 TARGET_DIR=$2
 HTNODES_SH="$HOME/htnodes.sh"
-
-# Check if the entry already exists
-if [ -f "$HTNODES_SH" ] && grep -q "cd '$TARGET_DIR' && node 'svr_$FILENAME.js' &" "$HTNODES_SH"; then
-    echo "Entry for $FILENAME in $TARGET_DIR already exists in $HTNODES_SH. No changes were made."
-    exit 0
-fi
+HTML_FILE="$TARGET_DIR/$FILENAME.html"
+SAVER_JS_FILE="$TARGET_DIR/svr_$FILENAME.js"
 
 # Determine the next available port
 PORT=3000
@@ -38,7 +34,7 @@ if [ ! -f "$HTNODES_SH" ]; then
     echo "" >> "$HTNODES_SH"
     echo "# $PORT" >> "$HTNODES_SH"
     echo "" >> "$HTNODES_SH"
-    echo "cd '$TARGET_DIR' && node 'svr_$FILENAME.js' &" >> "$HTNODES_SH"
+    echo "cd '$TARGET_DIR' && node '$SAVER_JS_FILE' &" >> "$HTNODES_SH"
     echo "" >> "$HTNODES_SH"
     echo "sleep 3" >> "$HTNODES_SH"
     echo "" >> "$HTNODES_SH"
@@ -53,42 +49,58 @@ if [ ! -f "$HTNODES_SH" ]; then
     echo "wait" >> "$HTNODES_SH"
     chmod +x "$HTNODES_SH"
 else
-    # Add the new port comment
-    LAST_PORT_LINE=$(grep -nE '^# [0-9]+$' "$HTNODES_SH" | tail -n 1 | cut -d: -f1)
-    if [ -n "$LAST_PORT_LINE" ]; then
-        sed -i "${LAST_PORT_LINE}a# $PORT" "$HTNODES_SH"
-    else
-        sed -i '/^#! \/bin\/bash/a # '$PORT'' "$HTNODES_SH"
-    fi
+	if ! grep -q "cd '$TARGET_DIR' && node '$SAVER_JS_FILE' &" "$HTNODES_SH"; then
+		# Add the new port comment
+		LAST_PORT_LINE=$(grep -nE '^# [0-9]+$' "$HTNODES_SH" | tail -n 1 | cut -d: -f1)
+		if [ -n "$LAST_PORT_LINE" ]; then
+			sed -i "${LAST_PORT_LINE}a# $PORT" "$HTNODES_SH"
+		else
+			sed -i '/^#! \/bin\/bash/a # '$PORT'' "$HTNODES_SH"
+		fi
 
-    # Add the new node service command before sleep 3
-    sed -i "/^sleep 3/i cd '$TARGET_DIR' && node 'svr_$FILENAME.js' &" "$HTNODES_SH"
+		# Add the new node service command before sleep 3
+		sed -i "/^sleep 3/i cd '$TARGET_DIR' && node '$SAVER_JS_FILE' &" "$HTNODES_SH"
 
-    # Add the new echo statement
-    LAST_ECHO_LINE=$(grep -nE 'echo ".*: [0-9]+"' "$HTNODES_SH" | tail -n 1 | cut -d: -f1)
-    if [ -n "$LAST_ECHO_LINE" ]; then
-        sed -i "${LAST_ECHO_LINE}a echo \"$FILENAME: $PORT\"" "$HTNODES_SH"
-    else
-        sed -i "/^wait/i echo \"$FILENAME: $PORT\"" "$HTNODES_SH"
-    fi
+		# Add the new echo statement
+		LAST_ECHO_LINE=$(grep -nE 'echo ".*: [0-9]+"' "$HTNODES_SH" | tail -n 1 | cut -d: -f1)
+		if [ -n "$LAST_ECHO_LINE" ]; then
+			sed -i "${LAST_ECHO_LINE}a echo \"$FILENAME: $PORT\"" "$HTNODES_SH"
+		else
+			sed -i "/^wait/i echo \"$FILENAME: $PORT\"" "$HTNODES_SH"
+		fi
+	fi
 fi
 
-# Copy httree.html to the target directory
-cp httree.html "$TARGET_DIR/$FILENAME.html"
+if [ ! -f "$HTML_FILE" ]; then
+    # Copy httree.html to the target directory
+    cp httree.html "$HTML_FILE"
 
-# Update the node port and file name in the new html file
-sed -i "s/let nodePort = 0;/let nodePort = $PORT;/" "$TARGET_DIR/$FILENAME.html"
-sed -i "s/let fileName = \"help\";/let fileName = \"$FILENAME\";/" "$TARGET_DIR/$FILENAME.html"
+    # Update the node port and file name in the new html file
+    sed -i "s/let nodePort = 0;/let nodePort = $PORT;/" "$HTML_FILE"
+    sed -i "s/let fileName = \"help\";/let fileName = \"$FILENAME\";/" "$HTML_FILE"
+else
+    # Update the node port and file name in the existing html file
+    sed -i "s/let nodePort = [0-9]*;/let nodePort = $PORT;/" "$HTML_FILE"
+    sed -i "s/let fileName = \".*\";/let fileName = \"$FILENAME\";/" "$HTML_FILE"
+fi
 
-# Copy saver.js to the target directory
-cp saver.js "$TARGET_DIR/svr_$FILENAME.js"
+if [ ! -f "$SAVER_JS_FILE" ]; then
+    # Copy saver.js to the target directory
+    cp saver.js "$SAVER_JS_FILE"
 
-# Update the file name and port in the new saver.js file
-sed -i "s|const FILE_PATH = \"./httree.html\";|const FILE_PATH = \"./$FILENAME.html\";|" "$TARGET_DIR/svr_$FILENAME.js"
-sed -i "s/const PORT = 3000;/const PORT = $PORT;/" "$TARGET_DIR/svr_$FILENAME.js"
+    # Update the file name and port in the new saver.js file
+    sed -i "s|const FILE_PATH = \"./httree.html\";|const FILE_PATH = \"./$FILENAME.html\";|" "$SAVER_JS_FILE"
+    sed -i "s/const PORT = 3000;/const PORT = $PORT;/" "$SAVER_JS_FILE"
+else
+    # Update the file name and port in the existing saver.js file
+    sed -i "s|const FILE_PATH = \".*\";|const FILE_PATH = \"./$FILENAME.html\";|" "$SAVER_JS_FILE"
+    sed -i "s/const PORT = [0-9]*;/const PORT = $PORT;/" "$SAVER_JS_FILE"
+fi
+
 
 echo "New httree instance '$FILENAME' created in '$TARGET_DIR' on port $PORT."
 echo "To start the node service, run: $HTNODES_SH"
 
 cd "$TARGET_DIR"
 npm install express
+
