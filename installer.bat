@@ -8,15 +8,8 @@ if "%~2"=="" goto usage
 set "FILENAME=%~1"
 set "TARGET_DIR=%~2"
 set "HTNODES_BAT=%USERPROFILE%\htnodes.bat"
-
-REM Check if the entry already exists
-if exist "%HTNODES_BAT%" (
-    findstr /c:"cd /d "%TARGET_DIR%" ^& start "Node Server for %FILENAME%" /b node "svr_%FILENAME%.js"" "%HTNODES_BAT%" >nul
-    if %errorlevel% equ 0 (
-        echo Entry for %FILENAME% in %TARGET_DIR% already exists in %HTNODES_BAT%. No changes were made.
-        exit /b 0
-    )
-)
+set "HTML_FILE=%TARGET_DIR%\%FILENAME%.html"
+set "SAVER_JS_FILE=%TARGET_DIR%\svr_%FILENAME%.js"
 
 REM Determine the next available port
 set "PORT=3000"
@@ -43,7 +36,7 @@ if not exist "%HTNODES_BAT%" (
     echo. >> "%HTNODES_BAT%"
     echo REM 3000 >> "%HTNODES_BAT%"
     echo. >> "%HTNODES_BAT%"
-    echo cd /d "%TARGET_DIR%" ^& start "Node Server for %FILENAME%" /b node "svr_%FILENAME%.js" >> "%HTNODES_BAT%"
+    echo cd /d "%TARGET_DIR%" ^& start "Node Server for %FILENAME%" /b node "%SAVER_JS_FILE%" >> "%HTNODES_BAT%"
     echo. >> "%HTNODES_BAT%"
     echo timeout /t 3 /nobreak ^>nul >> "%HTNODES_BAT%"
     echo. >> "%HTNODES_BAT%"
@@ -55,29 +48,44 @@ if not exist "%HTNODES_BAT%" (
     echo echo. >> "%HTNODES_BAT%"
     echo echo. >> "%HTNODES_BAT%"
 ) else (
-    REM Add the new port comment
-    powershell -Command "(Get-Content -path '%HTNODES_BAT%') + 'REM %PORT%' | Out-File -filepath '%HTNODES_BAT%' -encoding ASCII"
-    
-    REM Add the new node service command before timeout
-    powershell -Command "$content = Get-Content -path '%HTNODES_BAT%'; $timeoutIndex = $content | Select-String -Pattern 'timeout' | Select -First 1 | ForEach-Object { $_.LineNumber - 1 }; $newContent = $content[0..($timeoutIndex-1)] + 'cd /d \"%TARGET_DIR%\" ^& start \"Node Server for %FILENAME%\" /b node \"svr_%FILENAME%.js\"' + $content[$timeoutIndex..($content.Length-1)]; $newContent | Out-File -filepath '%HTNODES_BAT%' -encoding ASCII"
+    findstr /c:"cd /d \"%TARGET_DIR%\" ^& start \"Node Server for %FILENAME%\" /b node \"%SAVER_JS_FILE%\"" "%HTNODES_BAT%" >nul
+    if %errorlevel% neq 0 (
+        REM Add the new port comment
+        powershell -Command "(Get-Content -path '%HTNODES_BAT%') + 'REM %PORT%' | Out-File -filepath '%HTNODES_BAT%' -encoding ASCII"
+        
+        REM Add the new node service command before timeout
+        powershell -Command "$content = Get-Content -path '%HTNODES_BAT%'; $timeoutIndex = $content | Select-String -Pattern 'timeout' | Select -First 1 | ForEach-Object { $_.LineNumber - 1 }; $newContent = $content[0..($timeoutIndex-1)] + 'cd /d \"%TARGET_DIR%\" ^& start \"Node Server for %FILENAME%\" /b node \"%SAVER_JS_FILE%\"' + $content[$timeoutIndex..($content.Length-1)]; $newContent | Out-File -filepath '%HTNODES_BAT%' -encoding ASCII"
 
-    REM Add the new echo statement
-    powershell -Command "$content = Get-Content -path '%HTNODES_BAT%'; $lastEchoIndex = $content | Select-String -Pattern 'echo \".*:[0-9]*\"' | Select -Last 1 | ForEach-Object { $_.LineNumber - 1 }; $newContent = $content[0..$lastEchoIndex] + 'echo %FILENAME%: %PORT%' + $content[($lastEchoIndex+1)..($content.Length-1)]; $newContent | Out-File -filepath '%HTNODES_BAT%' -encoding ASCII"
+        REM Add the new echo statement
+        powershell -Command "$content = Get-Content -path '%HTNODES_BAT%'; $lastEchoIndex = $content | Select-String -Pattern 'echo \".*:[0-9]*\"' | Select -Last 1 | ForEach-Object { $_.LineNumber - 1 }; $newContent = $content[0..$lastEchoIndex] + 'echo %FILENAME%: %PORT%' + $content[($lastEchoIndex+1)..($content.Length-1)]; $newContent | Out-File -filepath '%HTNODES_BAT%' -encoding ASCII"
+    )
 )
 
-REM Copy httree.html to the target directory
-copy "httree.html" "%TARGET_DIR%\%FILENAME%.html" >nul
+if not exist "%HTML_FILE%" (
+    REM Copy httree.html to the target directory
+    copy "httree.html" "%HTML_FILE%" >nul
 
-REM Update the node port in the new html file
-powershell -Command "(Get-Content -path '%TARGET_DIR%\%FILENAME%.html') -replace 'let nodePort = 0;', 'let nodePort = %PORT%;' | Set-Content -path '%TARGET_DIR%\%FILENAME%.html'"
-powershell -Command "(Get-Content -path '%TARGET_DIR%\%FILENAME%.html') -replace 'let fileName = \"help\";', 'let fileName = \"%FILENAME%\";' | Set-Content -path '%TARGET_DIR%\%FILENAME%.html'"
+    REM Update the node port in the new html file
+    powershell -Command "(Get-Content -path '%HTML_FILE%') -replace 'let nodePort = 0;', 'let nodePort = %PORT%;' | Set-Content -path '%HTML_FILE%'"
+    powershell -Command "(Get-Content -path '%HTML_FILE%') -replace 'let fileName = \"help\";', 'let fileName = \"%FILENAME%\";' | Set-Content -path '%HTML_FILE%'"
+) else (
+    REM Update the node port and file name in the existing html file
+    powershell -Command "(Get-Content -path '%HTML_FILE%') -replace 'let nodePort = [0-9]*;', 'let nodePort = %PORT%;' | Set-Content -path '%HTML_FILE%'"
+    powershell -Command "(Get-Content -path '%HTML_FILE%') -replace 'let fileName = \".*\";', 'let fileName = \"%FILENAME%\";' | Set-Content -path '%HTML_FILE%'"
+)
 
-REM Copy saver.js to the target directory
-copy "saver.js" "%TARGET_DIR%\svr_%FILENAME%.js" >nul
+if not exist "%SAVER_JS_FILE%" (
+    REM Copy saver.js to the target directory
+    copy "saver.js" "%SAVER_JS_FILE%" >nul
 
-REM Update the file name and port in the new saver.js file
-powershell -Command "(Get-Content -path '%TARGET_DIR%\svr_%FILENAME%.js') -replace 'const FILE_PATH = \"./httree.html\";', 'const FILE_PATH = \"./%FILENAME%.html\";' | Set-Content -path '%TARGET_DIR%\svr_%FILENAME%.js'"
-powershell -Command "(Get-Content -path '%TARGET_DIR%\svr_%FILENAME%.js') -replace 'const PORT = 3000;', 'const PORT = %PORT%;' | Set-Content -path '%TARGET_DIR%\svr_%FILENAME%.js'"
+    REM Update the file name and port in the new saver.js file
+    powershell -Command "(Get-Content -path '%SAVER_JS_FILE%') -replace 'const FILE_PATH = \"./httree.html\";', 'const FILE_PATH = \"./%FILENAME%.html\";' | Set-Content -path '%SAVER_JS_FILE%'"
+    powershell -Command "(Get-Content -path '%SAVER_JS_FILE%') -replace 'const PORT = 3000;', 'const PORT = %PORT%;' | Set-Content -path '%SAVER_JS_FILE%'"
+) else (
+    REM Update the file name and port in the existing saver.js file
+    powershell -Command "(Get-Content -path '%SAVER_JS_FILE%') -replace 'const FILE_PATH = \".*\";', 'const FILE_PATH = \"./%FILENAME%.html\";' | Set-Content -path '%SAVER_JS_FILE%'"
+    powershell -Command "(Get-Content -path '%SAVER_JS_FILE%') -replace 'const PORT = [0-9]*;', 'const PORT = %PORT%;' | Set-Content -path '%SAVER_JS_FILE%'"
+)
 
 
 echo New httree instance '%FILENAME%' created in '%TARGET_DIR%' on port %PORT%.
