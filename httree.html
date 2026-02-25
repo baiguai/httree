@@ -3356,7 +3356,7 @@
                 `let nodePort = ${nodePort};`
             );
 
-            htmlContent = htmlContent.replace(/let\s+treeData\s*=\s*\[[\s\S]*?\];/, `let treeData = ${formattedDatabase};`);
+            htmlContent = htmlContent.replace(/let\s+treeData\s*=\s*\[[\s\S]*?\];/, `let treeData = ${JSON.stringify(treeData, null, 2)};`);
 
             // Make sure the latest bookmarks and historyStack are stored
             const latestBookmarks = JSON.parse(JSON.stringify(bookmarks));
