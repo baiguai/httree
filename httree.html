@@ -2159,7 +2159,7 @@
             ensureSelection();
             let selectedNode = findNodeAndParentById(selectedId).node;
             if (isFolder(selectedNode)) {
-                let newName = prompt('Enter new folder name:', selectedNode.name);
+                let newName = prompt('Enter new folder name:', selectedNode.title);
                 if (!newName) { return; }
                 selectedNode.title = newName;
                 render();
