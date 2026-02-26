@@ -2233,6 +2233,9 @@
             const info = findNodeAndParentById(selectedId); if (!info) return;
             if (info.node.expanded && doCollapse) {
                 info.node.expanded = false;
+                if (!info.node.children.length) {
+                    if (info.parent) selectedId = info.parent.id;
+                }
             } else {
                 if (info.parent) selectedId = info.parent.id;
             }
