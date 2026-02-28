@@ -3257,6 +3257,7 @@
         function closeLinkSearch() {
             searchActive = false;
             linkSearchDialog.style.display = 'none';
+            editorArea.focus();
         }
 
         function linkSearchTree(query) {
@@ -3310,7 +3311,6 @@
             const end = editorArea.selectionEnd;
             editorArea.setRangeText(linkText, start, end, "end");
             syncFile();
-            editorArea.focus();
         }
 
         linkSearchInput.addEventListener('input', e => {
