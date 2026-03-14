@@ -11,6 +11,13 @@ set "HTNODES_BAT=%USERPROFILE%\htnodes.bat"
 set "HTML_FILE=%TARGET_DIR%\%FILENAME%.html"
 set "SAVER_JS_FILE=%TARGET_DIR%\svr_%FILENAME%.js"
 
+if exist "%HTML_FILE%" (
+  if exist "%SAVER_JS_FILE%" (
+    echo "Installation for %FILENAME% in %TARGET_DIR% already exists. Aborting."
+    exit /b 0
+  )
+)
+
 REM Determine the next available port
 set "PORT=3000"
 if exist "%HTNODES_BAT%" (
@@ -20,11 +27,11 @@ if exist "%HTNODES_BAT%" (
     if defined LAST_PORT (
         set /a "PORT=LAST_PORT + 1"
     ) else (
-        for /f "tokens=2 delims=: " %%i in ('findstr /r "echo \".*:[0-9]*\"" "%HTNODES_BAT%"') do (
+        for /f "tokens=3 delims=: " %%i in ('findstr /r "echo.*:[0-9]*" "%HTNODES_BAT%"') do (
             set "LAST_PORT=%%i"
         )
         if defined LAST_PORT (
-            set /a "PORT=PORT + 1"
+            set /a "PORT=LAST_PORT + 1"
         )
     )
 )
