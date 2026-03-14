@@ -3192,6 +3192,19 @@
                     if (searchMatches.length > 0) {
                         selectSearchResult(i);
                         closeSearch();
+                        const selInfo = findNodeAndParentById(selectedId);
+                        if (selInfo && !isFolder(selInfo.node)) {
+                            editing = true;
+                            mode_insert = false;
+                            render();
+                            setTimeout(() => {
+                                editorArea.focus();
+                                // Force re-style
+                                editorArea.classList.remove('normal-mode');
+                                void editorArea.offsetWidth; // force reflow
+                                editorArea.classList.add('normal-mode');
+                            }, 0);
+                        }
                     }
                 });
                 searchList.appendChild(item);
@@ -3238,6 +3251,19 @@
                 if (searchMatches.length > 0) {
                     selectSearchResult(searchIndex);
                     closeSearch();
+                    const selInfo = findNodeAndParentById(selectedId);
+                    if (selInfo && !isFolder(selInfo.node)) {
+                        editing = true;
+                        mode_insert = false;
+                        render();
+                        setTimeout(() => {
+                            editorArea.focus();
+                            // Force re-style
+                            editorArea.classList.remove('normal-mode');
+                            void editorArea.offsetWidth; // force reflow
+                            editorArea.classList.add('normal-mode');
+                        }, 0);
+                    }
                 }
             } else if (e.key === 'Escape') {
                 closeSearch();
@@ -3648,6 +3674,9 @@
                         if (currentFindIndex !== -1) {
                             selectFindMatch(currentFindIndex);
                             closeReplaceDialog();
+                            const area = document.getElementById('editorArea');
+                            area.focus();
+                            setVimMode(false);
                         } else {
                             doFind();
                         }
