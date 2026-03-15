@@ -2,6 +2,12 @@
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport">
 <title>Httree Example</title>
+<script>
+    function closeDialogs() {
+        // Minimal implementation to prevent ReferenceError
+        // Real implementation will be handled later
+    }
+</script>
 <style>
     .app {
         display: grid;
@@ -2892,6 +2898,55 @@
             URL.revokeObjectURL(url);
         }
 
+        function exportTreeAsTxt() {
+            const nodeInfo = findNodeAndParentById(selectedId);
+            if (!nodeInfo) return;
+
+            let fullContent = "";
+
+            function getNodeText(node, depth) {
+                let content = "";
+                const indent = "  ".repeat(depth);
+
+                // Add title
+                content += indent + "# " + node.title + "\n\n";
+
+                // Add content
+                if (node.content && node.content.trim() !== "") {
+                    const contentLines = node.content.split('\n').map(line => indent + line);
+                    content += contentLines.join('\n') + "\n\n";
+                }
+
+                // Process children
+                if (node.children && node.children.length > 0) {
+                    node.children.forEach(child => {
+                        content += getNodeText(child, depth + 1);
+                    });
+                }
+
+                return content;
+            }
+
+            fullContent = getNodeText(nodeInfo.node, 0);
+
+            // Ask for filename (no extension needed)
+            const name = prompt("Save tree as .txt (enter name without extension):", "");
+            if (!name) return;
+
+            const fileName = name + ".txt";
+
+            // Create and trigger download
+            const blob = new Blob([fullContent], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
 
         //---- Key Handling ----------------------------------------------------
         function handleGlobalKey(e){
@@ -3027,7 +3082,8 @@
                 case 's': saveAsHtml(fileName); break;
                 case 'S': openSaveAsDialog(); break;
                 case 'n': saveViaNode(); break;
-                case 'T': exportNoteAsTxt(); break;
+                case 't': exportNoteAsTxt(); break;
+                case 'T': exportTreeAsTxt(); break;
                 case ']': resizeTree(30); break;
                 case '[': resizeTree(-30); break;
                 case '#': openLinksDialog(); break;
