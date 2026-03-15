@@ -638,12 +638,12 @@
 
 <div class="search-dialog" id="searchDialog" style="display: none;">
     <input id="searchInput" placeholder="Search..." type="text">
-    <div class="search-results" id="searchList"><div>Linking to Other Nodes</div><div>Export Current Note</div><div>Linking</div><div>Using the Links Dialog</div><div class="selected">Easily Add Reference Links</div></div>
+    <div class="search-results" id="searchList"><div class="selected">Other Options</div></div>
 </div>
 
 <div class="search-dialog" id="linkSearchDialog" style="display: none;">
     <input id="linkSearchInput" placeholder="Search to insert link..." type="text">
-    <div class="search-results" id="linkSearchList"><div>Adding Root Nodes</div><div>Horizontal Rule</div><div class="selected">Easily Add Reference Links</div></div>
+    <div class="search-results" id="linkSearchList"></div>
 </div>
 
 <div class="search-dialog" id="helpDialogUnified" style="display:none;">
@@ -655,7 +655,7 @@
 
 <div id="linksDialog" ondblclick="closeLinksDialog();" style="display: none;">
     <h3>Links in Note</h3>
-    <div id="linksList"><a href="https://intfiction.org/" target="_blank" class="">Int Fiction</a><a href="https://intfiction.org/" target="_blank">Int Fiction</a><a href="#" data-node-id="7tvrov2y">Introduction</a><a href="#" data-node-id="8tu8ax56">Using the Links Dialog</a><a href="#" data-node-id="z6ijgy5i" class="selected">Easily Add Reference Links</a></div>
+    <div id="linksList"><a href="#" data-node-id="kqr4o4g3" class="selected">The Options Dialog</a></div>
 </div>
 
 <div id="marksDialog" style="display: none;">
@@ -688,7 +688,7 @@
 <div id="historyDialog" style="display: none;">
     <h3>History</h3>
     <div class="history-content">
-        <div id="historyList"><div class="selected" style="background: var(--sel-bg);">Tables</div><div>Introduction</div><div>Easily Add Reference Links</div><div>Using the Links Dialog</div><div>Install Node and NPM</div><div>Using the Installer Script</div><div>Configure Your Notes File</div><div>Configure the Saver File</div><div>Copy the Files</div><div>Benefits of Advanced Saving</div><div>Introduction to Advanced Saving</div><div>Introduction to Saving</div><div>Introduction to Pinning Clips</div><div>Introduction to History</div></div>
+        <div id="historyList"></div>
     </div>
 </div>
 
@@ -712,7 +712,7 @@
         <span class="dim" id="path">/</span>
         <span class="pill" id="msg"></span>
     </div>
-    <textarea id="editorArea" spellcheck="false" class="" readonly="readonly"></textarea>
+    <textarea id="editorArea" spellcheck="false" readonly="readonly" class=""></textarea>
 </section>
 </div>
 
@@ -4049,6 +4049,7 @@
         function closeLinkSearch() {
             searchActive = false;
             linkSearchDialog.style.display = 'none';
+            editorArea.focus();
         }
 
         function linkSearchTree(query) {
@@ -4102,7 +4103,6 @@
             const end = editorArea.selectionEnd;
             editorArea.setRangeText(linkText, start, end, "end");
             syncFile();
-            editorArea.focus();
         }
 
         linkSearchInput.addEventListener('input', e => {
