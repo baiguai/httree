@@ -12,6 +12,12 @@ HTNODES_SH="$HOME/htnodes.sh"
 HTML_FILE="$TARGET_DIR/$FILENAME.html"
 SAVER_JS_FILE="$TARGET_DIR/svr_$FILENAME.js"
 
+# Check if the files already exist
+if [ -f "$HTML_FILE" ] && [ -f "$SAVER_JS_FILE" ]; then
+    echo "Installation for $FILENAME in $TARGET_DIR already exists. Aborting."
+    exit 0
+fi
+
 # Determine the next available port
 PORT=3000
 if [ -f "$HTNODES_SH" ]; then
@@ -21,7 +27,7 @@ if [ -f "$HTNODES_SH" ]; then
         PORT=$((LAST_PORT + 1))
     else
         # If no port comments are found, check for the old format
-        LAST_PORT=$(grep -o 'echo ".*: [0-9]*"' "$HTNODES_SH" | tail -n 1 | grep -o '[0-9]*$')
+        LAST_PORT=$(grep -o 'echo.*: [0-9]*' "$HTNODES_SH" | tail -n 1 | grep -o '[0-9]*$')
         if [ -n "$LAST_PORT" ]; then
             PORT=$((LAST_PORT + 1))
         fi
