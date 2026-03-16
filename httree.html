@@ -832,7 +832,8 @@
             { key: "<", mode: "TREE", description: "Show the history dialog" },
             { key: "gg", mode: "TREE", description: "Select first root tree node" },
             { key: "G", mode: "TREE", description: "Select last root tree node" },
-            { key: "T", mode: "TREE", description: "Export current note as .txt" },
+            { key: "t", mode: "TREE", description: "Export current note as .txt" },
+            { key: "T", mode: "TREE", description: "Export current tree branch as .txt" },
             { key: "m", mode: "TREE", description: "Bookmark current node" },
             { key: "`", mode: "TREE", description: "Show bookmarks" },
             { key: "%", mode: "TREE", description: "Import theme file" },
@@ -902,7 +903,8 @@
             { key: "s", mode: "TREE", description: "Save the current file" },
             { key: "S", mode: "TREE", description: "Save as" },
             { key: "n", mode: "TREE", description: "Save via NodeJs saver server" },
-            { key: "T", mode: "TREE", description: "Export current note as .txt" },
+            { key: "t", mode: "TREE", description: "Export current note as .txt" },
+            { key: "T", mode: "TREE", description: "Export current tree branch as .txt (#noexp to bypass)" },
             { key: "U", mode: "TREE", description: "Upgrade (import existing data)" },
             { key: "m", mode: "TREE", description: "Bookmark current node" },
             { key: "`", mode: "TREE", description: "Show bookmarks" },
@@ -3634,13 +3636,10 @@
 
             function getNodeText(node, depth) {
                 let content = "";
-                const indent = "  ".repeat(depth);
-
-                // Add title
-                // content += indent + "# " + node.title + "\n\n";
+                const indent = ""; // "  ".repeat(depth);
 
                 // Add content
-                if (node.content && node.content.trim() !== "") {
+                if (node.content && node.content.trim() !== "" && !node.content.includes("#noexp")) {
                     const contentLines = node.content.split('\n').map(line => indent + line);
                     content += contentLines.join('\n') + "\n\n";
                 }
