@@ -3,10 +3,15 @@ setlocal enabledelayedexpansion
 
 REM Check for the correct number of arguments
 if "%~1"=="" goto usage
-if "%~2"=="" goto usage
 
-set "FILENAME=%~1"
-set "TARGET_DIR=%~2"
+set "FULL_PATH=%~1"
+for %%F in ("%FULL_PATH%") do (
+    set "TARGET_DIR=%%~dpF"
+    set "FILENAME=%%~nF"
+)
+if /i "%~xF"==".html" (
+    set "FILENAME=%FILENAME%"
+)
 set "HTNODES_BAT=%USERPROFILE%\htnodes.bat"
 set "HTML_FILE=%TARGET_DIR%\%FILENAME%.html"
 set "SAVER_JS_FILE=%TARGET_DIR%\svr_%FILENAME%.js"
@@ -99,7 +104,8 @@ echo New httree instance '%FILENAME%' created in '%TARGET_DIR%' on port %PORT%.
 echo To start the node services, run: %HTNODES_BAT%
 
 cd "%TARGET_DIR%"
-npm install express
+copy "..\package.json" ".\"
+npm install
 goto:eof
 
 :usage
