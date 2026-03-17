@@ -826,7 +826,7 @@
             { key: "E", mode: "TREE", description: "Expand all the tree nodes" },
             { key: "]", mode: "TREE", description: "Expand the treeview panel" },
             { key: "[", mode: "TREE", description: "Shrink the treeview panel" },
-            { key: "/", mode: "TREE", description: "Search (begin with : to search labels)" },
+            { key: "/", mode: "TREE", description: "Search (begin with : labels, +: all words comma sep)" },
             { key: "f", mode: "TREE", description: "Find text in the current note " },
             { key: "#", mode: "TREE", description: "Show note links dialog" },
             { key: "<", mode: "TREE", description: "Show the history dialog" },
@@ -895,7 +895,7 @@
             { key: "D", mode: "TREE", description: "Delete the current node" },
             { key: "i", mode: "TREE", description: "Edit current note" },
             { key: "I", mode: "TREE", description: "Edit current note" },
-            { key: "/", mode: "TREE", description: "Search (begin with : to search labels)" },
+            { key: "/", mode: "TREE", description: "Search (begin with : labels, +: all words comma sep)" },
             { key: "f", mode: "TREE", description: "Find/Replace text in the current note " },
             { key: "#", mode: "TREE", description: "Show note links dialog" },
             { key: "<", mode: "TREE", description: "Show the history dialog" },
@@ -3137,6 +3137,15 @@
 
         function searchTree(query) {
             searchMatches = [];
+            if (query.startsWith("#:")) {
+                searchTreeRegex(query.substring(2));
+                return;
+            }
+            if (query.startsWith("+:")) {
+                searchTreeWords(query.substring(2));
+                return;
+            }
+
             const searchTitleOnly = query.startsWith(':');
             let q = query.startsWith(':') ? query.slice(1).toLowerCase() : query.toLowerCase();
 
@@ -3183,6 +3192,47 @@
                     if (n.children && n.children.length) walk(n.children);
                 }
             })(treeData);
+            searchIndex = 0;
+            renderSearchList();
+        }
+
+        function searchTreeWords(query) {
+            searchMatches = [];
+            if (!query) {
+                renderSearchList();
+                return;
+            }
+
+            const words = query.toLowerCase().split(',').map(w => w.trim()).filter(w => w);
+            if (words.length === 0) {
+                renderSearchList();
+                return;
+            }
+
+            (function walk(nodes) {
+                for (const n of nodes) {
+                    const nodeTitle = n.title ? n.title.toLowerCase() : '';
+                    const nodeContent = n.content ? n.content.toLowerCase() : '';
+                    const combinedText = nodeTitle + " " + nodeContent;
+
+                    let allWordsFound = true;
+                    for (const word of words) {
+                        if (!combinedText.includes(word)) {
+                            allWordsFound = false;
+                            break;
+                        }
+                    }
+
+                    if (allWordsFound) {
+                        searchMatches.push(n);
+                    }
+
+                    if (n.children && n.children.length) {
+                        walk(n.children);
+                    }
+                }
+            })(treeData);
+
             searchIndex = 0;
             renderSearchList();
         }
