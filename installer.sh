@@ -1,13 +1,17 @@
 #!/bin/bash
 
 # Check for the correct number of arguments
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <filename_minus_extension> <target_directory>"
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <full_path_to_html_file>"
     exit 1
 fi
 
-FILENAME=$1
-TARGET_DIR=$2
+FULL_PATH=$1
+TARGET_DIR=$(dirname "$FULL_PATH")
+FILENAME=$(basename "$FULL_PATH")
+if [[ $FILENAME == *.html ]]; then
+    FILENAME=${FILENAME%.html}
+fi
 HTNODES_SH="$HOME/htnodes.sh"
 HTML_FILE="$TARGET_DIR/$FILENAME.html"
 SAVER_JS_FILE="$TARGET_DIR/svr_$FILENAME.js"
@@ -108,5 +112,7 @@ echo "New httree instance '$FILENAME' created in '$TARGET_DIR' on port $PORT."
 echo "To start the node service, run: $HTNODES_SH"
 
 cd "$TARGET_DIR"
-npm install express
+cp ../package.json .
+npm install
+
 
