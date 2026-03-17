@@ -638,7 +638,7 @@
 
 <div class="search-dialog" id="searchDialog" style="display: none;">
     <input id="searchInput" placeholder="Search..." type="text">
-    <div class="search-results" id="searchList"><div class="selected">Other Options</div></div>
+    <div class="search-results" id="searchList"><div class="selected">Tables</div></div>
 </div>
 
 <div class="search-dialog" id="linkSearchDialog" style="display: none;">
@@ -688,7 +688,7 @@
 <div id="historyDialog" style="display: none;">
     <h3>History</h3>
     <div class="history-content">
-        <div id="historyList"></div>
+        <div id="historyList"><div>Introduction</div><div class="selected" style="background: var(--sel-bg);">Using the Installer Script</div><div>Easily Add Reference Links</div><div>Linking to Other Nodes</div><div>Tables</div><div>Using the Links Dialog</div><div>Install Node and NPM</div><div>Configure Your Notes File</div><div>Configure the Saver File</div><div>Copy the Files</div><div>Benefits of Advanced Saving</div><div>Introduction to Advanced Saving</div><div>Introduction to Saving</div><div>Introduction to Pinning Clips</div><div>Introduction to History</div></div>
     </div>
 </div>
 
@@ -712,7 +712,7 @@
         <span class="dim" id="path">/</span>
         <span class="pill" id="msg"></span>
     </div>
-    <textarea id="editorArea" spellcheck="false" readonly="readonly" class=""></textarea>
+    <textarea id="editorArea" spellcheck="false" class="" readonly="readonly"></textarea>
 </section>
 </div>
 
@@ -1054,7 +1054,7 @@
               {
                 "id": "e1ehbevm",
                 "title": "Tables",
-                "content": "Tables\n--------------------------------------------------------------------------------\n\nUsing the following hotkey:\n\nCtrl+;\n\nCreates a table within a note. To create a table you can define the columns\nusing pipes (|):\n\n|Col A|Another Column|\n|This is some long text|Short|\n\nTo convert the above, select it and hit Ctrl+;\nThe resulting table will look like this:\n\n| Col A                  | Another Column |\n| This is some long text | Short          |\n\nYou can add divider rows, using:\n----\n\nSo let's do that now:\n\n----\n|Col A|Another Column|\n----\n|This is some long text|Short|\n|Row 2|Another Row|\n|Still More Data|Data|\n----\n\nWould become:\n\n| ---------------------- | -------------- |\n| Col A                  | Another Column |\n| ---------------------- | -------------- |\n| This is some long text | Short          |\n| Row 2                  | Another Row    |\n| Still More Data        | Data           |\n| ---------------------- | -------------- |\n\n\nYou can also edit your existing tables - adding or modifying rows.\nSimply make your changes, select the table and hit Ctrl+; again\n\nWARNING!\nBe sure that the entire table is selected before updating it!\n\n\n\n| ---------------------- | -------------- |\n| Col A                  | Another Column |\n| ---------------------- | -------------- |\n| This is some long text | Short          |\n| Row 2                  | Another Row    |\n----\n| Still More Data        | Data           |\n|New Row|New Row|\n|Additional Data|Something new|\n| ---------------------- | -------------- |\n\nWould become:\n\n| ---------------------- | -------------- |\n| Col A                  | Another Column |\n| ---------------------- | -------------- |\n| This is some long text | Short          |\n| Row 2                  | Another Row    |\n| ---------------------- | -------------- |\n| Still More Data        | Data           |\n| New Row                | New Row        |\n| Additional Data        | Something new  |\n| ---------------------- | -------------- |",
+                "content": "Tables\n--------------------------------------------------------------------------------\n\nUsing the following hotkey:\n\nCtrl+;\n\nCreates a table within a note. To create a table you can define the columns\nusing pipes (|):\n\n|Col A|Another Column|\n|This is some long text|Short|\n\nTo convert the above, select it and hit Ctrl+;\nThe resulting table will look like this:\n\n| Col A                  | Another Column |\n| This is some long text | Short          |\n\nYou can add divider rows, using:\n----\n\nSo let's do that now:\n\n----\n|Col A|Another Column|\n----\n|This is some long text|Short|\n|Row 2|Another Row|\n|Still More Data|Data|\n----\n\nWould become:\n\n+------------------------+----------------+\n| Col A                  | Another Column |\n+------------------------+----------------+\n| This is some long text | Short          |\n| Row 2                  | Another Row    |\n| Still More Data        | Data           |\n+------------------------+----------------+\n\n\nYou can also edit your existing tables - adding or modifying rows.\nSimply make your changes, select the table and hit Ctrl+; again\n\nWARNING!\nBe sure that the entire table is selected before updating it!\n\n\n\n+------------------------+----------------+\n| Col A                  | Another Column |\n+------------------------+----------------+\n| This is some long text | Short          |\n| Row 2                  | Another Row    |\n----\n| Still More Data        | Data           |\n|New Row|New Row|\n|Additional Data|Something new|\n+------------------------+----------------+\n\nWould become:\n\n+------------------------+----------------+\n| Col A                  | Another Column |\n+------------------------+----------------+\n| This is some long text | Short          |\n| Row 2                  | Another Row    |\n+------------------------+----------------+\n| Still More Data        | Data           |\n| New Row                | New Row        |\n| Additional Data        | Something new  |\n+------------------------+----------------+\n",
                 "children": [],
                 "expanded": false
               }
@@ -1280,7 +1280,7 @@
               {
                 "id": "uirc0zcu",
                 "title": "Using the Installer Script",
-                "content": "Using the Installer Script\n\n\nThe easiest way to set up auto-saving Httree files is to use the installer\nscript. There is one for Linux and one for Windows.\n\nTo use the script:\n\n./installer.sh <filename> <destination directory>\n\nExample:\n\n./installer.sh test ~/temp\n\n\nWhat the script does:\n\n1. Ensures there's a script to start all of your node servers\n   (if it exists, the script will just update it with the new one).\n    This will be located in your user directory, and is called htnodes.sh\n    To start your auto-saver services, simply execute this script.\n    \n2. Copies httree and the saver file to the destination.\n\n3. Updates the port and file name in these copies.\n\n4. Ensures the express node module is installed in the destination directory.",
+                "content": "Using the Installer Script\n\n\nThe easiest way to set up auto-saving Httree files is to use the installer\nscript. There is one for Linux and one for Windows.\n\nTo use the script:\n\n./installer.sh <full path and file name (the extension is optional)>\n\nExample:\n\n./installer.sh ~/temp/test\n\n\nWhat the script does:\n\n1.  Copies the saver.js file to that directory, named: svr_<your file name>.js\n\n2.  Gives it a unique port number.\n\n3.  Ensures you have an htnodes script (when you run this it will start a\n    Node service, just keep that running. If you 'install' other Httree help\n    systems, they will be added to the script, so just stop it and re-start it.\n    This script is placed in your home directory.\n\n4.  If you are Node-enabling an existing Httree help file, it just updates its\n    Node port. (if that file is already Node-enabled, it does nothing - see\n    note below)\n\n5.  If it is a new Httree help file, it will copy httree.html to your directory\n    and name it as you specified, and update its Node port.\n    \n    \nNote:\n    To revert a node-enabled Httree help file, delete its svr_*.js file, and\n    remove its entries in the htnodes script.\n",
                 "children": [],
                 "expanded": false
               },
@@ -1344,6 +1344,13 @@
         "id": "3k7huuk6",
         "title": "Export Current Note",
         "content": "Export Current Note\n--------------------------------------------------------------------------------\n\nKey Binding: U\n\nYou can also export the currently selected note as a .txt file.\n\n** Note **\nThe resulting text file removes the underscores (_) used to create inter\nnote links.",
+        "children": [],
+        "expanded": false
+      },
+      {
+        "id": "osn5bkvy",
+        "title": "Export Current Branch",
+        "content": "Export Current Branch\n--------------------------------------------------------------------------------\n\nYou can also export the current tree node AND all of its child nodes into a\nsingle text file. You can even mark child nodes to NOT be included in this.\n\nFor example:\nIf you are writing a book, and each chapter is a child node of 'Book' AND\nyou also have notes nodes that aren't part of the book's output, anywhere in\nthose notes topics you can add:\n\n#noexp\n\nThis will cause those note nodes to not be exported.",
         "children": [],
         "expanded": false
       }
@@ -1495,10 +1502,6 @@
         "title": "Configure Your Notes File"
     },
     {
-        "id": "uirc0zcu",
-        "title": "Using the Installer Script"
-    },
-    {
         "id": "w4p132r1",
         "title": "Install Node and NPM"
     },
@@ -1507,16 +1510,32 @@
         "title": "Using the Links Dialog"
     },
     {
-        "id": "e1ehbevm",
-        "title": "Tables"
-    },
-    {
         "id": "mn1y8eig",
         "title": "Linking to Other Nodes"
     },
     {
         "id": "z6ijgy5i",
         "title": "Easily Add Reference Links"
+    },
+    {
+        "id": "uirc0zcu",
+        "title": "Using the Installer Script"
+    },
+    {
+        "id": "3k7huuk6",
+        "title": "Export Current Note"
+    },
+    {
+        "id": "osn5bkvy",
+        "title": "Export Current Branch"
+    },
+    {
+        "id": "uf47yk0u",
+        "title": "Wrap Text"
+    },
+    {
+        "id": "e1ehbevm",
+        "title": "Tables"
     },
     {
         "id": "7tvrov2y",
@@ -1535,7 +1554,7 @@
             "\\);": "^^^func^^^"
         };
 
-        let nodePort = 0;
+        let nodePort = 3008;
 
         let currentEditorNodeId = null;
 
@@ -4225,12 +4244,12 @@
             // Ensure correct replacement of the old database
             let htmlContent = "<!DOCTYPE html>" + htmlDoc.outerHTML;
             if (saveName) {
-                htmlContent = htmlContent.replace(/let\s+fileName\s*=\s*"([^"]*)";/, `let fileName = "${name}";`);
+                htmlContent = htmlContent.replace(/let\s+fileName\s*=\s*"([^"]*)";/, `let fileName = "httree_help";`);
             } else {
                 // fileName
                 htmlContent = htmlContent.replace(
                   /let\s+fileName\s*=\s*"([^"]*)";/,
-                  `let fileName = "${fileName}";`
+                  `let fileName = "httree_help";`
                 );
             }
 
