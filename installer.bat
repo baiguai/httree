@@ -9,12 +9,18 @@ for %%F in ("%FULL_PATH%") do (
     set "TARGET_DIR=%%~dpF"
     set "FILENAME=%%~nF"
 )
-if /i "%~xF"==".html" (
-    set "FILENAME=%FILENAME%"
+
+if "%FILENAME%"=="" (
+    echo Error: Could not extract filename from path.
+    exit /b 1
 )
+
 set "HTNODES_BAT=%USERPROFILE%\htnodes.bat"
 set "HTML_FILE=%TARGET_DIR%\%FILENAME%.html"
 set "SAVER_JS_FILE=%TARGET_DIR%\svr_%FILENAME%.js"
+
+REM Ensure target directory exists
+if not exist "%TARGET_DIR%" mkdir "%TARGET_DIR%"
 
 if exist "%HTML_FILE%" (
   if exist "%SAVER_JS_FILE%" (
@@ -75,7 +81,7 @@ if not exist "%HTNODES_BAT%" (
 
 if not exist "%HTML_FILE%" (
     REM Copy httree.html to the target directory
-    copy "httree.html" "%HTML_FILE%" >nul
+    copy "%~dp0httree.html" "%HTML_FILE%" >nul
 
     REM Update the node port in the new html file
     powershell -Command "(Get-Content -path '%HTML_FILE%') -replace 'let nodePort = 0;', 'let nodePort = %PORT%;' | Set-Content -path '%HTML_FILE%'"
@@ -88,7 +94,7 @@ if not exist "%HTML_FILE%" (
 
 if not exist "%SAVER_JS_FILE%" (
     REM Copy saver.js to the target directory
-    copy "saver.js" "%SAVER_JS_FILE%" >nul
+    copy "%~dp0saver.js" "%SAVER_JS_FILE%" >nul
 
     REM Update the file name and port in the new saver.js file
     powershell -Command "(Get-Content -path '%SAVER_JS_FILE%') -replace 'const FILE_PATH = \"./httree.html\";', 'const FILE_PATH = \"./%FILENAME%.html\";' | Set-Content -path '%SAVER_JS_FILE%'"
@@ -104,11 +110,11 @@ echo New httree instance '%FILENAME%' created in '%TARGET_DIR%' on port %PORT%.
 echo To start the node services, run: %HTNODES_BAT%
 
 cd "%TARGET_DIR%"
-copy "..\package.json" ".\"
+copy "%~dp0package.json" ".\"
 npm install
 goto:eof
 
 :usage
-echo Usage: %0 ^<filename_minus_extension^> ^<target_directory^>
+echo Usage: %0 ^<path\to\filename_without_extension^>
 
 exit /b 1
