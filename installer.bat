@@ -110,7 +110,7 @@ echo New httree instance '%FILENAME%' created in '%TARGET_DIR%' on port %PORT%.
 echo To start the node services, run: %HTNODES_BAT%
 
 cd "%TARGET_DIR%"
-copy "%~dp0package.json" ".\"
+powershell -Command "Set-Content -Path 'package.json' -Value '{ \"dependencies\": { \"express\": \"^5.1.0\", \"body-parser\": \"^1.20.0\" } }' -Encoding ASCII"
 npm install
 goto:eof
 
