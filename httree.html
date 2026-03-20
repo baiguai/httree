@@ -1707,8 +1707,17 @@
                     const currentLineText = textH.substring(lineStartH, lineEndH);
                     const parts = headerTemplate.split('^*^');
                     const newText = parts.join(currentLineText);
-                    editorArea.setRangeText(newText, lineStartH, lineEndH, "end");
-                    editorArea.selectionStart = editorArea.selectionEnd = lineStartH + newText.length;
+
+                    if (currentLineText === "") {
+                        let delimiterIndex = headerTemplate.indexOf('^*^');
+                        editorArea.setRangeText(newText, lineStartH, lineEndH, "end");
+                        editorArea.setSelectionRange(delimiterIndex, delimiterIndex);
+                        editorArea.selectionStart = editorArea.selectionEnd = delimiterIndex;
+                    }
+                    else {
+                        editorArea.setRangeText(newText, lineStartH, lineEndH, "end");
+                        editorArea.selectionStart = editorArea.selectionEnd = lineStartH + newText.length;
+                    }
                     syncFile();
                     performed = true;
                     break;
