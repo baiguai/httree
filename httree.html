@@ -1712,7 +1712,7 @@
                         let delimiterIndex = headerTemplate.indexOf('^*^');
                         editorArea.setRangeText(newText, lineStartH, lineEndH, "end");
                         editorArea.setSelectionRange(delimiterIndex, delimiterIndex);
-                        editorArea.selectionStart = editorArea.selectionEnd = delimiterIndex;
+                        editorArea.selectionStart = editorArea.selectionEnd = lineStartH + delimiterIndex;
                     }
                     else {
                         editorArea.setRangeText(newText, lineStartH, lineEndH, "end");
