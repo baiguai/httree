@@ -3384,13 +3384,14 @@
                     if (selInfo && !isFolder(selInfo.node)) {
                         editing = true;
                         mode_insert = false;
+                        mode_visual = true;
                         render();
                         setTimeout(() => {
                             editorArea.focus();
                             // Force re-style
                             editorArea.classList.remove('normal-mode');
                             void editorArea.offsetWidth; // force reflow
-                            editorArea.classList.add('normal-mode');
+                            editorArea.classList.add('visual-mode');
                         }, 0);
                     }
                 }
