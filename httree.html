@@ -4,8 +4,15 @@
 <title>Httree</title>
 <script>
     function closeDialogs() {
-        // Minimal implementation to prevent ReferenceError
-        // Real implementation will be handled later
+        closeSearch();
+        closeHelp();
+        closeOptions();
+        closeSaveAs();
+        closeReplace();
+        closeLinksDialog();
+        closeMarksDialog();
+        closeHistoryDialog();
+        closeVersionDialog();
     }
 </script>
 <style id="theme_styles">
@@ -723,6 +730,12 @@
     <p style="color:var(--dim); font-size:0.9em;">Press Enter to save, Esc to cancel.</p>
 </div>
 
+<div id="versionDialog" style="display:none;">
+    <h3>Version</h3>
+    <p>Current Version: <span id="versionNumber"></span></p>
+    <p style="color:var(--dim); font-size:0.9em;">Press Enter or Esc to close.</p>
+</div>
+
 
 <aside class="tree" id="tree" onclick="closeDialogs(); activateTree();"><ul></ul></aside>
 <section class="editor">
@@ -773,6 +786,7 @@
         let importedFileName = null;
 
         let fileName = "help";
+        let curVersion = "1.0.0";
         let showInitHelp = false;
         let headerTemplate = "__| ^*^ |__";
         let selectedId = null;
@@ -814,6 +828,7 @@
         const linksDialog = document.getElementById('linksDialog');
         const marksDialog = document.getElementById('marksDialog');
         const historyDialog = document.getElementById('historyDialog');
+        const versionDialog = document.getElementById('versionDialog');
         const marksList = document.getElementById('marksList');
         const searchInput = document.getElementById('searchInput');
         const searchList = document.getElementById('searchList');
@@ -827,6 +842,15 @@
         const optHeaderTemplate = document.getElementById('optHeaderTemplate');
         let optionFields = [optShowInitHelp, optFileName, optModeVim, optHeaderTemplate];
         let optionIndex = 0;
+
+        function openVersionDialog() {
+            document.getElementById('versionNumber').textContent = curVersion;
+            versionDialog.style.display = 'block';
+        }
+
+        function closeVersionDialog() {
+            versionDialog.style.display = 'none';
+        }
 
         // !@!
         // Help Data
@@ -925,6 +949,7 @@
             { key: "`", mode: "TREE", description: "Show bookmarks" },
             { key: "%", mode: "TREE", description: "Import theme file" },
             { key: "!", mode: "TREE", description: "Display options dialog" },
+            { key: "v", mode: "TREE", description: "Display version dialog" },
 
             { key: "Control+-", mode: "INSERT", description: "Insert horizontal line" },
             { key: "Control+\\", mode: "INSERT", description: "Wrap selected text" },
@@ -3980,6 +4005,15 @@
                 else openHelpDialog('VimDisabled');
                 return;
             }
+
+            if (versionDialog.style.display === 'block') {
+                if (e.key === 'Enter' || e.key === 'Escape') {
+                    e.preventDefault();
+                    closeVersionDialog();
+                }
+                return;
+            }
+
             if (optionsDialog.style.display === 'block') {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -4005,6 +4039,9 @@
             } else if (e.key === '!' && !editing && !readOnly && !dialogOpen()) {
                 e.preventDefault();
                 openOptionsDialog();
+            } else if (e.key === 'v' && !editing && !dialogOpen()) {
+                e.preventDefault();
+                openVersionDialog();
             }
             if (e.key === 'U' && !editing && !dialogOpen()) {
                 document.getElementById('filePicker').click()
