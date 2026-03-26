@@ -697,15 +697,15 @@
 </div>
 
 <div id="replaceDialog" style="display: none;">
-    <h3>Find &amp; Replace</h3>
-    <label for="searchText">Find</label>
+    <h3>Find<span id="ttlReplace"> &amp; Replace<span></h3>
+    <label id="lblFind" for="searchText">Find</label>
     <input id="searchText" type="text">
     <div id="replaceTools" style="display: block;">
-        <label for="replaceText">Replace With</label>
+        <label id="lblReplace" for="replaceText">Replace With</label>
         <input id="replaceText" type="text">
         <div style="display: none;">
             <button onclick="doFind()">Find</button>
-            <button onclick="doReplaceAll()">Replace All</button>
+            <button id="btnFndReplace" onclick="doReplaceAll()">Replace All</button>
         </div>
     </div>
     <div id="replaceResults">Replaced 1 occurrence(s).</div>
@@ -2126,6 +2126,11 @@
         }
 
         function setVimMode(insertMode) {
+            if (readOnly) {
+                modeEl.textContent = 'TREE';
+                return;
+            }
+
             // Remove all cursor mode classes first
             editorArea.classList.remove('insert-mode', 'normal-mode', 'visual-mode');
             
@@ -2843,6 +2848,22 @@
             }
             
             replaceDialog.style.display = 'block';
+
+            if (readOnly) {
+                let btnRplc = document.getElementById('btnFndReplace');
+                let txtRplc = document.getElementById('replaceText');
+                let ttlRplc = document.getElementById('ttlReplace');
+                let resRplc = document.getElementById('replaceResults');
+                let lblRplc = document.getElementById('lblReplace');
+                let lblFnd = document.getElementById('lblFind');
+                btnRplc.style.display = 'none';
+                txtRplc.style.display = 'none';
+                ttlRplc.style.display = 'none';
+                resRplc.style.display = 'none';
+                lblRplc.style.display = 'none';
+                lblFnd.style.display = 'none';
+            }
+
             document.getElementById('searchText').focus();
         }
 
