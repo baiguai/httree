@@ -695,15 +695,15 @@
 </div>
 
 <div id="replaceDialog" style="display: none;">
-    <h3>Find &amp; Replace</h3>
-    <label for="searchText">Find</label>
+    <h3>Find<span id="ttlReplace"> &amp; Replace<span></span></span></h3>
+    <label id="lblFind" for="searchText">Find</label>
     <input id="searchText" type="text">
     <div id="replaceTools" style="display: block;">
-        <label for="replaceText">Replace With</label>
+        <label id="lblReplace" for="replaceText">Replace With</label>
         <input id="replaceText" type="text">
         <div style="display: none;">
             <button onclick="doFind()">Find</button>
-            <button onclick="doReplaceAll()">Replace All</button>
+            <button id="btnFndReplace" onclick="doReplaceAll()">Replace All</button>
         </div>
     </div>
     <div id="replaceResults">Replaced 1 occurrence(s).</div>
@@ -1774,6 +1774,8 @@
             { key: "H", mode: "NORMAL", description: "Insert Header, See Options ^*^ is the row's text" },
             { key: "j", mode: "NORMAL", description: "Move cursor down" },
             { key: "k", mode: "NORMAL", description: "Move cursor up" },
+            { key: "J", mode: "NORMAL", description: "Move current line down" },
+            { key: "K", mode: "NORMAL", description: "Move current line up" },
             { key: "l", mode: "NORMAL", description: "Move cursor right" },
             { key: "w", mode: "NORMAL", description: "Move to next word" },
             { key: "b", mode: "NORMAL", description: "Move to previous word" },
@@ -2385,6 +2387,14 @@
                     for (let i = 0; i < mode_repeat; i++) moveCursorVertical(-1);
                     performed = true;
                     break;
+                case "K": // Move current line up
+                    moveLineUp();
+                    performed = true;
+                    break;
+                case "J": // Move current line down
+                    moveLineDown();
+                    performed = true;
+                    break;
                 case "0": // Jump to beginning of line
                     const before0 = editorArea.value.lastIndexOf("\n", editorArea.selectionStart - 1);
                     let moveStart = editorArea.selectionEnd = (before0 === -1 ? 0 : before0 + 1);
@@ -2635,6 +2645,74 @@
                 editorArea.selectionStart = editorArea.selectionEnd = targetPos;
             }
         }
+
+        function moveLineUp() {
+            const text = editorArea.value;
+            const cursorPosition = editorArea.selectionStart;
+
+            const lines = text.split('\n');
+            let currentLineIndex = text.substring(0, cursorPosition).split('\n').length - 1;
+
+            if (currentLineIndex === 0) {
+                // Already at the top
+                return;
+            }
+
+            const currentLine = lines[currentLineIndex];
+            const previousLine = lines[currentLineIndex - 1];
+
+            // Swap lines
+            lines[currentLineIndex] = previousLine;
+            lines[currentLineIndex - 1] = currentLine;
+
+            const newText = lines.join('\n');
+            editorArea.value = newText;
+
+            // Calculate new cursor position to stay on the same line content
+            let newCursorPosition = 0;
+            for (let i = 0; i < currentLineIndex - 1; i++) {
+                newCursorPosition += lines[i].length + 1; // +1 for newline character
+            }
+            newCursorPosition += Math.min(cursorPosition - text.substring(0, text.substring(0, cursorPosition).lastIndexOf('\n') + 1).length, currentLine.length);
+            
+            editorArea.selectionStart = editorArea.selectionEnd = newCursorPosition;
+            syncFile();
+        }
+
+        function moveLineDown() {
+            const text = editorArea.value;
+            const cursorPosition = editorArea.selectionStart;
+
+            const lines = text.split('\n');
+            let currentLineIndex = text.substring(0, cursorPosition).split('\n').length - 1;
+
+            if (currentLineIndex === lines.length - 1) {
+                // Already at the bottom
+                return;
+            }
+
+            const currentLine = lines[currentLineIndex];
+            const nextLine = lines[currentLineIndex + 1];
+
+            // Swap lines
+            lines[currentLineIndex] = nextLine;
+            lines[currentLineIndex + 1] = currentLine;
+
+            const newText = lines.join('\n');
+            editorArea.value = newText;
+
+            // Calculate new cursor position to stay on the same line content
+            let newCursorPosition = 0;
+            for (let i = 0; i < currentLineIndex + 1; i++) {
+                newCursorPosition += lines[i].length + 1; // +1 for newline character
+            }
+            newCursorPosition += Math.min(cursorPosition - text.substring(0, text.substring(0, cursorPosition).lastIndexOf('\n') + 1).length, currentLine.length);
+
+            editorArea.selectionStart = editorArea.selectionEnd = newCursorPosition;
+            syncFile();
+        }
+
+
 
         function moveWord(direction) {
             const text = editorArea.value;
@@ -2937,6 +3015,11 @@
         }
 
         function setVimMode(insertMode) {
+            if (readOnly) {
+                modeEl.textContent = 'TREE';
+                return;
+            }
+
             // Remove all cursor mode classes first
             editorArea.classList.remove('insert-mode', 'normal-mode', 'visual-mode');
             
@@ -3654,6 +3737,22 @@
             }
             
             replaceDialog.style.display = 'block';
+
+            if (readOnly) {
+                let btnRplc = document.getElementById('btnFndReplace');
+                let txtRplc = document.getElementById('replaceText');
+                let ttlRplc = document.getElementById('ttlReplace');
+                let resRplc = document.getElementById('replaceResults');
+                let lblRplc = document.getElementById('lblReplace');
+                let lblFnd = document.getElementById('lblFind');
+                btnRplc.style.display = 'none';
+                txtRplc.style.display = 'none';
+                ttlRplc.style.display = 'none';
+                resRplc.style.display = 'none';
+                lblRplc.style.display = 'none';
+                lblFnd.style.display = 'none';
+            }
+
             document.getElementById('searchText').focus();
         }
 
