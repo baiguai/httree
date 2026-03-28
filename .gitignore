@@ -1,0 +1,12 @@
+node_modules/
+package-lock.json
+backups/
+debug.txt.txt
+test_outside/
+svr_httree_help.js
+svr_test_instance.js
+test.sh
+test_instance.html
+.aider.chat.history.md
+.aider.input.history
+.aider.tags.cache.v4/
